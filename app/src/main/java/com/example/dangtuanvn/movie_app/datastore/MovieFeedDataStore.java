@@ -1,7 +1,6 @@
 package com.example.dangtuanvn.movie_app.datastore;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -9,7 +8,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.dangtuanvn.movie_app.model.Movie;
@@ -19,9 +17,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.security.MessageDigest;
@@ -40,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class MovieFeedDataStore implements FeedDataStore {
     private Context context;
     private List<Movie> list, newList;
-    public MovieFeedDataStore(Context context)    {
+    public MovieFeedDataStore(Context context) {
         this.context = context;
     }
 
@@ -58,18 +53,7 @@ public class MovieFeedDataStore implements FeedDataStore {
                     @Override
                     public void onResponse(String response) {
                         Log.i("RESPONSE", "Response is: "+ response);
-                        try {
-                            JSONObject jsonObject= new JSONObject(response.toString());
-//                            JSONArray jsonArray = jsonObject.getJSONArray("arrname");
-//                            JSONObject jsonRow = jsonArray.getJSONObject(0);
-//                            //get value from jsonRow
-//                            String resultStr = jsonRow.getString("result");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if(newList != null) {
-                            newList.clear();
-                        }
+
 
                         Type type = new TypeToken<List<Movie>>(){}.getType();
                         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -78,7 +62,7 @@ public class MovieFeedDataStore implements FeedDataStore {
 
                         JsonParser jsonParser = new JsonParser();
 
-                        JsonObject jsonObject = (JsonObject)jsonParser.parse(response.toString());
+                        JsonObject jsonObject = (JsonObject)jsonParser.parse(response);
 //                      System.out.println(jsonObject.toString());
 
                         newList = gson.fromJson(jsonObject.get("result").getAsJsonArray(), type);
@@ -117,7 +101,8 @@ public class MovieFeedDataStore implements FeedDataStore {
         };
 
 // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        SingletonDataStore.getInstance(context).addRequest(stringRequest);
+//        queue.add(stringRequest);
     }
 
     // http://stackoverflow.com/questions/4846484/md5-hashing-in-android

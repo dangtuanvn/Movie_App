@@ -28,11 +28,11 @@ public class MovieDeserializer extends EasyDeserializer<Movie>  {
                 movie.setFilmNameEn(getStringValue(jsonObject.get("film_name_en"), null));
                 movie.setDuration(getStringValue(jsonObject.get("film_duration"), null));
                 movie.setPublishDate(getStringValue(jsonObject.get("publish_date"), null));
+                movie.setAvgPoint(getStringValue(jsonObject.get("avg_point"), null));
                 movie.setPg_rating(getStringValue(jsonObject.get("pg_rating"), null));
                 movie.setPosterUrl(getStringValue(jsonObject.get("poster_url"), null));
                 movie.setPosterThumb(getStringValue(jsonObject.get("poster_thumb"), null));
                 movie.setPosterLandscape(getStringValue(jsonObject.get("poster_landscape"), null));
-
 
     //            JsonElement authorJsonElement = jsonObject.get("from");
     //            if (authorJsonElement != null && authorJsonElement.isJsonObject()) {
