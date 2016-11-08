@@ -8,24 +8,25 @@ import java.util.List;
  */
 
 public class Movie implements Serializable {
-    private String filmId;
+    private int filmId;
     private String filmName;
     private String filmNameVn;
     private String filmNameEn;
-    private String duration;
+    private int duration;
     private String publishDate;
     private String pgRating;
     private String posterUrl;
     private String posterThumb;
     private String posterLandscape;
-    private float avgPoint;
+    private double avgPoint;
+    private double imdbPoint;
     private List<Integer> listLocationId;
 
-    public String getFilmId() {
+    public int getFilmId() {
         return filmId;
     }
 
-    public void setFilmId(String filmId) {
+    public void setFilmId(int filmId) {
         this.filmId = filmId;
     }
 
@@ -53,11 +54,11 @@ public class Movie implements Serializable {
         this.filmNameEn = filmNameEn;
     }
 
-    public String getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(String duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
@@ -73,8 +74,8 @@ public class Movie implements Serializable {
         return pgRating;
     }
 
-    public void setPg_rating(String pg_rating) {
-        this.pgRating = pg_rating;
+    public void setPgRating(String pgRating) {
+        this.pgRating = pgRating;
     }
 
     public String getPosterUrl() {
@@ -101,11 +102,11 @@ public class Movie implements Serializable {
         this.posterLandscape = posterLandscape;
     }
 
-    public float getAvgPoint() {
+    public double getAvgPoint() {
         return avgPoint;
     }
 
-    public void setAvgPoint(float avgPoint) {
+    public void setAvgPoint(double avgPoint) {
         this.avgPoint = avgPoint;
     }
 
@@ -115,5 +116,13 @@ public class Movie implements Serializable {
 
     public void setListLocationId(List<Integer> listLocationId) {
         this.listLocationId = listLocationId;
+    }
+
+    public double getImdbPoint() {
+        return imdbPoint;
+    }
+
+    public void setImdbPoint(double imdbPoint) {
+        this.imdbPoint = imdbPoint;
     }
 }

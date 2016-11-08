@@ -10,8 +10,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
+import com.example.dangtuanvn.movie_app.model.News;
+import com.example.dangtuanvn.movie_app.model.converter.CinemaDeserializer;
 import com.example.dangtuanvn.movie_app.model.converter.MovieDeserializer;
+import com.example.dangtuanvn.movie_app.model.converter.NewsDeserializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -33,18 +37,34 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class MovieFeedDataStore implements FeedDataStore {
+    public enum DataType {
+        SHOWING,
+        UPCOMING,
+        CINEMA,
+        NEWS,
+        MOVIE_DETAIL,
+        MOVIE_TRAILER,
+        NEWS_DETAIL
+    }
+
+    private static String X123F_TOKEN = "GVlRhvnZt0Z4WF4NrfsQXwZh";
+    private static String X123F_VERSION = "3";
+    private static String BASEURL = "http://mapp.123phim.vn/android/2.97/";
+
     private Context context;
-    private List<Movie> list, newList;
+    private DataType dataType;
+    private String itemId;
+
     public MovieFeedDataStore(Context context) {
         this.context = context;
+        this.dataType = null;
+        this.itemId = null;
     }
 
     @Override
     public void getList(final OnDataRetrievedListener onDataRetrievedListener) {
-        final RequestQueue queue = Volley.newRequestQueue(context);
-
-        String BaseUrl = "http://mapp.123phim.vn/android/2.97";
-        String url = "http://mapp.123phim.vn/android/2.97/film/list?status=1";
+//        final RequestQueue queue = Volley.newRequestQueue(context);
+        String url = setUrl();
 
         Log.i("GET URL", url);
 
@@ -54,25 +74,7 @@ public class MovieFeedDataStore implements FeedDataStore {
                     public void onResponse(String response) {
                         Log.i("RESPONSE", "Response is: "+ response);
 
-
-                        Type type = new TypeToken<List<Movie>>(){}.getType();
-                        GsonBuilder gsonBuilder = new GsonBuilder();
-                        gsonBuilder.registerTypeAdapter(Movie.class, new MovieDeserializer());
-                        Gson gson = gsonBuilder.create();
-
-                        JsonParser jsonParser = new JsonParser();
-
-                        JsonObject jsonObject = (JsonObject)jsonParser.parse(response);
-//                      System.out.println(jsonObject.toString());
-
-                        newList = gson.fromJson(jsonObject.get("result").getAsJsonArray(), type);
-                        updateList(newList);
-
-//                        Log.i("LIST SIZE", "" + posts.size());
-//                        afterPost = jsonObject.get("data").getAsJsonObject().get("after").getAsString();
-//                        Log.i("AFTER", afterPost);
-
-                        onDataRetrievedListener.onDataRetrievedListener(list, null);
+                        onDataRetrievedListener.onDataRetrievedListener(handleData(response), null);
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -90,17 +92,17 @@ public class MovieFeedDataStore implements FeedDataStore {
 
 
                 long timestamp = TimeUnit.MILLISECONDS.toSeconds(new Date().getTime());
-//                        Log.i("CURRENT UTC", "" + timestamp);
-                String token = hashMd5("GVlRhvnZt0Z4WF4NrfsQXwZh" + timestamp) + " " + timestamp;
+//                Log.i("CURRENT UTC", "" + timestamp);
+                String accessToken = hashMd5(X123F_TOKEN + timestamp) + " " + timestamp;
 
-                params.put("X-123F-Version", "3");
-                params.put("X-123F-Token", token);
+                params.put("X-123F-Version", X123F_VERSION);
+                params.put("X-123F-Token", accessToken);
 
                 return params;
             }
         };
 
-// Add the request to the RequestQueue.
+        // Add the request to the RequestQueue.
         SingletonDataStore.getInstance(context).addRequest(stringRequest);
 //        queue.add(stringRequest);
     }
@@ -130,11 +132,80 @@ public class MovieFeedDataStore implements FeedDataStore {
         return "";
     }
 
-    public void updateList(List<Movie> newList){
-        if(list == null){
-            list = new ArrayList<>();
+//    public void updateList(List<Movie> newList){
+//        if(list == null){
+//            list = new ArrayList<>();
+//        }
+//        list.addAll(newList);
+//    }
+
+    public void setDataType(DataType type){
+        this.dataType = type;
+    }
+
+    public void setItemId(String itemId){
+        this.itemId = itemId;
+    }
+
+    public String setUrl(){
+        String url = null;
+        switch(dataType) {
+            case SHOWING:
+                url = BASEURL + "film/list?status=1";
+                break;
+
+            case UPCOMING:
+                url = BASEURL + "film/list?status=2";
+                break;
+
+            case CINEMA:
+                url = BASEURL + "cinema/list";
+                break;
+
+            case NEWS:
+                url = BASEURL + "news/list?type_id=1";
+                break;
         }
-        list.addAll(newList);
+        return url;
+    }
+
+    private List<?> handleData(String response){
+        JsonParser jsonParser = new JsonParser();
+        JsonObject jsonObject = (JsonObject)jsonParser.parse(response);
+        Type type;
+        GsonBuilder gsonBuilder;
+        Gson gson;
+
+        switch(dataType){
+            case SHOWING:
+            case UPCOMING:
+                List<Movie> movieList;
+                type = new TypeToken<List<Movie>>(){}.getType();
+                gsonBuilder = new GsonBuilder();
+                gsonBuilder.registerTypeAdapter(Movie.class, new MovieDeserializer());
+                gson = gsonBuilder.create();
+                movieList = gson.fromJson(jsonObject.get("result").getAsJsonArray(), type);
+                return movieList;
+
+            case CINEMA:
+                List<Cinema> cinemaList;
+                type = new TypeToken<List<Cinema>>(){}.getType();
+                gsonBuilder = new GsonBuilder();
+                gsonBuilder.registerTypeAdapter(Cinema.class, new CinemaDeserializer());
+                gson = gsonBuilder.create();
+                cinemaList = gson.fromJson(jsonObject.get("result").getAsJsonArray(), type);
+                return cinemaList;
+
+            case NEWS:
+                List<News> newsList;
+                type = new TypeToken<List<News>>(){}.getType();
+                gsonBuilder = new GsonBuilder();
+                gsonBuilder.registerTypeAdapter(News.class, new NewsDeserializer());
+                gson = gsonBuilder.create();
+                newsList = gson.fromJson(jsonObject.get("result").getAsJsonArray(), type);
+                return newsList;
+        }
+        return null;
     }
 }
 
