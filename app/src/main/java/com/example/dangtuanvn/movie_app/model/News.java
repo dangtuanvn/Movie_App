@@ -21,6 +21,7 @@ public class News implements Serializable {
     private String imageFull;
     private String imageMedium;
     private String imageSmall;
+    private String timeDifference;
 
     public int getNewsId() {
         return newsId;
@@ -124,5 +125,13 @@ public class News implements Serializable {
 
     public void setListFilm(List<Integer> listFilm) {
         this.listFilm = listFilm;
+    }
+
+    public String getTimeDifference() {
+        return timeDifference;
+    }
+
+    public void setTimeDifference(String timeDifference) {
+        this.timeDifference = timeDifference;
     }
 }

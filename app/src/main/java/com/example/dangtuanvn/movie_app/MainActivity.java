@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             feedDataStore = new MovieFeedDataStore(this);    // fetch data
-            feedDataStore.setDataType(MovieFeedDataStore.DataType.CINEMA);
+            feedDataStore.setDataType(MovieFeedDataStore.DataType.NEWS);
             feedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
                 @Override
                 public void onDataRetrievedListener(List<?> list, Exception ex) {
@@ -40,13 +40,13 @@ public class MainActivity extends AppCompatActivity {
 //                    Log.i("FILM NAME" , "" + movieList.get(0).getFilmName());
 //                    Toast.makeText(getApplicationContext(),"" + abc.get(0).getFilmName(),Toast.LENGTH_LONG).show();
 
-//                    List<News> newsList = (List<News>) list;
-//                    Log.i("NEWS TITLE" , "" + newsList.get(0).getDateAdd());
-//                    Toast.makeText(getApplicationContext(),"" + newsList.get(0).getDateAdd(),Toast.LENGTH_LONG).show();
+                    List<News> newsList = (List<News>) list;
+                    Log.i("NEWS TITLE" , "" + newsList.get(0).getDateAdd());
+                    Toast.makeText(getApplicationContext(),"" + newsList.get(0).getDateAdd(),Toast.LENGTH_LONG).show();
 
-                    List<Cinema> newsList = (List<Cinema>) list;
-                    Log.i("NEWS TITLE" , "" + newsList.get(0).getLatitude());
-                    Toast.makeText(getApplicationContext(),"" + newsList.get(0).getLatitude(),Toast.LENGTH_LONG).show();
+//                    List<Cinema> newsList = (List<Cinema>) list;
+//                    Log.i("NEWS TITLE" , "" + newsList.get(0).getLatitude());
+//                    Toast.makeText(getApplicationContext(),"" + newsList.get(0).getLatitude(),Toast.LENGTH_LONG).show();
 
                 }});
         } else {
