@@ -14,12 +14,14 @@ import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private MovieFeedDataStore feedDataStore;
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -27,40 +29,63 @@ public class MainActivity extends AppCompatActivity {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             feedDataStore = new MovieFeedDataStore(this);    // fetch data
+
             feedDataStore.setDataType(MovieFeedDataStore.DataType.NEWS);
             feedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
                 @Override
                 public void onDataRetrievedListener(List<?> list, Exception ex) {
-                    // Toast.makeText(getApplicationContext(),"Size: " + postList.size(),Toast.LENGTH_SHORT).show(); // size 26
-                    // displayRecyclerExpandableList(postList);
-//                    displayRecyclerList(postList);
-//                    position = postList.size() - 2;
-
 //                    List<Movie> movieList = (List<Movie>) list;
 //                    Log.i("FILM NAME" , "" + movieList.get(0).getFilmName());
-//                    Toast.makeText(getApplicationContext(),"" + abc.get(0).getFilmName(),Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(),"" + movieList.get(0).getFilmName(),Toast.LENGTH_LONG).show();
 
-                    List<News> newsList = (List<News>) list;
-                    Log.i("NEWS TITLE" , "" + newsList.get(0).getDateAdd());
-                    Toast.makeText(getApplicationContext(),"" + newsList.get(0).getDateAdd(),Toast.LENGTH_LONG).show();
+//                    List<Cinema> cinemaList = (List<Cinema>) list;
+//                    Log.i("CINEMA ADDRESS" , "" + cinemaList.get(0).getCinemaAddress());
+//                    Toast.makeText(getApplicationContext(),"" + cinemaList.get(0).getCinemaAddress(),Toast.LENGTH_LONG).show();
 
-//                    List<Cinema> newsList = (List<Cinema>) list;
-//                    Log.i("NEWS TITLE" , "" + newsList.get(0).getLatitude());
-//                    Toast.makeText(getApplicationContext(),"" + newsList.get(0).getLatitude(),Toast.LENGTH_LONG).show();
-
-                }});
+                    if (list != null && checkType(News.class, list.get(0))) {
+                        List<News> newsList = (List<News>) list;
+//                    List<News> newsList = getNewsList(list);
+                        Log.i("NEWS TITLE", "" + newsList.get(0).getNewsTitle());
+                        Toast.makeText(getApplicationContext(), "" + newsList.get(0).getNewsTitle(), Toast.LENGTH_LONG).show();
+                    }
+                    else{
+                        // IF THERE IS NO DATA
+                    }
+                }
+            });
         } else {
+            // SHOW NO NETWORK CONNECTION ERROR HERE
+
+
+
+            // Code to set another DataType and keep send queue to feedDataStore to fetch more data
+            feedDataStore.setDataType(MovieFeedDataStore.DataType.UPCOMING);
             feedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
                 @Override
                 public void onDataRetrievedListener(List<?> list, Exception ex) {
-                    feedDataStore.setDataType(MovieFeedDataStore.DataType.UPCOMING);
                     feedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
                         @Override
                         public void onDataRetrievedListener(List<?> list, Exception ex) {
 
-                        }});
+                        }
+                    });
                 }
             });
+
+
+
         }
+    }
+
+    public List<Movie> getMovieList(List<?> list) {
+        List<Movie> movieList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            movieList.add((Movie) list.get(i));
+        }
+        return movieList;
+    }
+
+    public static boolean checkType(Class expectedType, Object object) {
+        return expectedType.isInstance(object);
     }
 }

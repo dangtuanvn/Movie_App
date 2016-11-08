@@ -56,7 +56,6 @@ public class NewsDeserializer extends EasyDeserializer<News> {
     }
 
     public void calculateTime(News news, String dateUpdate){
-
         // Calculate difference in update time and current time
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
