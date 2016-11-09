@@ -2,6 +2,7 @@ package com.example.dangtuanvn.movie_app;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -13,7 +14,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -166,5 +169,60 @@ public class MovieTabFragment extends Fragment {
         }, 2000);
     }
 
+                });
+                newsFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
+                    @Override
+                    public void onDataRetrievedListener(List list, Exception ex) {
+                        final List<News> newsShowingList = (List<News>) list;
+                        mAdapter = new NewsDetailAdapter(getContext(), newsShowingList, mPage);
+                        mRecyclerView.setAdapter((mAdapter));
+                        final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+                            @Override
+                            public boolean onSingleTapUp(MotionEvent e) {
+
+                                return true;
+                            }
+                             });
+                        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+                            @Override
+                            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                                View childview = rv.findChildViewUnder(e.getX(), e.getY());
+
+
+                                if (childview != null && mGestureDetector.onTouchEvent(e))  {
+
+                                    Intent intent = new Intent(getContext(), WebViewDisplay.class);
+                                    intent.putExtra("link", newsShowingList.get(rv.getChildAdapterPosition(childview)).getUrl());
+                                    startActivity(intent);
+                                }
+                                return false;
+                            }
+
+                            @Override
+                            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+                            }
+
+                            @Override
+                            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+                            }
+                        });
+                    }
+                });
+            }
+        }
+        else {
+            // NO NETWORK CONNECTION
+        }
+        return view;
+    }
+
+    private enum TAB{
+        SHOWING,
+        UPCOMING,
+        AROUND,
+        NEWS
+    }
 }
 
