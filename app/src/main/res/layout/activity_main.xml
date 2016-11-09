@@ -19,8 +19,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#424242"
+        app:tabTextColor="@color/colorNormalTab"
+        app:tabSelectedTextColor="@color/colorHighlightTab"
         app:tabTextAppearance="@style/MineCustomTabText"
 
+
         />
+    <!--app:tabSelectedTextColor="@color/colorHighlightTab"-->
+    <!--app:tabTextColor="@color/colorNormalTab"-->
 
 </LinearLayout>

@@ -9,6 +9,10 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 
+import com.example.dangtuanvn.movie_app.model.Movie;
+
+import java.util.List;
+
 
 /**
  * Created by sinhhx on 11/7/16.

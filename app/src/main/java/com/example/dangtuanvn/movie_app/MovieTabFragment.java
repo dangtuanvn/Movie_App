@@ -2,16 +2,26 @@ package com.example.dangtuanvn.movie_app;
 
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
+import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
+import com.example.dangtuanvn.movie_app.model.Movie;
+
+import java.io.Serializable;
+import java.util.List;
 
 
 /**
@@ -24,6 +34,7 @@ public class MovieTabFragment extends Fragment {
     public static final String ARG_PAGE = "ARG_PAGE";
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
+    private MovieFeedDataStore feedDataStore;
 
     public static MovieTabFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -37,6 +48,8 @@ public class MovieTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
+
+
     }
 
     @Override
@@ -51,15 +64,34 @@ public class MovieTabFragment extends Fragment {
         // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
 
-        // use a linear layout manager
+      if(mPage==1) {
+          ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+          NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+          if (networkInfo != null && networkInfo.isConnected()) {
+              feedDataStore = new MovieFeedDataStore(getContext());    // fetch data
+              feedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
+                  @Override
+                  public void onDataRetrievedListener(List list, Exception ex) {
+                      // Toast.makeText(getApplicationContext(),"Size: " + postList.size(),Toast.LENGTH_SHORT).show(); // size 26
+                      // displayRecyclerExpandableList(postList);
+//                    displayRecyclerList(postList);
+//                    position = postList.size() - 2;
+                      List<Movie> abc = (List<Movie>) list;
+                      mLayoutManager = new LinearLayoutManager(getContext());
+                      mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mLayoutManager = new LinearLayoutManager(getContext());
-        mRecyclerView.setLayoutManager(mLayoutManager);
+                      // specify an adapter (see also next example)
+                      mAdapter = new MovieDetailAdapter(getContext(), abc);
 
-        // specify an adapter (see also next example)
-        mAdapter = new MovieDetailAdapter(getContext());
-        mRecyclerView.setAdapter(mAdapter);
+                      mRecyclerView.setAdapter(mAdapter);
 
+                  }
+              });
+          } else {
+
+          }
+
+      }
 
         return view;
 

@@ -1,23 +1,44 @@
 package com.example.dangtuanvn.movie_app;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.dangtuanvn.movie_app.model.Movie;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
 
 /**
  * Created by sinhhx on 11/7/16.
  */
 public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.ViewHolder>  {
-
+        List<Movie> movieList;
         Context context;
-public MovieDetailAdapter(Context context){
+        int targetwidth;
 
+public MovieDetailAdapter(Context context, List<Movie> movieList){
+        this.movieList = movieList;
         this.context =context;
 
         }
@@ -37,8 +58,6 @@ public static class ViewHolder extends RecyclerView.ViewHolder{
 }
     public MovieDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.showing_movie_detail, parent, false);
-        v.setBackgroundColor(Color.WHITE);
-
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
@@ -46,17 +65,53 @@ public static class ViewHolder extends RecyclerView.ViewHolder{
 
 
     @Override
-    public void onBindViewHolder(MovieDetailAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final MovieDetailAdapter.ViewHolder holder, final int position) {
 
+        String text = "<font color=#cc0029>"+"6.6"+"</font> <font color=#ffffff>IMBD</font>";
+      holder.IMDB.setText(Html.fromHtml(text));
+       displayCarList_Picasso(holder.moviePic,movieList.get(position).getPosterLandscape());
+        holder.moviePic.setScaleType(ImageView.ScaleType.FIT_XY);
 
 
     }
+    private Transformation cropPosterTransformation = new Transformation() {
+
+        @Override public Bitmap transform(Bitmap source) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+
+            wm.getDefaultDisplay().getMetrics(metrics);
+            int targetWidth = metrics.widthPixels-(metrics.widthPixels/20);
+            double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
+            int targetHeight = (int) (targetWidth * aspectRatio);
+            Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
+            if (result != source) {
+                // Same bitmap is returned if sizes are the same
+                source.recycle();
+            }
+            return result;
+        }
+
+        @Override public String key() {
+            return "cropPosterTransformation";
+        }
+    };
 
 
     @Override
     public int getItemCount() {
-        return 0;
+        return movieList.size();
     }
+
+    public void displayCarList_Picasso(ImageView imageView, String url){
+
+        Picasso.with(context)
+                .load(url)
+                .transform(cropPosterTransformation)
+                .into(imageView);
+    }
+
+
 
 
 }
