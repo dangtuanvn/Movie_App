@@ -132,6 +132,7 @@ public static class ViewHolder extends RecyclerView.ViewHolder{
 
         Picasso.with(context)
                 .load(url)
+                .placeholder(R.drawable.white_placeholder)
                 .transform(cropPosterTransformation)
                 .into(imageView);
     }
