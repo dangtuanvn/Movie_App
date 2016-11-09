@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private FeedDataStore movieFeedDataStore, newsFeedDataStore;
+    private MovieFeedDataStore movieFeedDataStore;
+    private NewsFeedDataStore newsFeedDataStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
+
             movieFeedDataStore = new MovieFeedDataStore(this, MovieFeedDataStore.DataType.SHOWING);    // fetch data
 
             movieFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {

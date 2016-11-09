@@ -19,23 +19,23 @@ import java.util.List;
  * Created by dangtuanvn on 11/7/16.
  */
 
-public class MovieFeedDataStore extends DataStore implements FeedDataStore {
-    String urlShowing = BASEURL + "film/list?status=1";
-    String urlUpcoming = BASEURL + "film/list?status=1";
+public class MovieFeedDataStore extends DataStore {
+    private String urlShowing = BASEURL + "film/list?status=1";
+    private String urlUpcoming = BASEURL + "film/list?status=2";
 
     public enum DataType{
         SHOWING,
         UPCOMING
     }
 
-    DataType type;
+    private DataType type;
     public MovieFeedDataStore(Context context, DataType type) {
         super(context);
         this.type = type;
     }
 
     @Override
-    protected List<?> handleData(String response) {
+    protected List<Movie> handleData(String response) {
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(response);
         List<Movie> movieList;
