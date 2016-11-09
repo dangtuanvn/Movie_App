@@ -10,11 +10,11 @@ import com.android.volley.toolbox.Volley;
  * Created by dangtuanvn on 11/7/16.
  */
 
-public class SingletonDataStore {
-    public static SingletonDataStore instance;
+public class SingletonQueue {
+    public static SingletonQueue instance;
     private RequestQueue queue;
     private Context context;
-    public SingletonDataStore(Context context){
+    public SingletonQueue(Context context){
         this.context =context;
         queue = getRequestQueue();
     }
@@ -26,9 +26,9 @@ public class SingletonDataStore {
         return queue;
     }
 
-    public static synchronized SingletonDataStore getInstance(Context context){
+    public static synchronized SingletonQueue getInstance(Context context){
         if(instance ==null ){
-            instance = new SingletonDataStore(context);
+            instance = new SingletonQueue(context);
         }
         return instance;
     }

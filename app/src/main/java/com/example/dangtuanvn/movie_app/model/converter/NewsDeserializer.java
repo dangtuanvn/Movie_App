@@ -71,10 +71,10 @@ public class NewsDeserializer extends EasyDeserializer<News> {
             int numberOfDays = (int) ((date1.getTime() - date2.getTime()) / (3600 * 24 * 1000));
 
             if (numberOfDays > 30) {
-                news.setTimeDifference(numberOfDays / 30 + " months");
+                news.setTimeDifference(numberOfDays / 30 + " months ago");
 //                        Log.i("MONTH DIFFERENCE", numberOfDays / 30 + " months ago");
             } else if (numberOfDays > 0) {
-                news.setTimeDifference(numberOfDays + " days");
+                news.setTimeDifference(numberOfDays + " days ago");
 //                        Log.i("DAY DIFFERENCE", numberOfDays + " days ago");
             } else {
                 SimpleDateFormat hms = new SimpleDateFormat("HH:mm:ss");
@@ -86,10 +86,14 @@ public class NewsDeserializer extends EasyDeserializer<News> {
 
                 if (minuteDifference > 60) {
                     news.setTimeDifference(minuteDifference / 60 + " hours ago");
-//                            Log.i("HOUR DIFFERENCE", minuteDifference / 60 + " hours");
-                } else {
+//                    Log.i("HOUR DIFFERENCE", minuteDifference / 60 + " hours");
+                } else if (minuteDifference < 6) {
+                    news.setTimeDifference("Just now");
+//                    Log.i("MINUTE DIFFERENCE", minuteDifference + " minutes");
+                }
+                else{
                     news.setTimeDifference(minuteDifference + " minutes ago");
-//                            Log.i("MINUTE DIFFERENCE", minuteDifference + " minutes");
+//                    Log.i("MINUTE DIFFERENCE", minuteDifference + " minutes");
                 }
             }
         } catch (ParseException e) {

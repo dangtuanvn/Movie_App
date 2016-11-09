@@ -35,51 +35,46 @@ import java.util.List;
 /**
  * Created by sinhhx on 11/7/16.
  */
-public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.ViewHolder>  {
-        List<Movie> movieList;
-        Context context;
-        int mPage;
+public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.ViewHolder> {
+    List<Movie> movieList;
+    Context context;
+    int mPage;
 
-public MovieDetailAdapter(Context context, List<Movie> movieList, int mPage){
+    public MovieDetailAdapter(Context context, List<Movie> movieList, int mPage) {
         this.movieList = movieList;
-        this.mPage =mPage;
-        this.context =context;
-
-        }
-
-
-
-public static class ViewHolder extends RecyclerView.ViewHolder{
-    public ImageView moviePic;
-    public TextView IMDB;
-    public TextView calendar;
-
-
-    public ViewHolder(View itemView) {
-        super(itemView);
-        moviePic =(ImageView) itemView.findViewById(R.id.moviepic);
-        IMDB= (TextView) itemView.findViewById(R.id.txtIMDB);
-        calendar=(TextView) itemView.findViewById(R.id.txtCalendar);
+        this.mPage = mPage;
+        this.context = context;
     }
-}
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public ImageView moviePic;
+        public TextView IMDB;
+        public TextView calendar;
+
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            moviePic = (ImageView) itemView.findViewById(R.id.moviepic);
+            IMDB = (TextView) itemView.findViewById(R.id.txtIMDB);
+            calendar = (TextView) itemView.findViewById(R.id.txtCalendar);
+        }
+    }
+
     public MovieDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.showing_movie_detail, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
 
-
-
     @Override
     public void onBindViewHolder(final MovieDetailAdapter.ViewHolder holder, final int position) {
-
-        String text = "<font color=#cc0029>"+movieList.get(position).getImdbPoint()+"</font> <font color=#ffffff>IMBD</font>";
-      holder.IMDB.setText(Html.fromHtml(text));
-       displayCarList_Picasso(holder.moviePic,movieList.get(position).getPosterLandscape());
-        if(mPage==1){
+        String text = "<font color=#cc0029>" + movieList.get(position).getImdbPoint() + "</font> <font color=#ffffff>IMBD</font>";
+        holder.IMDB.setText(Html.fromHtml(text));
+        displayCarList_Picasso(holder.moviePic, movieList.get(position).getPosterLandscape());
+        if (mPage == 1) {
             holder.calendar.setVisibility(View.GONE);
-            }
-        if(mPage==2){
+        }
+        if (mPage == 2) {
             holder.calendar.setVisibility(View.VISIBLE);
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date newDate = null;
@@ -91,20 +86,19 @@ public static class ViewHolder extends RecyclerView.ViewHolder{
 
             format = new SimpleDateFormat("dd.MM");
             String date = format.format(newDate);
-        holder.calendar.setText(date);
-            }
+            holder.calendar.setText(date);
+        }
         holder.moviePic.setScaleType(ImageView.ScaleType.FIT_XY);
-
-
     }
-    private Transformation cropPosterTransformation = new Transformation() {
 
-        @Override public Bitmap transform(Bitmap source) {
+    private Transformation cropPosterTransformation = new Transformation() {
+        @Override
+        public Bitmap transform(Bitmap source) {
             DisplayMetrics metrics = new DisplayMetrics();
             WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
             wm.getDefaultDisplay().getMetrics(metrics);
-            int targetWidth = metrics.widthPixels-(metrics.widthPixels/20);
+            int targetWidth = metrics.widthPixels - (metrics.widthPixels / 20);
             double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
             int targetHeight = (int) (targetWidth * aspectRatio);
             Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
@@ -115,26 +109,23 @@ public static class ViewHolder extends RecyclerView.ViewHolder{
             return result;
         }
 
-        @Override public String key() {
+        @Override
+        public String key() {
             return "cropPosterTransformation";
         }
     };
-
 
     @Override
     public int getItemCount() {
         return movieList.size();
     }
 
-    public void displayCarList_Picasso(ImageView imageView, String url){
-
+    public void displayCarList_Picasso(ImageView imageView, String url) {
         Picasso.with(context)
                 .load(url)
                 .transform(cropPosterTransformation)
                 .into(imageView);
     }
-
-
 
 
 }
