@@ -35,35 +35,29 @@ import java.util.List;
 /**
  * Created by sinhhx on 11/7/16.
  */
-public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.ViewHolder>  {
-        List<Movie> movieList;
-        Context context;
-        int mPage;
+public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.ViewHolder> {
+    private List<Movie> movieList;
+    private Context context;
+    private int mPage;
 
-public MovieDetailAdapter(Context context, List<Movie> movieList, int mPage){
+    public MovieDetailAdapter(Context context, List<Movie> movieList, int mPage) {
         this.movieList = movieList;
-        this.mPage =mPage;
-        this.context =context;
-
-        }
-
-
-
-public static class ViewHolder extends RecyclerView.ViewHolder{
-
-    public ImageView moviePic;
-    public TextView IMDB;
-    public TextView calendar;
-
-
-    public ViewHolder(View itemView) {
-        super(itemView);
-        moviePic =(ImageView) itemView.findViewById(R.id.moviepic);
-        IMDB= (TextView) itemView.findViewById(R.id.txtIMDB);
-        calendar=(TextView) itemView.findViewById(R.id.txtCalendar);
-
+        this.mPage = mPage;
+        this.context = context;
     }
-}
+
+    protected static class ViewHolder extends RecyclerView.ViewHolder {
+        private ImageView moviePic;
+        private TextView IMDB;
+        private TextView calendar;
+        private ViewHolder(View itemView) {
+            super(itemView);
+            moviePic = (ImageView) itemView.findViewById(R.id.moviepic);
+            IMDB = (TextView) itemView.findViewById(R.id.txtIMDB);
+            calendar = (TextView) itemView.findViewById(R.id.txtCalendar);
+        }
+    }
+
     public MovieDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.showing_movie_detail, parent, false);
         ViewHolder vh = new ViewHolder(v);
@@ -71,42 +65,43 @@ public static class ViewHolder extends RecyclerView.ViewHolder{
     }
 
 
-
     @Override
     public void onBindViewHolder(final MovieDetailAdapter.ViewHolder holder, final int position) {
+        String text = "<font color=#cc0029>" + movieList.get(position).getImdbPoint() + "</font> <font color=#ffffff>IMDB</font>";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            holder.IMDB.setText(Html.fromHtml((text), Html.FROM_HTML_MODE_LEGACY));
+        } else {
+            holder.IMDB.setText(Html.fromHtml(text));
+        }
+//        holder.IMDB.setText(Html.fromHtml(text));
 
-        String text = "<font color=#cc0029>"+movieList.get(position).getImdbPoint()+"</font> <font color=#ffffff>IMDB</font>";
-      holder.IMDB.setText(Html.fromHtml(text));
-       displayCarList_Picasso(holder.moviePic,movieList.get(position).getPosterLandscape());
-        if(mPage==1){
+        displayCarList_Picasso(holder.moviePic, movieList.get(position).getPosterLandscape());
+        if (mPage == 1) {
             holder.calendar.setVisibility(View.GONE);
-            }
-        if(mPage==2){
-            holder.calendar.setVisibility(View.VISIBLE);
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            Date newDate = null;
+        }
+        else if (mPage == 2) {
             try {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                Date newDate = null;
                 newDate = format.parse(movieList.get(position).getPublishDate());
+                format = new SimpleDateFormat("dd.MM");
+                String date = format.format(newDate);
+                holder.calendar.setVisibility(View.VISIBLE);
+                holder.calendar.setText(date);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-
-            format = new SimpleDateFormat("dd.MM");
-            String date = format.format(newDate);
-        holder.calendar.setText(date);
-            }
+        }
         holder.moviePic.setScaleType(ImageView.ScaleType.FIT_XY);
-
-
     }
-    private Transformation cropPosterTransformation = new Transformation() {
 
-        @Override public Bitmap transform(Bitmap source) {
+    public Transformation cropPosterTransformation = new Transformation() {
+        @Override
+        public Bitmap transform(Bitmap source) {
             DisplayMetrics metrics = new DisplayMetrics();
             WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-
             wm.getDefaultDisplay().getMetrics(metrics);
-            int targetWidth = metrics.widthPixels-(metrics.widthPixels/20);
+            int targetWidth = metrics.widthPixels - (metrics.widthPixels / 20);
             double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
             int targetHeight = (int) (targetWidth * aspectRatio);
             Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
@@ -117,7 +112,8 @@ public static class ViewHolder extends RecyclerView.ViewHolder{
             return result;
         }
 
-        @Override public String key() {
+        @Override
+        public String key() {
             return "cropPosterTransformation";
         }
     };
@@ -128,7 +124,7 @@ public static class ViewHolder extends RecyclerView.ViewHolder{
         return movieList.size();
     }
 
-    public void displayCarList_Picasso(ImageView imageView, String url){
+    public void displayCarList_Picasso(ImageView imageView, String url) {
 
         Picasso.with(context)
                 .load(url)
@@ -136,8 +132,6 @@ public static class ViewHolder extends RecyclerView.ViewHolder{
                 .transform(cropPosterTransformation)
                 .into(imageView);
     }
-
-
 
 
 }

@@ -20,17 +20,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        {
-            viewPager = (ViewPager) findViewById(R.id.viewpager);
-            viewPager.setAdapter(new TabViewPagerAdapter(getSupportFragmentManager(),
-                    MainActivity.this));
-            // Give the TabLayout the ViewPager
-            tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
-            tabLayout.setupWithViewPager(viewPager);
-            for (int i = 0; i < 4; i++) {
-                tabLayout.getTabAt(i).setIcon(imageResId[i]);
-            }
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setAdapter(new TabViewPagerAdapter(getSupportFragmentManager(),
+                MainActivity.this));
+        // Give the TabLayout the ViewPager
+        tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        for (int i = 0; i < 4; i++) {
+            tabLayout.getTabAt(i).setIcon(imageResId[i]);
         }
     }
 }
