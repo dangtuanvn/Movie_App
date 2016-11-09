@@ -5,9 +5,11 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,8 +22,10 @@ import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Movie;
+import com.example.dangtuanvn.movie_app.model.News;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -36,6 +40,7 @@ public class MovieTabFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
     private MovieFeedDataStore movieFeedDataStore;
+    private NewsFeedDataStore newsFeedDataStore;
 
     public static MovieTabFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -57,76 +62,153 @@ public class MovieTabFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         final View view = inflater.inflate(R.layout.movietabrecycler, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
+        final SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
 
-      if(mPage==1) {
-          ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-          NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-          if (networkInfo != null && networkInfo.isConnected()) {
-              movieFeedDataStore = new MovieFeedDataStore(getContext(), MovieFeedDataStore.DataType.SHOWING);    // fetch data
-              movieFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
-                  @Override
-                  public void onDataRetrievedListener(List list, Exception ex) {
-                      // Toast.makeText(getApplicationContext(),"Size: " + postList.size(),Toast.LENGTH_SHORT).show(); // size 26
-                      // displayRecyclerExpandableList(postList);
-//                    displayRecyclerList(postList);
-//                    position = postList.size() - 2;
-                      List<Movie> abc = (List<Movie>) list;
-                      mLayoutManager = new LinearLayoutManager(getContext());
-                      mRecyclerView.setLayoutManager(mLayoutManager);
 
-                      // specify an adapter (see also next example)
-                      mAdapter = new MovieDetailAdapter(getContext(), abc,mPage);
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
-                      mRecyclerView.setAdapter(mAdapter);
+        // specify an adapter (see also next example)
 
-                  }
-              });
-          } else {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-          }
-      }
-        if(mPage==2){
 
-            ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-            if (networkInfo != null && networkInfo.isConnected()) {
-                movieFeedDataStore = new MovieFeedDataStore(getContext(), MovieFeedDataStore.DataType.UPCOMING);    // fetch data
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            if (mPage == 1) {
+                movieFeedDataStore = new MovieFeedDataStore(getContext(), MovieFeedDataStore.DataType.SHOWING);
+
+                swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+                    @Override
+                    public void onRefresh() {
+                        swipeLayout.setRefreshing(true);
+                        (new Handler()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                movieFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
+                                    @Override
+                                    public void onDataRetrievedListener(List list, Exception ex) {
+
+                                        List<Movie> movieShowingList = (List<Movie>) list;
+                                        mAdapter = new MovieDetailAdapter(getContext(), movieShowingList, mPage);
+                                        mRecyclerView.setAdapter((mAdapter));
+                                        swipeLayout.setRefreshing(false);
+                                    }
+                                });
+                            }
+                        }, 2000);
+
+                    }
+
+                });
                 movieFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
-                        // Toast.makeText(getApplicationContext(),"Size: " + postList.size(),Toast.LENGTH_SHORT).show(); // size 26
-                        // displayRecyclerExpandableList(postList);
-//                    displayRecyclerList(postList);
-//                    position = postList.size() - 2;
-                        List<Movie> abc = (List<Movie>) list;
-                        mLayoutManager = new LinearLayoutManager(getContext());
-                        mRecyclerView.setLayoutManager(mLayoutManager);
 
-                        // specify an adapter (see also next example)
-                        mAdapter = new MovieDetailAdapter(getContext(),abc,mPage);
-
-                        mRecyclerView.setAdapter(mAdapter);
-
+                        List<Movie> movieShowingList = (List<Movie>) list;
+                        mAdapter = new MovieDetailAdapter(getContext(), movieShowingList,mPage);
+                        mRecyclerView.setAdapter((mAdapter));
                     }
                 });
+
             } else {
 
             }
+            }
+            if(mPage==2 ||mPage==3)
+            {
+                movieFeedDataStore = new MovieFeedDataStore(getContext(), MovieFeedDataStore.DataType.UPCOMING);
+
+                swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+                    @Override
+                    public void onRefresh() {
+                        swipeLayout.setRefreshing(true);
+                        (new Handler()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                movieFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
+                                    @Override
+                                    public void onDataRetrievedListener(List list, Exception ex) {
+
+                                        List<Movie> movieShowingList = (List<Movie>) list;
+                                        mAdapter = new MovieDetailAdapter(getContext(), movieShowingList, mPage);
+                                        mRecyclerView.setAdapter((mAdapter));
+                                        swipeLayout.setRefreshing(false);
+                                    }
+                                });
+                            }
+                        }, 2000);
+
+                    }
+
+                });
+                movieFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
+                    @Override
+                    public void onDataRetrievedListener(List list, Exception ex) {
+
+                        List<Movie> movieShowingList = (List<Movie>) list;
+                        mAdapter = new MovieDetailAdapter(getContext(), movieShowingList,mPage);
+                        mRecyclerView.setAdapter((mAdapter));
+                    }
+                });
+
+            } if(mPage==4){
+           newsFeedDataStore = new NewsFeedDataStore(getContext());
+
+            swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+                @Override
+                public void onRefresh() {
+                    swipeLayout.setRefreshing(true);
+                    (new Handler()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+
+                           newsFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
+                                @Override
+                                public void onDataRetrievedListener(List list, Exception ex) {
+
+                                    List<News> newsShowingList = (List<News>) list;
+                                    mAdapter = new NewsDetailAdapter(getContext(), newsShowingList, mPage);
+                                    mRecyclerView.setAdapter((mAdapter));
+                                    swipeLayout.setRefreshing(false);
+                                }
+                            });
+                        }
+                    }, 2000);
+
+                }
+
+            });
+            newsFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
+                @Override
+                public void onDataRetrievedListener(List list, Exception ex) {
+
+                    List<News> newsShowingList = (List<News>) list;
+                    mAdapter = new NewsDetailAdapter(getContext(), newsShowingList,mPage);
+                    mRecyclerView.setAdapter((mAdapter));
+                }
+            });
+
         }
+
 
         return view;
 
+        }
 
 
 
 
-    }
 }
 

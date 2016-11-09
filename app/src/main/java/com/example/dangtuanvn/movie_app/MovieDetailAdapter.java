@@ -50,6 +50,7 @@ public MovieDetailAdapter(Context context, List<Movie> movieList, int mPage){
 
 
 public static class ViewHolder extends RecyclerView.ViewHolder{
+
     public ImageView moviePic;
     public TextView IMDB;
     public TextView calendar;
@@ -60,6 +61,7 @@ public static class ViewHolder extends RecyclerView.ViewHolder{
         moviePic =(ImageView) itemView.findViewById(R.id.moviepic);
         IMDB= (TextView) itemView.findViewById(R.id.txtIMDB);
         calendar=(TextView) itemView.findViewById(R.id.txtCalendar);
+
     }
 }
     public MovieDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -73,7 +75,7 @@ public static class ViewHolder extends RecyclerView.ViewHolder{
     @Override
     public void onBindViewHolder(final MovieDetailAdapter.ViewHolder holder, final int position) {
 
-        String text = "<font color=#cc0029>"+movieList.get(position).getImdbPoint()+"</font> <font color=#ffffff>IMBD</font>";
+        String text = "<font color=#cc0029>"+movieList.get(position).getImdbPoint()+"</font> <font color=#ffffff>IMDB</font>";
       holder.IMDB.setText(Html.fromHtml(text));
        displayCarList_Picasso(holder.moviePic,movieList.get(position).getPosterLandscape());
         if(mPage==1){
