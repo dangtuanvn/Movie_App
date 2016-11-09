@@ -82,7 +82,7 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
         else if (mPage == 2) {
             try {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                Date newDate = null;
+                Date newDate;
                 newDate = format.parse(movieList.get(position).getPublishDate());
                 format = new SimpleDateFormat("dd.MM");
                 String date = format.format(newDate);

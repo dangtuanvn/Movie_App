@@ -94,6 +94,7 @@ public class NewsDetailAdapter extends RecyclerView.Adapter<NewsDetailAdapter.Vi
     public void displayCarList_Picasso(ImageView imageView, String url) {
         Picasso.with(context)
                 .load(url)
+                .placeholder(R.drawable.white_placeholder)
                 .transform(cropPosterTransformation)
                 .into(imageView);
     }
