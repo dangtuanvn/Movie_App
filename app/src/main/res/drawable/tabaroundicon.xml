@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true"
+        android:drawable="@drawable/ic_around_highlight" /> <!-- pressed -->
+    <item android:state_selected="true"
+        android:drawable="@drawable/ic_around_highlight" /> <!-- focused -->
+    <item
+        android:drawable="@drawable/ic_around_normal" /> <!-- focused -->
+
+</selector>
