@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
+import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
@@ -18,30 +19,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private MovieFeedDataStore feedDataStore;
+    private FeedDataStore movieFeedDataStore, newsFeedDataStore;
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            feedDataStore = new MovieFeedDataStore(this);    // fetch data
+            movieFeedDataStore = new MovieFeedDataStore(this, MovieFeedDataStore.DataType.SHOWING);    // fetch data
 
-            feedDataStore.setDataType(MovieFeedDataStore.DataType.NEWS);
-            feedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
+            movieFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
                 @Override
                 public void onDataRetrievedListener(List<?> list, Exception ex) {
-//                    List<Movie> movieList = (List<Movie>) list;
-//                    Log.i("FILM NAME" , "" + movieList.get(0).getFilmName());
-//                    Toast.makeText(getApplicationContext(),"" + movieList.get(0).getFilmName(),Toast.LENGTH_LONG).show();
+                    List<Movie> movieList = (List<Movie>) list;
+                    Log.i("FILM NAME" , "" + movieList.get(0).getFilmName());
+                    Toast.makeText(getApplicationContext(),"" + movieList.get(0).getFilmName(),Toast.LENGTH_LONG).show();
+                }
+            });
 
-//                    List<Cinema> cinemaList = (List<Cinema>) list;
-//                    Log.i("CINEMA ADDRESS" , "" + cinemaList.get(0).getCinemaAddress());
-//                    Toast.makeText(getApplicationContext(),"" + cinemaList.get(0).getCinemaAddress(),Toast.LENGTH_LONG).show();
-
+            newsFeedDataStore = new NewsFeedDataStore(this);
+            newsFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
+                @Override
+                public void onDataRetrievedListener(List<?> list, Exception ex) {
                     if (list != null && checkType(News.class, list.get(0))) {
                         List<News> newsList = (List<News>) list;
 //                    List<News> newsList = getNewsList(list);
@@ -49,31 +50,16 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "" + newsList.get(0).getNewsTitle(), Toast.LENGTH_LONG).show();
                     }
                     else{
-                        // IF THERE IS NO DATA
+//                         IF THERE IS NO DATA
                     }
                 }
             });
+//                    List<Cinema> cinemaList = (List<Cinema>) list;
+//                    Log.i("CINEMA ADDRESS" , "" + cinemaList.get(0).getCinemaAddress());
+//                    Toast.makeText(getApplicationContext(),"" + cinemaList.get(0).getCinemaAddress(),Toast.LENGTH_LONG).show();
+
         } else {
             // SHOW NO NETWORK CONNECTION ERROR HERE
-
-
-
-            // Code to set another DataType and keep send queue to feedDataStore to fetch more data
-            feedDataStore.setDataType(MovieFeedDataStore.DataType.UPCOMING);
-            feedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
-                @Override
-                public void onDataRetrievedListener(List<?> list, Exception ex) {
-                    feedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
-                        @Override
-                        public void onDataRetrievedListener(List<?> list, Exception ex) {
-
-                        }
-                    });
-                }
-            });
-
-
-
         }
     }
 
