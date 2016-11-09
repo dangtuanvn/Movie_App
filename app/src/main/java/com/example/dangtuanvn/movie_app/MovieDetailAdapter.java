@@ -27,6 +27,9 @@ import com.squareup.picasso.Transformation;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,10 +38,11 @@ import java.util.List;
 public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.ViewHolder>  {
         List<Movie> movieList;
         Context context;
-        int targetwidth;
+        int mPage;
 
-public MovieDetailAdapter(Context context, List<Movie> movieList){
+public MovieDetailAdapter(Context context, List<Movie> movieList, int mPage){
         this.movieList = movieList;
+        this.mPage =mPage;
         this.context =context;
 
         }
@@ -48,12 +52,14 @@ public MovieDetailAdapter(Context context, List<Movie> movieList){
 public static class ViewHolder extends RecyclerView.ViewHolder{
     public ImageView moviePic;
     public TextView IMDB;
+    public TextView calendar;
 
 
     public ViewHolder(View itemView) {
         super(itemView);
         moviePic =(ImageView) itemView.findViewById(R.id.moviepic);
-        IMDB= (TextView) itemView.findViewById(R.id.IMDB);
+        IMDB= (TextView) itemView.findViewById(R.id.txtIMDB);
+        calendar=(TextView) itemView.findViewById(R.id.txtCalendar);
     }
 }
     public MovieDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -67,9 +73,26 @@ public static class ViewHolder extends RecyclerView.ViewHolder{
     @Override
     public void onBindViewHolder(final MovieDetailAdapter.ViewHolder holder, final int position) {
 
-        String text = "<font color=#cc0029>"+"6.6"+"</font> <font color=#ffffff>IMBD</font>";
+        String text = "<font color=#cc0029>"+movieList.get(position).getImdbPoint()+"</font> <font color=#ffffff>IMBD</font>";
       holder.IMDB.setText(Html.fromHtml(text));
        displayCarList_Picasso(holder.moviePic,movieList.get(position).getPosterLandscape());
+        if(mPage==1){
+            holder.calendar.setVisibility(View.GONE);
+            }
+        if(mPage==2){
+            holder.calendar.setVisibility(View.VISIBLE);
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date newDate = null;
+            try {
+                newDate = format.parse(movieList.get(position).getPublishDate());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            format = new SimpleDateFormat("dd.MM");
+            String date = format.format(newDate);
+        holder.calendar.setText(date);
+            }
         holder.moviePic.setScaleType(ImageView.ScaleType.FIT_XY);
 
 

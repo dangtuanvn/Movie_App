@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface FeedDataStore {
     interface OnDataRetrievedListener {
-        void onDataRetrievedListener(List list, Exception ex);
+        void onDataRetrievedListener(List<?> list, Exception ex);
     }
 
     void getList(OnDataRetrievedListener onDataRetrievedListener);

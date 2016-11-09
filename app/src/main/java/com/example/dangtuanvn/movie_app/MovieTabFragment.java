@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
+import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Movie;
 
 import java.io.Serializable;
@@ -34,7 +35,7 @@ public class MovieTabFragment extends Fragment {
     public static final String ARG_PAGE = "ARG_PAGE";
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
-    private MovieFeedDataStore feedDataStore;
+    private MovieFeedDataStore movieFeedDataStore;
 
     public static MovieTabFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -68,8 +69,8 @@ public class MovieTabFragment extends Fragment {
           ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
           NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
           if (networkInfo != null && networkInfo.isConnected()) {
-              feedDataStore = new MovieFeedDataStore(getContext());    // fetch data
-              feedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
+              movieFeedDataStore = new MovieFeedDataStore(getContext(), MovieFeedDataStore.DataType.SHOWING);    // fetch data
+              movieFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
                   @Override
                   public void onDataRetrievedListener(List list, Exception ex) {
                       // Toast.makeText(getApplicationContext(),"Size: " + postList.size(),Toast.LENGTH_SHORT).show(); // size 26
@@ -81,7 +82,7 @@ public class MovieTabFragment extends Fragment {
                       mRecyclerView.setLayoutManager(mLayoutManager);
 
                       // specify an adapter (see also next example)
-                      mAdapter = new MovieDetailAdapter(getContext(), abc);
+                      mAdapter = new MovieDetailAdapter(getContext(), abc,mPage);
 
                       mRecyclerView.setAdapter(mAdapter);
 
@@ -90,8 +91,35 @@ public class MovieTabFragment extends Fragment {
           } else {
 
           }
-
       }
+        if(mPage==2){
+
+            ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.isConnected()) {
+                movieFeedDataStore = new MovieFeedDataStore(getContext(), MovieFeedDataStore.DataType.UPCOMING);    // fetch data
+                movieFeedDataStore.getList(new FeedDataStore.OnDataRetrievedListener() {
+                    @Override
+                    public void onDataRetrievedListener(List list, Exception ex) {
+                        // Toast.makeText(getApplicationContext(),"Size: " + postList.size(),Toast.LENGTH_SHORT).show(); // size 26
+                        // displayRecyclerExpandableList(postList);
+//                    displayRecyclerList(postList);
+//                    position = postList.size() - 2;
+                        List<Movie> abc = (List<Movie>) list;
+                        mLayoutManager = new LinearLayoutManager(getContext());
+                        mRecyclerView.setLayoutManager(mLayoutManager);
+
+                        // specify an adapter (see also next example)
+                        mAdapter = new MovieDetailAdapter(getContext(),abc,mPage);
+
+                        mRecyclerView.setAdapter(mAdapter);
+
+                    }
+                });
+            } else {
+
+            }
+        }
 
         return view;
 

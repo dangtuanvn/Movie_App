@@ -1,7 +1,11 @@
 package com.example.dangtuanvn.movie_app.model.converter;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Easy serializer that includes multiple methods to get primitive value easier.
@@ -77,5 +81,13 @@ public abstract class EasyDeserializer<T> implements JsonDeserializer<T> {
             returnedValue = jsonElement.getAsDouble();
         }
         return returnedValue;
+    }
+
+    protected List<Integer> getListInteger(JsonArray list){
+        List<Integer> listInteger = new ArrayList<>();
+        for(int i = 0; i < list.size(); i++){
+            listInteger.add(Integer.parseInt(list.get(i).toString()));
+        }
+        return listInteger;
     }
 }
