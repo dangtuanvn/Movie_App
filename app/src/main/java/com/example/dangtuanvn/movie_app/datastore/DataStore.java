@@ -75,7 +75,7 @@ public abstract class DataStore implements FeedDataStore {
         };
 
         // Add the request to the RequestQueue.
-        SingletonDataStore.getInstance(context).addRequest(stringRequest);
+        SingletonQueue.getInstance(context).addRequest(stringRequest);
 //        queue.add(stringRequest);
     }
 
@@ -119,3 +119,4 @@ public abstract class DataStore implements FeedDataStore {
         return BASEURL;
     }
 }
+

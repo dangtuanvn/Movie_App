@@ -17,24 +17,24 @@ import java.util.List;
  * Created by dangtuanvn on 11/9/16.
  */
 
-public class NewsFeedDataStore extends DataStore implements FeedDataStore {
-    String url = BASEURL + "news/list?type_id=1";
+public class NewsFeedDataStore extends DataStore {
+    private String url = BASEURL + "news/list?type_id=1";
 
     public NewsFeedDataStore(Context context) {
         super(context);
     }
 
     @Override
-    protected List<?> handleData(String response) {
+    protected List<News> handleData(String response) {
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(response);
-        List<News> movieList;
+        List<News> newsList;
         Type type = new TypeToken<List<News>>() {}.getType();
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(News.class, new NewsDeserializer());
         Gson gson = gsonBuilder.create();
-        movieList = gson.fromJson(jsonObject.get("result").getAsJsonArray(), type);
-        return movieList;
+        newsList = gson.fromJson(jsonObject.get("result").getAsJsonArray(), type);
+        return newsList;
     }
 
     @Override

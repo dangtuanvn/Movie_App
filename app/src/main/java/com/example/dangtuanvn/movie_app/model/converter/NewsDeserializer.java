@@ -55,7 +55,7 @@ public class NewsDeserializer extends EasyDeserializer<News> {
         return news;
     }
 
-    public void calculateTime(News news, String dateUpdate){
+    public void calculateTime(News news, String dateUpdate) {
         // Calculate difference in update time and current time
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -71,11 +71,15 @@ public class NewsDeserializer extends EasyDeserializer<News> {
             int numberOfDays = (int) ((date1.getTime() - date2.getTime()) / (3600 * 24 * 1000));
 
             if (numberOfDays > 30) {
-                news.setTimeDifference(numberOfDays / 30 + " months");
+                news.setTimeDifference(numberOfDays / 30 + " months ago");
 //                        Log.i("MONTH DIFFERENCE", numberOfDays / 30 + " months ago");
-            } else if (numberOfDays > 0) {
-                news.setTimeDifference(numberOfDays + " days");
-//                        Log.i("DAY DIFFERENCE", numberOfDays + " days ago");
+            }
+            else if (numberOfDays == 1) {
+                news.setTimeDifference("1 day ago");
+            }
+            else if (numberOfDays > 0) {
+                news.setTimeDifference(numberOfDays + " days ago");
+//                Log.i("DAY DIFFERENCE", numberOfDays + " days ago");
             } else {
                 SimpleDateFormat hms = new SimpleDateFormat("HH:mm:ss");
                 String[] splitedTime1 = currentTime.split("\\s+");
@@ -85,11 +89,20 @@ public class NewsDeserializer extends EasyDeserializer<News> {
                 long minuteDifference = (time1.getTime() - time2.getTime()) / 1000 / 60;
 
                 if (minuteDifference > 60) {
-                    news.setTimeDifference(minuteDifference / 60 + " hours ago");
-//                            Log.i("HOUR DIFFERENCE", minuteDifference / 60 + " hours");
+                    int hoursDifference = (int) (minuteDifference / 60);
+                    if(hoursDifference == 1){
+                        news.setTimeDifference("1 hour ago");
+                    }
+                    else {
+                        news.setTimeDifference(hoursDifference + " hours ago");
+                    }
+//                    Log.i("HOUR DIFFERENCE", minuteDifference / 60 + " hours");
+                } else if (minuteDifference < 6) {
+                    news.setTimeDifference("Just now");
+//                    Log.i("MINUTE DIFFERENCE", minuteDifference + " minutes");
                 } else {
                     news.setTimeDifference(minuteDifference + " minutes ago");
-//                            Log.i("MINUTE DIFFERENCE", minuteDifference + " minutes");
+//                    Log.i("MINUTE DIFFERENCE", minuteDifference + " minutes");
                 }
             }
         } catch (ParseException e) {
