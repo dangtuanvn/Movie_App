@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class TabViewPagerAdapter extends FragmentPagerAdapter {
 
-    final int PAGE_COUNT = 4;
+    public final static int PAGE_COUNT = 4;
     private String tabTitles[] = new String[] { "Showing", "Upcoming", "Cinema around","News"};
     private Context context;
 
@@ -43,5 +43,4 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
         // Generate title based on item position
         return tabTitles[position];
     }
-
 }
