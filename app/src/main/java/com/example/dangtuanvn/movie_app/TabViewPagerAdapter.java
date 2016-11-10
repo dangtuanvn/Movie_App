@@ -35,7 +35,7 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public android.support.v4.app.Fragment getItem(int position) {
-        return MovieTabFragment.newInstance(position + 1);
+        return MovieTabFragment.newInstance(position);
     }
 
     @Override
