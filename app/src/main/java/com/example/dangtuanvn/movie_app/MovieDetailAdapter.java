@@ -39,11 +39,13 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
     private List<Movie> movieList;
     private Context context;
     private int mPage;
+    Transformation cropPosterTransformation;
 
-    public MovieDetailAdapter(Context context, List<Movie> movieList, int mPage) {
+    public MovieDetailAdapter(Context context, List<Movie> movieList, int mPage,Transformation cropPosterTransformation) {
         this.movieList = movieList;
         this.mPage = mPage;
         this.context = context;
+        this.cropPosterTransformation=cropPosterTransformation;
     }
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
@@ -75,7 +77,7 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
         }
 //        holder.IMDB.setText(Html.fromHtml(text));
 
-        displayCarList_Picasso(holder.moviePic, movieList.get(position).getPosterLandscape());
+        displayMovieList_Picasso(holder.moviePic, movieList.get(position).getPosterLandscape());
         if (mPage == 1) {
             holder.calendar.setVisibility(View.GONE);
         }
@@ -95,28 +97,7 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
         holder.moviePic.setScaleType(ImageView.ScaleType.FIT_XY);
     }
 
-    public Transformation cropPosterTransformation = new Transformation() {
-        @Override
-        public Bitmap transform(Bitmap source) {
-            DisplayMetrics metrics = new DisplayMetrics();
-            WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            wm.getDefaultDisplay().getMetrics(metrics);
-            int targetWidth = metrics.widthPixels - (metrics.widthPixels / 20);
-            double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
-            int targetHeight = (int) (targetWidth * aspectRatio);
-            Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
-            if (result != source) {
-                // Same bitmap is returned if sizes are the same
-                source.recycle();
-            }
-            return result;
-        }
 
-        @Override
-        public String key() {
-            return "cropPosterTransformation";
-        }
-    };
 
 
     @Override
@@ -124,7 +105,7 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
         return movieList.size();
     }
 
-    public void displayCarList_Picasso(ImageView imageView, String url) {
+    public void displayMovieList_Picasso(ImageView imageView, String url) {
 
         Picasso.with(context)
                 .load(url)
