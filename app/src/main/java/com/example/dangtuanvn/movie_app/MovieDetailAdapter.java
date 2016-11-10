@@ -76,10 +76,10 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
 //        holder.IMDB.setText(Html.fromHtml(text));
 
         displayCarList_Picasso(holder.moviePic, movieList.get(position).getPosterLandscape());
-        if (mPage == 1) {
+        if (mPage == 0) {
             holder.calendar.setVisibility(View.GONE);
         }
-        else if (mPage == 2) {
+        else if (mPage == 1) {
             try {
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                 Date newDate;
