@@ -1,6 +1,7 @@
 package com.example.dangtuanvn.movie_app;
 
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -23,12 +25,22 @@ import android.view.WindowManager;
 
 import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.NewsDetailAdapter;
+import com.example.dangtuanvn.movie_app.datastore.CinemaFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
-import com.example.dangtuanvn.movie_app.datastore.SingletonQueue;
+import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Transformation;
 
 import java.util.List;
@@ -65,6 +77,7 @@ public class MovieTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
+
     }
 
     @Override
@@ -82,11 +95,14 @@ public class MovieTabFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+
+
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             switch (TAB.values()[mPage]) {
                 case SHOWING:
+
                     final MovieFeedDataStore movieShowingFDS = new MovieFeedDataStore(getContext(),
                             MovieFeedDataStore.DataType.SHOWING);
                     swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -99,6 +115,7 @@ public class MovieTabFragment extends Fragment {
                     break;
 
                 case UPCOMING:
+
                     final MovieFeedDataStore movieUpcomingFDS = new MovieFeedDataStore(getContext(),
                             MovieFeedDataStore.DataType.UPCOMING);
                     swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -110,6 +127,36 @@ public class MovieTabFragment extends Fragment {
                     break;
 
                 case CINEMA:
+                    view = inflater.inflate(R.layout.googlemap, container, false);
+                    final CinemaFeedDataStore localcinema = new CinemaFeedDataStore(getContext());
+                    localcinema.getList(new FeedDataStore.OnDataRetrievedListener() {
+                        @Override
+                        public void onDataRetrievedListener(List<?> list, Exception ex) {
+                            final List<Cinema> cinemalist = (List<Cinema>) list;
+                            SupportMapFragment mapFragment =
+                                    (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+                            mapFragment.getMapAsync(new OnMapReadyCallback() {
+                                @Override
+                                public void onMapReady(GoogleMap map) {
+                                    for(int i=0;i<cinemalist.size();i++){
+                                    Marker marker = map.addMarker(new MarkerOptions()
+                                            .position(new LatLng(cinemalist.get(i).getLatitude(), cinemalist.get(i).getLongtitude()))
+                                            .title(cinemalist.get(i).getCinemaName())
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_around_highlight)));
+
+
+                                    CameraUpdate center=
+                                            CameraUpdateFactory.newLatLng(marker.getPosition()
+                                            );
+                                    CameraUpdate zoom= CameraUpdateFactory.zoomTo(10);
+
+                                    map.moveCamera(center);
+                                    map.animateCamera(zoom);
+                                }
+                                }
+                            });
+                        }
+                    });
 
                     break;
 
@@ -163,7 +210,7 @@ public class MovieTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         final List<News> newsShowingList = (List<News>) list;
-                        mAdapter = new NewsDetailAdapter(getContext(), newsShowingList);
+                        mAdapter = new NewsDetailAdapter(getContext(), newsShowingList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
                         if (addTouch) {
                             addOnTouchNewsItem(mRecyclerView, newsShowingList);
@@ -222,6 +269,11 @@ public class MovieTabFragment extends Fragment {
 
         // Cancel all tasks running on thread
         handlerFDS.removeCallbacksAndMessages(null);
+    }
+
+    public void stopGetData(){
+        handlerFDS.removeCallbacksAndMessages(null);
+        swipeLayout.setRefreshing(false);
     }
 }
 

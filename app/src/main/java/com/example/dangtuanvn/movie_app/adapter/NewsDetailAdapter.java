@@ -21,7 +21,7 @@ import java.util.List;
 public class NewsDetailAdapter extends DetailAdapter {
     private List<News> newsList;
 
-    public NewsDetailAdapter(Context context, List<News> newsList) {
+    public NewsDetailAdapter(Context context, List<News> newsList, int mPage) {
         super(context, newsList);
         this.newsList = newsList;
     }
