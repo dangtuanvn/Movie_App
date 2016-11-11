@@ -10,7 +10,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
@@ -29,13 +32,16 @@ public class GoogleMAp extends AppCompatActivity implements OnMapReadyCallback {
     }
     @Override
     public void onMapReady(GoogleMap map) {
-        map.addMarker(new MarkerOptions()
+        Marker marker = map.addMarker(new MarkerOptions()
                 .position(new LatLng(10.769095, 106.683169))
-                .title("Marker"));
+                .title("Rap chieu phim")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_around_highlight)));
+
+
         CameraUpdate center=
-                CameraUpdateFactory.newLatLng(new LatLng(10.769095,
-                        106.683169));
-        CameraUpdate zoom= CameraUpdateFactory.zoomTo(15);
+                CameraUpdateFactory.newLatLng(marker.getPosition()
+                );
+        CameraUpdate zoom= CameraUpdateFactory.zoomTo(16);
 
         map.moveCamera(center);
         map.animateCamera(zoom);
