@@ -3,6 +3,7 @@ package com.example.dangtuanvn.movie_app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -12,19 +13,22 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.view.WindowManager;
 
+import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
+import com.example.dangtuanvn.movie_app.adapter.NewsDetailAdapter;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
+import com.squareup.picasso.Transformation;
 
 import java.util.List;
 
@@ -155,7 +159,7 @@ public class MovieTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         final List<News> newsShowingList = (List<News>) list;
-                        mAdapter = new NewsDetailAdapter(getContext(), newsShowingList, mPage);
+                        mAdapter = new NewsDetailAdapter(getContext(), newsShowingList);
                         mRecyclerView.setAdapter((mAdapter));
                         if(addTouch){
                             addOnTouchNewsItem(mRecyclerView, newsShowingList);
