@@ -29,7 +29,7 @@ public class CinemaDeserializer extends EasyDeserializer<Cinema>   {
             cinema.setCinemaNameS2(getStringValue(jsonObject.get("cinema_name_s2"), null));
             cinema.setCinemaAddress(getStringValue(jsonObject.get("cinema_address"), null));
             cinema.setLatitude(getDoubleValue(jsonObject.get("cinema_latitude"), 0));
-            cinema.setLongtitude(getDoubleValue(jsonObject.get("cinema_longtitude"), 0));
+            cinema.setLongtitude(getDoubleValue(jsonObject.get("cinema_longitude"), 0));
             cinema.setCinemaLogo(getStringValue(jsonObject.get("cinema_logo"), null));
             cinema.setCinemaPhone(getStringValue(jsonObject.get("cinema_phone"), null));
             cinema.setCinemaImage(getStringValue(jsonObject.get("cinema_image"), null));

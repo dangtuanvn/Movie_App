@@ -26,6 +26,7 @@ import com.example.dangtuanvn.movie_app.adapter.NewsDetailAdapter;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
+import com.example.dangtuanvn.movie_app.datastore.SingletonQueue;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.squareup.picasso.Transformation;
@@ -68,7 +69,7 @@ public class MovieTabFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.movietabrecycler, container, false);
+        View view = inflater.inflate(R.layout.movietabrecycler, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeLayout.setColorSchemeColors(ContextCompat.getColor(getActivity(), R.color.orange),
@@ -109,6 +110,7 @@ public class MovieTabFragment extends Fragment {
                     break;
 
                 case CINEMA:
+
                     break;
 
                 case NEWS:
@@ -131,27 +133,29 @@ public class MovieTabFragment extends Fragment {
         return view;
     }
 
-    public void displayMovieList(final MovieFeedDataStore movieShowingFDS) {
+    public void displayMovieList(final MovieFeedDataStore movieFDS) {
+//        Code to get handler of current Activity
+//        Handler handler = getActivity().getWindow().getDecorView().getHandler();
+//        (new Handler()).post(new Runnable() {
         swipeLayout.setRefreshing(true);
         handlerFDS.postDelayed(new Runnable() {
             @Override
             public void run() {
-                movieShowingFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+                movieFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
-                        List<Movie> movieShowingList = (List<Movie>) list;
-                        mAdapter = new MovieDetailAdapter(getContext(), movieShowingList, mPage);
+                        List<Movie> movieList = (List<Movie>) list;
+                        mAdapter = new MovieDetailAdapter(getContext(), movieList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
                         swipeLayout.setRefreshing(false);
-                    }});
-            }}, 1000);
+                    }
+                });
+            }
+        }, 1000);
     }
 
     public void displayNewsList(final NewsFeedDataStore newsFDS, final boolean addTouch) {
         swipeLayout.setRefreshing(true);
-//        Code to get handler of current Activity
-//        Handler handler = getActivity().getWindow().getDecorView().getHandler();
-//        (new Handler()).post(new Runnable() {
         handlerFDS.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -161,15 +165,17 @@ public class MovieTabFragment extends Fragment {
                         final List<News> newsShowingList = (List<News>) list;
                         mAdapter = new NewsDetailAdapter(getContext(), newsShowingList);
                         mRecyclerView.setAdapter((mAdapter));
-                        if(addTouch){
+                        if (addTouch) {
                             addOnTouchNewsItem(mRecyclerView, newsShowingList);
                         }
                         swipeLayout.setRefreshing(false);
-                    }});
-            }}, 1000);
+                    }
+                });
+            }
+        }, 1000);
     }
 
-    public void addOnTouchNewsItem(RecyclerView mRecyclerView, final List<News> newsShowingList){
+    public void addOnTouchNewsItem(RecyclerView mRecyclerView, final List<News> newsShowingList) {
         final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
@@ -182,7 +188,11 @@ public class MovieTabFragment extends Fragment {
             public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
                 View childView = rv.findChildViewUnder(e.getX(), e.getY());
                 if (childView != null && mGestureDetector.onTouchEvent(e)) {
-                    stopGetData();
+                    // Cancel the current refreshing data
+                    handlerFDS.removeCallbacksAndMessages(null);
+                    swipeLayout.setRefreshing(false);
+
+                    // Start web view
                     Intent intent = new Intent(getContext(), WebViewDisplay.class);
                     intent.putExtra("link", newsShowingList.get(rv.getChildAdapterPosition(childView)).getUrl());
                     handlerFDS.removeCallbacksAndMessages(null);
@@ -198,19 +208,20 @@ public class MovieTabFragment extends Fragment {
 
             @Override
             public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-            }});
+            }
+        });
         swipeLayout.setRefreshing(false);
     }
 
     @Override
-    public void onStop(){
+    public void onStop() {
         super.onStop();
-        handlerFDS.removeCallbacksAndMessages(null);
-    }
 
-    public void stopGetData(){
+        // Cancel all Volley requests that have not start yet
+        SingletonQueue.getInstance(getContext()).cancelAllRequests();
+
+        // Cancel all tasks running on thread
         handlerFDS.removeCallbacksAndMessages(null);
-        swipeLayout.setRefreshing(false);
     }
 }
 

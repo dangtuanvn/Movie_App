@@ -34,8 +34,7 @@ public class NewsDetailAdapter extends DetailAdapter {
             super(itemView);
             newsPic = (ImageView) itemView.findViewById(R.id.newspic);
             title = (TextView) itemView.findViewById(R.id.txtTitle);
-            time = (TextView) itemView.findViewById(R.id.txtTime
-            );
+            time = (TextView) itemView.findViewById(R.id.txtTime);
         }
     }
 

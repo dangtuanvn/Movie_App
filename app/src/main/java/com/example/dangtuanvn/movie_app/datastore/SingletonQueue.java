@@ -37,6 +37,13 @@ public class SingletonQueue {
         queue.add(request);
     }
 
-
+    public void cancelAllRequests(){
+        queue.cancelAll(new RequestQueue.RequestFilter() {
+            @Override
+            public boolean apply(Request<?> request) {
+                return true;
+            }
+        });
+    }
 }
 
