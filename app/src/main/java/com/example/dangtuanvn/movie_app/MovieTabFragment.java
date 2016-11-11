@@ -16,15 +16,15 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Toast;
 
+import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
+import com.example.dangtuanvn.movie_app.adapter.NewsDetailAdapter;
 import com.example.dangtuanvn.movie_app.datastore.CinemaFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
@@ -63,7 +63,6 @@ public class MovieTabFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout swipeLayout;
-    private Transformation cropPosterTransformation;
     Handler handlerFDS = new Handler();
 
     public static MovieTabFragment newInstance(int page) {
@@ -96,28 +95,7 @@ public class MovieTabFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        cropPosterTransformation = new Transformation() {
-            @Override
-            public Bitmap transform(Bitmap source) {
-                DisplayMetrics metrics = new DisplayMetrics();
-                WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-                wm.getDefaultDisplay().getMetrics(metrics);
-                int targetWidth = metrics.widthPixels - (metrics.widthPixels / 20);
-                double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
-                int targetHeight = (int) (targetWidth * aspectRatio);
-                Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
-                if (result != source) {
-                    // Same bitmap is returned if sizes are the same
-                    source.recycle();
-                }
-                return result;
-            }
 
-            @Override
-            public String key() {
-                return "cropPosterTransformation";
-            }
-        };
 
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -211,7 +189,7 @@ public class MovieTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         List<Movie> movieShowingList = (List<Movie>) list;
-                        mAdapter = new MovieDetailAdapter(getContext(), movieShowingList, mPage, cropPosterTransformation);
+                        mAdapter = new MovieDetailAdapter(getContext(), movieShowingList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
                         swipeLayout.setRefreshing(false);
                     }
@@ -232,7 +210,7 @@ public class MovieTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         final List<News> newsShowingList = (List<News>) list;
-                        mAdapter = new NewsDetailAdapter(getContext(), newsShowingList, mPage, cropPosterTransformation);
+                        mAdapter = new NewsDetailAdapter(getContext(), newsShowingList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
                         if (addTouch) {
                             addOnTouchNewsItem(mRecyclerView, newsShowingList);

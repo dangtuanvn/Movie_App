@@ -30,7 +30,6 @@ public abstract class DataStore implements FeedDataStore {
 
     public DataStore(Context context) {
         this.context = context;
-
     }
 
     @Override

@@ -1,32 +1,19 @@
-package com.example.dangtuanvn.movie_app;
+package com.example.dangtuanvn.movie_app.adapter;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,17 +22,14 @@ import java.util.List;
 /**
  * Created by sinhhx on 11/7/16.
  */
-public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.ViewHolder> {
+public class MovieDetailAdapter extends DetailAdapter {
     private List<Movie> movieList;
-    private Context context;
     private int mPage;
-    Transformation cropPosterTransformation;
 
-    public MovieDetailAdapter(Context context, List<Movie> movieList, int mPage,Transformation cropPosterTransformation) {
+    public MovieDetailAdapter(Context context, List<Movie> movieList, int mPage) {
+        super(context, movieList);
         this.movieList = movieList;
         this.mPage = mPage;
-        this.context = context;
-        this.cropPosterTransformation=cropPosterTransformation;
     }
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
@@ -66,20 +50,19 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
         return vh;
     }
 
-
     @Override
-    public void onBindViewHolder(final MovieDetailAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        MovieDetailAdapter.ViewHolder movieHolder = (MovieDetailAdapter.ViewHolder) holder;
         String text = "<font color=#cc0029>" + movieList.get(position).getImdbPoint() + "</font> <font color=#ffffff>IMDB</font>";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            holder.IMDB.setText(Html.fromHtml((text), Html.FROM_HTML_MODE_LEGACY));
+            movieHolder.IMDB.setText(Html.fromHtml((text), Html.FROM_HTML_MODE_LEGACY));
         } else {
-            holder.IMDB.setText(Html.fromHtml(text));
+            movieHolder.IMDB.setText(Html.fromHtml(text));
         }
-//        holder.IMDB.setText(Html.fromHtml(text));
 
-        displayMovieList_Picasso(holder.moviePic, movieList.get(position).getPosterLandscape());
+        displayImagePicasso(movieHolder.moviePic, movieList.get(position).getPosterLandscape());
         if (mPage == 0) {
-            holder.calendar.setVisibility(View.GONE);
+            movieHolder.calendar.setVisibility(View.GONE);
         }
         else if (mPage == 1) {
             try {
@@ -88,31 +71,12 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
                 newDate = format.parse(movieList.get(position).getPublishDate());
                 format = new SimpleDateFormat("dd.MM");
                 String date = format.format(newDate);
-                holder.calendar.setVisibility(View.VISIBLE);
-                holder.calendar.setText(date);
+                movieHolder.calendar.setVisibility(View.VISIBLE);
+                movieHolder.calendar.setText(date);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
-        holder.moviePic.setScaleType(ImageView.ScaleType.FIT_XY);
+        movieHolder.moviePic.setScaleType(ImageView.ScaleType.FIT_XY);
     }
-
-
-
-
-    @Override
-    public int getItemCount() {
-        return movieList.size();
-    }
-
-    public void displayMovieList_Picasso(ImageView imageView, String url) {
-
-        Picasso.with(context)
-                .load(url)
-                .placeholder(R.drawable.white_placeholder)
-                .transform(cropPosterTransformation)
-                .into(imageView);
-    }
-
-
 }
