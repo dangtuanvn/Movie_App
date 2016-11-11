@@ -1,28 +1,31 @@
 package com.example.dangtuanvn.movie_app;
 
 
-
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
+import com.example.dangtuanvn.movie_app.adapter.AroundDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.NewsDetailAdapter;
 import com.example.dangtuanvn.movie_app.datastore.CinemaFeedDataStore;
@@ -41,7 +44,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.squareup.picasso.Transformation;
+
 
 import java.util.List;
 
@@ -57,11 +60,15 @@ public class MovieTabFragment extends Fragment {
         NEWS
     }
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
     private int mPage;
     private RecyclerView.LayoutManager mLayoutManager;
     public static final String ARG_PAGE = "ARG_PAGE";
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
+    private RecyclerView recyclerview;
+    private RecyclerView.Adapter nAdapter;
     private SwipeRefreshLayout swipeLayout;
     Handler handlerFDS = new Handler();
 
@@ -96,7 +103,6 @@ public class MovieTabFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
 
-
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
@@ -129,33 +135,56 @@ public class MovieTabFragment extends Fragment {
                 case CINEMA:
                     view = inflater.inflate(R.layout.googlemap, container, false);
                     final CinemaFeedDataStore localcinema = new CinemaFeedDataStore(getContext());
+                    recyclerview = (RecyclerView) view.findViewById(R.id.map_recycler);
                     localcinema.getList(new FeedDataStore.OnDataRetrievedListener() {
                         @Override
                         public void onDataRetrievedListener(List<?> list, Exception ex) {
-                            final List<Cinema> cinemalist = (List<Cinema>) list;
+                            final List<Cinema> cinemadetail = (List<Cinema>) list;
+                            nAdapter = new AroundDetailAdapter(getContext(), cinemadetail, mPage);
+                            recyclerview.setAdapter((nAdapter));
+
                             SupportMapFragment mapFragment =
                                     (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
                             mapFragment.getMapAsync(new OnMapReadyCallback() {
-                                @Override
-                                public void onMapReady(GoogleMap map) {
-                                    for(int i=0;i<cinemalist.size();i++){
-                                    Marker marker = map.addMarker(new MarkerOptions()
-                                            .position(new LatLng(cinemalist.get(i).getLatitude(), cinemalist.get(i).getLongtitude()))
-                                            .title(cinemalist.get(i).getCinemaName())
-                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_around_highlight)));
+                                                        @Override
+                                                        public void onMapReady(GoogleMap map) {
+                                                            for (int i = 0; i < cinemadetail.size(); i++) {
+                                                             map.addMarker(new MarkerOptions()
+                                                                        .position(new LatLng(cinemadetail.get(i).getLatitude(), cinemadetail.get(i).getLongtitude()))
+                                                                        .title(cinemadetail.get(i).getCinemaName())
+                                                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_around_highlight)));
 
 
-                                    CameraUpdate center=
-                                            CameraUpdateFactory.newLatLng(marker.getPosition()
-                                            );
-                                    CameraUpdate zoom= CameraUpdateFactory.zoomTo(10);
+                                                            }
 
-                                    map.moveCamera(center);
-                                    map.animateCamera(zoom);
-                                }
-                                }
-                            });
+
+                                                            LocationManager locationManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
+                                                            Criteria criteria = new Criteria();
+                                                            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                                                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                                                                return;
+                                                            }else {
+                                                                Location location = locationManager.getLastKnownLocation(locationManager
+                                                                        .getBestProvider(criteria, false));
+                                                                double latitude = location.getLatitude();
+                                                                double longitude = location.getLongitude();
+                                                                Marker marker = map.addMarker(new MarkerOptions()
+                                                                        .position(new LatLng(latitude, longitude))
+                                                                        .title("here i am"));
+                                                                CameraUpdate center =
+                                                                        CameraUpdateFactory.newLatLng(marker.getPosition()
+                                                                        );
+                                                                CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
+
+                                                                map.moveCamera(center);
+                                                                map.animateCamera(zoom);
+                                                            }
+                                                        }
+                            }
+                            );
+
                         }
+
                     });
 
                     break;
@@ -222,6 +251,8 @@ public class MovieTabFragment extends Fragment {
         }, 1000);
     }
 
+
+
     public void addOnTouchNewsItem(RecyclerView mRecyclerView, final List<News> newsShowingList) {
         final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -268,7 +299,10 @@ public class MovieTabFragment extends Fragment {
     }
 
 
+    }
 
 
-}
+
+
+
 
