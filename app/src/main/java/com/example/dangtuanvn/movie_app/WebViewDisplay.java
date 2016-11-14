@@ -16,6 +16,7 @@ import android.webkit.WebViewClient;
 public class WebViewDisplay extends AppCompatActivity {
     Bundle extras;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
@@ -30,9 +31,10 @@ public class WebViewDisplay extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.webview);
         extras = getIntent().getExtras();
-        String url = extras.getString("link");
+        String data = extras.getString("data");
         WebView webview = (WebView)findViewById(R.id.webView);
+        webview.getSettings().setJavaScriptEnabled(true);
         webview.setWebViewClient(new WebViewClient());
-        webview.loadUrl(url);
+        webview.loadData(data, "text/html; charset=utf-8","UTF-8");
     }
 }

@@ -25,11 +25,13 @@ import com.example.dangtuanvn.movie_app.adapter.NewsDetailAdapter;
 import com.example.dangtuanvn.movie_app.datastore.CinemaFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
+import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.SingletonQueue;
 import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
+import com.example.dangtuanvn.movie_app.model.NewsDetail;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -226,19 +228,27 @@ public class MovieTabFragment extends Fragment {
 
         mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                View childView = rv.findChildViewUnder(e.getX(), e.getY());
+            public boolean onInterceptTouchEvent(final RecyclerView rv, MotionEvent e) {
+                final View childView = rv.findChildViewUnder(e.getX(), e.getY());
                 if (childView != null && mGestureDetector.onTouchEvent(e)) {
                     // Cancel the current refreshing data
                     handlerFDS.removeCallbacksAndMessages(null);
                     swipeLayout.setRefreshing(false);
 
-                    // Start web view
-                    Intent intent = new Intent(getContext(), WebViewDisplay.class);
-                    intent.putExtra("link", newsShowingList.get(rv.getChildAdapterPosition(childView)).getUrl());
-                    handlerFDS.removeCallbacksAndMessages(null);
-                    swipeLayout.setRefreshing(false);
-                    startActivity(intent);
+
+                    FeedDataStore newsDetailFDS = new NewsDetailFeedDataStore(getContext(), newsShowingList.get(rv.getChildAdapterPosition(childView)).getNewsId());
+                    newsDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+                        @Override
+                        public void onDataRetrievedListener(List<?> list, Exception ex) {
+                            // Start web view
+                            Intent intent = new Intent(getContext(), WebViewDisplay.class);
+                            intent.putExtra("data", ((NewsDetail) list.get(0)).getContent());
+                            handlerFDS.removeCallbacksAndMessages(null);
+                            swipeLayout.setRefreshing(false);
+                            startActivity(intent);
+                        }
+                    });
+
                 }
                 return false;
             }
@@ -306,8 +316,6 @@ public class MovieTabFragment extends Fragment {
 //            Fragment fragment = fm.findFragmentById(R.id.map_fragment);
 //            fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
 //        }
-
-
     }
 }
 
