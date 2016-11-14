@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.example.dangtuanvn.movie_app.adapter.AroundDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
@@ -48,6 +49,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Transformation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -55,6 +57,8 @@ import java.util.List;
  * Created by sinhhx on 11/7/16.
  */
 public class MovieTabFragment extends Fragment {
+
+
     private enum TAB {
         SHOWING,
         UPCOMING,
@@ -70,6 +74,9 @@ public class MovieTabFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
     private RecyclerView recyclerview;
+    double latitude;
+    double longitude;
+
     private RecyclerView.Adapter nAdapter;
     private SwipeRefreshLayout swipeLayout;
     Handler handlerFDS = new Handler();
@@ -127,6 +134,8 @@ public class MovieTabFragment extends Fragment {
 
                 case CINEMA:
                     view = inflateMapView(inflater, container);
+                    mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view2);
+
                     final CinemaFeedDataStore localcinema = new CinemaFeedDataStore(getContext());
                     FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.map_fragment);
                     frameLayout.setId(frameId);
@@ -136,6 +145,7 @@ public class MovieTabFragment extends Fragment {
                         public void onDataRetrievedListener(List<?> list, Exception ex) {
                             final List<Cinema> cinemalist = (List<Cinema>) list;
 
+
                             FragmentManager fm = getChildFragmentManager();
                             SupportMapFragment mapFragment = (SupportMapFragment) fm.findFragmentByTag("map_fragment");
                             if(mapFragment == null) {
@@ -144,28 +154,65 @@ public class MovieTabFragment extends Fragment {
                                 fm.beginTransaction().add(frameId, mapFragment, "map_fragment").commit();
 //                            SupportMapFragment mapFragment =
 //                                    (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_fragment);
+
                                 mapFragment.getMapAsync(new OnMapReadyCallback() {
+
                                     @Override
                                     public void onMapReady(GoogleMap map) {
+                                        List<Float> distance = new ArrayList<Float>();
+                                        LocationManager locationManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
+                                        Criteria criteria = new Criteria();
+                                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                                            return;
+                                        }else {
+                                            Location location = locationManager.getLastKnownLocation(locationManager
+                                                    .getBestProvider(criteria, false));
+                                           latitude  = location.getLatitude();
+                                           longitude = location.getLongitude();
+
+                                        }
                                         for (int i = 0; i < cinemalist.size(); i++) {
-                                            Marker marker = map.addMarker(new MarkerOptions()
+                                            map.addMarker(new MarkerOptions()
                                                     .position(new LatLng(cinemalist.get(i).getLatitude(), cinemalist.get(i).getLongtitude()))
                                                     .title(cinemalist.get(i).getCinemaName())
                                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_around_highlight)));
 
-                                            CameraUpdate center =
-                                                    CameraUpdateFactory.newLatLng(marker.getPosition()
-                                                    );
-                                            CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
+                                            Location loc1 = new Location("");
+                                            loc1.setLatitude(latitude);
+                                            loc1.setLongitude(longitude);
 
-                                            map.moveCamera(center);
-                                            map.animateCamera(zoom);
+                                            Location loc2 = new Location("");
+                                            loc2.setLatitude(cinemalist.get(i).getLatitude());
+                                            loc2.setLongitude(cinemalist.get(i).getLongtitude());
+                                            distance.add(loc1.distanceTo(loc2)/1000);
                                         }
+
+                                        Marker marker = map.addMarker(new MarkerOptions()
+                                                .position(new LatLng(latitude, longitude))
+                                                .title("here i am"));
+                                        CameraUpdate center =
+                                                CameraUpdateFactory.newLatLng(marker.getPosition()
+                                                );
+                                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
+
+                                        map.moveCamera(center);
+                                        map.animateCamera(zoom);
+
+
+                                        mAdapter = new AroundDetailAdapter(getContext(),cinemalist,mPage,distance);
+                                        mRecyclerView .setLayoutManager(new LinearLayoutManager(getActivity()));
+                                        mRecyclerView.setAdapter(mAdapter);
                                     }
+
+
                                 });
                             }
                             else{
                                 fm.beginTransaction().add(frameId, mapFragment, null).commit();
+//                                mAdapter = new AroundDetailAdapter(getContext(),cinemalist,mPage,distance);
+//                                mRecyclerView .setLayoutManager(new LinearLayoutManager(getActivity()));
+//                                mRecyclerView.setAdapter(mAdapter);
                             }
                         }
 
