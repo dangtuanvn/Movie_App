@@ -1,12 +1,19 @@
 package com.example.dangtuanvn.movie_app;
 
+
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -19,7 +26,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
+import com.example.dangtuanvn.movie_app.adapter.AroundDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.NewsDetailAdapter;
 import com.example.dangtuanvn.movie_app.datastore.CinemaFeedDataStore;
@@ -35,19 +44,24 @@ import com.example.dangtuanvn.movie_app.model.NewsDetail;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.picasso.Transformation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by sinhhx on 11/7/16.
  */
 public class MovieTabFragment extends Fragment {
+
+
     private enum TAB {
         SHOWING,
         UPCOMING,
@@ -55,17 +69,26 @@ public class MovieTabFragment extends Fragment {
         NEWS
     }
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
     private int mPage;
-    private TAB mTab;
-    public static final String ARGUMENT_PAGE = "page";
+//    private RecyclerView.LayoutManager mLayoutManager;
+    public static final String ARG_PAGE = "ARG_PAGE";
+    private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
+    private RecyclerView recyclerview;
+    double latitude;
+    double longitude;
+
+    private RecyclerView.Adapter nAdapter;
     private SwipeRefreshLayout swipeLayout;
     Handler handlerFDS = new Handler();
-//    private static int mapFragmentId = View.generateViewId();
+    private static int frameId = View.generateViewId();
 
     public static MovieTabFragment newInstance(int page) {
         Bundle args = new Bundle();
-        args.putInt(ARGUMENT_PAGE, page);
+        args.putInt(ARG_PAGE, page);
+        args.putInt("frame_id", frameId);
         MovieTabFragment fragment = new MovieTabFragment();
         fragment.setArguments(args);
         return fragment;
@@ -74,8 +97,9 @@ public class MovieTabFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPage = getArguments().getInt(ARGUMENT_PAGE);
-        mTab = TAB.values()[mPage];
+        frameId = getArguments().getInt("frame_id");
+        mPage = getArguments().getInt(ARG_PAGE);
+
     }
 
     @Override
@@ -86,7 +110,7 @@ public class MovieTabFragment extends Fragment {
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            switch (mTab) {
+            switch (TAB.values()[mPage]) {
                 case SHOWING:
                     view = inflateListView(inflater, container);
                     final MovieFeedDataStore movieShowingFDS = new MovieFeedDataStore(getContext(),
@@ -114,44 +138,90 @@ public class MovieTabFragment extends Fragment {
 
                 case CINEMA:
                     view = inflateMapView(inflater, container);
+                    mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view2);
+
                     final CinemaFeedDataStore localcinema = new CinemaFeedDataStore(getContext());
-                    final int mapFragmentId = view.findViewById(R.id.map_fragment).getId();
+                    FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.map_fragment);
+                    frameLayout.setId(frameId);
 
                     localcinema.getList(new FeedDataStore.OnDataRetrievedListener() {
                         @Override
                         public void onDataRetrievedListener(List<?> list, Exception ex) {
                             final List<Cinema> cinemalist = (List<Cinema>) list;
 
+
                             FragmentManager fm = getChildFragmentManager();
                             SupportMapFragment mapFragment = (SupportMapFragment) fm.findFragmentByTag("map_fragment");
+                            final List<Float> distance = new ArrayList<Float>();
                             if(mapFragment == null) {
                                 mapFragment = new SupportMapFragment();
-                                fm.beginTransaction().add(mapFragmentId, mapFragment, "map_fragment").commit();
+
+                                fm.beginTransaction().add(frameId, mapFragment, "map_fragment").commit();
+
+//                            SupportMapFragment mapFragment =
+//                                    (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_fragment);
+
                                 mapFragment.getMapAsync(new OnMapReadyCallback() {
+
                                     @Override
                                     public void onMapReady(GoogleMap map) {
+//                                        List<Float> distance = new ArrayList<Float>();
+                                        LocationManager locationManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
+
+                                        Criteria criteria = new Criteria();
+                                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                                            return;
+                                        }else {
+                                            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                                           latitude  = location.getLatitude();
+                                           longitude = location.getLongitude();
+
+                                        }
                                         for (int i = 0; i < cinemalist.size(); i++) {
-                                            Marker marker = map.addMarker(new MarkerOptions()
+                                            map.addMarker(new MarkerOptions()
                                                     .position(new LatLng(cinemalist.get(i).getLatitude(), cinemalist.get(i).getLongtitude()))
                                                     .title(cinemalist.get(i).getCinemaName())
                                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_around_highlight)));
 
-                                            CameraUpdate center =
-                                                    CameraUpdateFactory.newLatLng(marker.getPosition()
-                                                    );
-                                            CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
+                                            Location loc1 = new Location("");
+                                            loc1.setLatitude(latitude);
+                                            loc1.setLongitude(longitude);
 
-                                            map.moveCamera(center);
-                                            map.animateCamera(zoom);
+                                            Location loc2 = new Location("");
+                                            loc2.setLatitude(cinemalist.get(i).getLatitude());
+                                            loc2.setLongitude(cinemalist.get(i).getLongtitude());
+                                            distance.add(loc1.distanceTo(loc2)/1000);
                                         }
+
+                                        Marker marker = map.addMarker(new MarkerOptions()
+                                                .position(new LatLng(latitude, longitude))
+                                                .title("here i am"));
+                                        CameraUpdate center =
+                                                CameraUpdateFactory.newLatLng(marker.getPosition()
+                                                );
+                                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(12);
+
+                                        map.moveCamera(center);
+                                        map.animateCamera(zoom);
+
+
+                                        mAdapter = new AroundDetailAdapter(getContext(),cinemalist,mPage,distance);
+                                        mRecyclerView .setLayoutManager(new LinearLayoutManager(getActivity()));
+                                        mRecyclerView.setAdapter(mAdapter);
                                     }
+
+
                                 });
                             }
-
                             else{
-                                fm.beginTransaction().add(mapFragmentId, mapFragment, null).commit();
+                                fm.beginTransaction().add(frameId, mapFragment, null).commit();
+                                mAdapter = new AroundDetailAdapter(getContext(),cinemalist,mPage,distance);
+                                mRecyclerView .setLayoutManager(new LinearLayoutManager(getActivity()));
+                                mRecyclerView.setAdapter(mAdapter);
                             }
                         }
+
                     });
                     break;
 
@@ -188,7 +258,7 @@ public class MovieTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         List<Movie> movieList = (List<Movie>) list;
-                        RecyclerView.Adapter mAdapter = new MovieDetailAdapter(getContext(), movieList, mPage);
+                        mAdapter = new MovieDetailAdapter(getContext(), movieList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
                         swipeLayout.setRefreshing(false);
                     }
@@ -206,7 +276,7 @@ public class MovieTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         final List<News> newsShowingList = (List<News>) list;
-                        RecyclerView.Adapter mAdapter = new NewsDetailAdapter(getContext(), newsShowingList, mPage);
+                        mAdapter = new NewsDetailAdapter(getContext(), newsShowingList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
                         if (addTouch) {
                             addOnTouchNewsItem(mRecyclerView, newsShowingList);
@@ -217,6 +287,7 @@ public class MovieTabFragment extends Fragment {
             }
         }, 1000);
     }
+
 
     public void addOnTouchNewsItem(RecyclerView mRecyclerView, final List<News> newsShowingList) {
         final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
@@ -272,16 +343,11 @@ public class MovieTabFragment extends Fragment {
 //        SingletonQueue.getInstance(getContext()).cancelAllRequests();
 
         // Cancel all tasks running on thread
-        handlerFDS.removeCallbacksAndMessages(null);
+        handlerFDS.removeCallbacksAndMessages(null);}
 
-        if(mTab == TAB.CINEMA) {
-            FragmentManager fm = getChildFragmentManager();
-            Fragment fragment = fm.findFragmentByTag("map_fragment");
-            fm.beginTransaction()
-                    .remove(fragment)
-                    .addToBackStack(null)
-                    .commitAllowingStateLoss();
-        }
+    public void stopGetData(){
+        handlerFDS.removeCallbacksAndMessages(null);
+        swipeLayout.setRefreshing(false);
     }
 
     public View inflateListView(LayoutInflater inflater, ViewGroup container){
@@ -316,6 +382,10 @@ public class MovieTabFragment extends Fragment {
 //            Fragment fragment = fm.findFragmentById(R.id.map_fragment);
 //            fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
 //        }
+
+
     }
+
+
 }
 
