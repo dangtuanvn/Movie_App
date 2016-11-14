@@ -20,12 +20,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.example.dangtuanvn.movie_app.adapter.AroundDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
@@ -52,7 +52,6 @@ import com.squareup.picasso.Transformation;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Created by sinhhx on 11/7/16.
  */
@@ -69,9 +68,8 @@ public class MovieTabFragment extends Fragment {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private int mPage;
-//    private RecyclerView.LayoutManager mLayoutManager;
-    public static final String ARG_PAGE = "ARG_PAGE";
-    private RecyclerView.Adapter mAdapter;
+    private TAB mTab;
+    public static final String ARGUMENT_PAGE = "page";
     private RecyclerView mRecyclerView;
     private RecyclerView recyclerview;
     double latitude;
@@ -80,12 +78,11 @@ public class MovieTabFragment extends Fragment {
     private RecyclerView.Adapter nAdapter;
     private SwipeRefreshLayout swipeLayout;
     Handler handlerFDS = new Handler();
-    private static int frameId = View.generateViewId();
+//    private static int mapFragmentId = View.generateViewId();
 
     public static MovieTabFragment newInstance(int page) {
         Bundle args = new Bundle();
-        args.putInt(ARG_PAGE, page);
-        args.putInt("frame_id", frameId);
+        args.putInt(ARGUMENT_PAGE, page);
         MovieTabFragment fragment = new MovieTabFragment();
         fragment.setArguments(args);
         return fragment;
@@ -94,19 +91,19 @@ public class MovieTabFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        frameId = getArguments().getInt("frame_id");
-        mPage = getArguments().getInt(ARG_PAGE);
-
+        mPage = getArguments().getInt(ARGUMENT_PAGE);
+        mTab = TAB.values()[mPage];
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = null;
         // Check for network connection
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            switch (TAB.values()[mPage]) {
+            switch (mTab) {
                 case SHOWING:
                     view = inflateListView(inflater, container);
                     final MovieFeedDataStore movieShowingFDS = new MovieFeedDataStore(getContext(),
@@ -137,8 +134,7 @@ public class MovieTabFragment extends Fragment {
                     mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view2);
 
                     final CinemaFeedDataStore localcinema = new CinemaFeedDataStore(getContext());
-                    FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.map_fragment);
-                    frameLayout.setId(frameId);
+                    final int mapFragmentId = view.findViewById(R.id.map_fragment).getId();
 
                     localcinema.getList(new FeedDataStore.OnDataRetrievedListener() {
                         @Override
@@ -208,6 +204,7 @@ public class MovieTabFragment extends Fragment {
 
                                 });
                             }
+
                             else{
                                 fm.beginTransaction().add(frameId, mapFragment, null).commit();
 //                                mAdapter = new AroundDetailAdapter(getContext(),cinemalist,mPage,distance);
@@ -252,7 +249,7 @@ public class MovieTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         List<Movie> movieList = (List<Movie>) list;
-                        mAdapter = new MovieDetailAdapter(getContext(), movieList, mPage);
+                        RecyclerView.Adapter mAdapter = new MovieDetailAdapter(getContext(), movieList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
                         swipeLayout.setRefreshing(false);
                     }
@@ -270,7 +267,7 @@ public class MovieTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         final List<News> newsShowingList = (List<News>) list;
-                        mAdapter = new NewsDetailAdapter(getContext(), newsShowingList, mPage);
+                        RecyclerView.Adapter mAdapter = new NewsDetailAdapter(getContext(), newsShowingList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
                         if (addTouch) {
                             addOnTouchNewsItem(mRecyclerView, newsShowingList);
@@ -331,11 +328,15 @@ public class MovieTabFragment extends Fragment {
 
         // Cancel all tasks running on thread
         handlerFDS.removeCallbacksAndMessages(null);
-    }
 
-    public void stopGetData(){
-        handlerFDS.removeCallbacksAndMessages(null);
-        swipeLayout.setRefreshing(false);
+        if(mTab == TAB.CINEMA) {
+            FragmentManager fm = getChildFragmentManager();
+            Fragment fragment = fm.findFragmentByTag("map_fragment");
+            fm.beginTransaction()
+                    .remove(fragment)
+                    .addToBackStack(null)
+                    .commitAllowingStateLoss();
+        }
     }
 
     public View inflateListView(LayoutInflater inflater, ViewGroup container){
@@ -371,14 +372,7 @@ public class MovieTabFragment extends Fragment {
 //            fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
 //        }
 
-        if(mPage == 2) { // CINEMA TAB
-            FragmentManager fm = getChildFragmentManager();
-            Fragment fragment = fm.findFragmentByTag("map_fragment");
-            fm.beginTransaction()
-                    .remove(fragment)
-                    .addToBackStack(null)
-                    .commitAllowingStateLoss();
-        }
+
     }
 }
 
