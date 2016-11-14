@@ -41,6 +41,7 @@ import com.example.dangtuanvn.movie_app.model.News;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -75,7 +76,7 @@ public class MovieTabFragment extends Fragment {
     double latitude;
     double longitude;
 
-    private RecyclerView.Adapter nAdapter;
+    private RecyclerView.Adapter mAdapter;
     private SwipeRefreshLayout swipeLayout;
     Handler handlerFDS = new Handler();
 //    private static int mapFragmentId = View.generateViewId();
@@ -144,10 +145,10 @@ public class MovieTabFragment extends Fragment {
 
                             FragmentManager fm = getChildFragmentManager();
                             SupportMapFragment mapFragment = (SupportMapFragment) fm.findFragmentByTag("map_fragment");
-                            if(mapFragment == null) {
+                            if (mapFragment == null) {
                                 mapFragment = new SupportMapFragment();
 
-                                fm.beginTransaction().add(frameId, mapFragment, "map_fragment").commit();
+                                fm.beginTransaction().add(mapFragment, "map_fragment").commit();
 //                            SupportMapFragment mapFragment =
 //                                    (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_fragment);
 
@@ -161,11 +162,10 @@ public class MovieTabFragment extends Fragment {
                                         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                                             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                                             return;
-                                        }else {
-                                            Location location = locationManager.getLastKnownLocation(locationManager
-                                                    .getBestProvider(criteria, false));
-                                           latitude  = location.getLatitude();
-                                           longitude = location.getLongitude();
+                                        } else {
+                                           Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                                            latitude = location.getLatitude();
+                                            longitude = location.getLongitude();
 
                                         }
                                         for (int i = 0; i < cinemalist.size(); i++) {
@@ -181,7 +181,7 @@ public class MovieTabFragment extends Fragment {
                                             Location loc2 = new Location("");
                                             loc2.setLatitude(cinemalist.get(i).getLatitude());
                                             loc2.setLongitude(cinemalist.get(i).getLongtitude());
-                                            distance.add(loc1.distanceTo(loc2)/1000);
+                                            distance.add(loc1.distanceTo(loc2) / 1000);
                                         }
 
                                         Marker marker = map.addMarker(new MarkerOptions()
@@ -196,17 +196,15 @@ public class MovieTabFragment extends Fragment {
                                         map.animateCamera(zoom);
 
 
-                                        mAdapter = new AroundDetailAdapter(getContext(),cinemalist,mPage,distance);
-                                        mRecyclerView .setLayoutManager(new LinearLayoutManager(getActivity()));
+                                        mAdapter = new AroundDetailAdapter(getContext(), cinemalist, mPage, distance);
+                                        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                                         mRecyclerView.setAdapter(mAdapter);
                                     }
 
 
                                 });
-                            }
-
-                            else{
-                                fm.beginTransaction().add(frameId, mapFragment, null).commit();
+                            } else {
+                                fm.beginTransaction().add(mapFragment, null).commit();
 //                                mAdapter = new AroundDetailAdapter(getContext(),cinemalist,mPage,distance);
 //                                mRecyclerView .setLayoutManager(new LinearLayoutManager(getActivity()));
 //                                mRecyclerView.setAdapter(mAdapter);
@@ -280,7 +278,6 @@ public class MovieTabFragment extends Fragment {
     }
 
 
-
     public void addOnTouchNewsItem(RecyclerView mRecyclerView, final List<News> newsShowingList) {
         final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -329,7 +326,7 @@ public class MovieTabFragment extends Fragment {
         // Cancel all tasks running on thread
         handlerFDS.removeCallbacksAndMessages(null);
 
-        if(mTab == TAB.CINEMA) {
+        if (mTab == TAB.CINEMA) {
             FragmentManager fm = getChildFragmentManager();
             Fragment fragment = fm.findFragmentByTag("map_fragment");
             fm.beginTransaction()
@@ -339,7 +336,7 @@ public class MovieTabFragment extends Fragment {
         }
     }
 
-    public View inflateListView(LayoutInflater inflater, ViewGroup container){
+    public View inflateListView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.movietabrecycler, container, false);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
@@ -358,9 +355,9 @@ public class MovieTabFragment extends Fragment {
         return view;
     }
 
-    public View inflateMapView(LayoutInflater inflater, ViewGroup container){
-       View view = inflater.inflate(R.layout.googlemap, container, false);
-       return view;
+    public View inflateMapView(LayoutInflater inflater, ViewGroup container) {
+        View view = inflater.inflate(R.layout.googlemap, container, false);
+        return view;
     }
 
     @Override
@@ -374,5 +371,7 @@ public class MovieTabFragment extends Fragment {
 
 
     }
+
+
 }
 
