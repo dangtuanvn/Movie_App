@@ -155,6 +155,7 @@ public class MovieTabFragment extends Fragment {
                                 mapFragment = new SupportMapFragment();
 
                                 fm.beginTransaction().add(frameId, mapFragment, "map_fragment").commit();
+
 //                            SupportMapFragment mapFragment =
 //                                    (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_fragment);
 
@@ -164,13 +165,13 @@ public class MovieTabFragment extends Fragment {
                                     public void onMapReady(GoogleMap map) {
 //                                        List<Float> distance = new ArrayList<Float>();
                                         LocationManager locationManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
+
                                         Criteria criteria = new Criteria();
                                         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                                             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                                             return;
                                         }else {
-                                            Location location = locationManager.getLastKnownLocation(locationManager
-                                                    .getBestProvider(criteria, false));
+                                            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                                            latitude  = location.getLatitude();
                                            longitude = location.getLongitude();
 
@@ -197,7 +198,7 @@ public class MovieTabFragment extends Fragment {
                                         CameraUpdate center =
                                                 CameraUpdateFactory.newLatLng(marker.getPosition()
                                                 );
-                                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
+                                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(12);
 
                                         map.moveCamera(center);
                                         map.animateCamera(zoom);
