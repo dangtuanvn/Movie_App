@@ -5,12 +5,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -37,7 +32,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.dangtuanvn.movie_app.adapter.AroundDetailAdapter;
+import com.example.dangtuanvn.movie_app.adapter.CinemaDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.NewsDetailAdapter;
 import com.example.dangtuanvn.movie_app.datastore.CinemaFeedDataStore;
@@ -45,14 +40,10 @@ import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
-import com.example.dangtuanvn.movie_app.datastore.ScheduleFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.example.dangtuanvn.movie_app.model.Schedule;
-import com.example.dangtuanvn.movie_app.model.Session;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -81,8 +72,6 @@ import java.util.List;
  * Created by sinhhx on 11/7/16.
  */
 public class MovieTabFragment extends Fragment {
-
-
     private enum TAB {
         SHOWING,
         UPCOMING,
@@ -93,21 +82,16 @@ public class MovieTabFragment extends Fragment {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private int mPage;
-//    private RecyclerView.LayoutManager mLayoutManager;
     public static final String ARG_PAGE = "ARG_PAGE";
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
-    private RecyclerView recyclerview;
-    double latitude;
-    double longitude;
-    Polyline polyline;
-    GoogleMap map;
-    SupportMapFragment mapFragment;
-
-    private RecyclerView.Adapter nAdapter;
+    private GoogleMap map;
+    private SupportMapFragment mapFragment;
+    private Polyline polyline;
     private SwipeRefreshLayout swipeLayout;
-    Handler handlerFDS = new Handler();
+    private Handler handlerFDS = new Handler();
     private static int frameId = View.generateViewId();
+    private TAB mTab;
 
     public static MovieTabFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -123,50 +107,19 @@ public class MovieTabFragment extends Fragment {
         super.onCreate(savedInstanceState);
         frameId = getArguments().getInt("frame_id");
         mPage = getArguments().getInt(ARG_PAGE);
-
+        mTab = TAB.values()[mPage];
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = null;
+
         // Check for network connection
-        class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-
-            private final View myContentsView;
-
-            MyInfoWindowAdapter(){
-                myContentsView = inflater.inflate(R.layout.locationdetail, null);
-            }
-
-            @Override
-            public View getInfoContents(Marker marker) {
-
-
-
-               return null;
-            }
-
-            @Override
-            public View getInfoWindow(Marker marker) {
-                myContentsView.setBackgroundColor(Color.BLACK);
-                LinearLayout distancelinear = (LinearLayout) myContentsView.findViewById(R.id.lineardistacne);
-                distancelinear.setVisibility(View.GONE);
-                ImageView cinemaicon = (ImageView) myContentsView.findViewById(R.id.locationicon);
-                cinemaicon.getPaddingLeft();
-                cinemaicon.setImageResource(R.drawable.cinema_holder);
-                TextView tvTitle = ((TextView)myContentsView.findViewById(R.id.cinema_name));
-                tvTitle.setText(marker.getTitle());
-                TextView tvSnippet = ((TextView)myContentsView.findViewById(R.id.address));
-                tvSnippet.setText(marker.getSnippet());
-                return myContentsView;
-            }
-
-        }
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            switch (TAB.values()[mPage]) {
+            switch (mTab) {
                 case SHOWING:
                     view = inflateListView(inflater, container);
                     final MovieFeedDataStore movieShowingFDS = new MovieFeedDataStore(getContext(),
@@ -182,8 +135,7 @@ public class MovieTabFragment extends Fragment {
 
                 case UPCOMING:
                     view = inflateListView(inflater, container);
-                    final MovieFeedDataStore movieUpcomingFDS = new MovieFeedDataStore(getContext(),
-                            MovieFeedDataStore.DataType.UPCOMING);
+                    final MovieFeedDataStore movieUpcomingFDS = new MovieFeedDataStore(getContext(), MovieFeedDataStore.DataType.UPCOMING);
                     swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                         public void onRefresh() {
                             displayMovieList(movieUpcomingFDS);
@@ -194,155 +146,13 @@ public class MovieTabFragment extends Fragment {
 
                 case CINEMA:
                     view = inflateMapView(inflater, container);
-
                     mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view2);
 
-                    final CinemaFeedDataStore localcinema = new CinemaFeedDataStore(getContext());
                     FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.map_fragment);
                     frameLayout.setId(frameId);
 
-                    localcinema.getList(new FeedDataStore.OnDataRetrievedListener() {
-                        @Override
-                        public void onDataRetrievedListener(List<?> list, Exception ex) {
-                            final List<Cinema> cinemalist = (List<Cinema>) list;
-
-
-
-                            FragmentManager fm = getChildFragmentManager();
-                           mapFragment = (SupportMapFragment) fm.findFragmentByTag("map_fragment");
-                            final List<Float> distance = new ArrayList<Float>();
-                            if(mapFragment == null) {
-                                mapFragment = new SupportMapFragment();
-                                final MarkerOptions[] curentposition = new MarkerOptions[1];
-
-                                fm.beginTransaction().add(frameId, mapFragment, "map_fragment").commit();
-
-//                            SupportMapFragment mapFragment =
-//                                    (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_fragment);
-
-                                mapFragment.getMapAsync(new OnMapReadyCallback() {
-
-                                    @Override
-                                    public void onMapReady(GoogleMap googlemap) {
-                                        map = googlemap;
-                                        map.setInfoWindowAdapter(new MyInfoWindowAdapter());
-//                                        List<Float> distance = new ArrayList<Float>();
-                                        LocationManager locationManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
-                                        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-                                            return;
-                                        }else {
-                                            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                                           latitude  = location.getLatitude();
-                                           longitude = location.getLongitude();
-                                            curentposition[0] = new MarkerOptions()
-                                                    .position(new LatLng(latitude,longitude));
-
-                                        }
-                                        for (int i = 0; i < cinemalist.size(); i++) {
-                                            map.addMarker(new MarkerOptions()
-                                                    .position(new LatLng(cinemalist.get(i).getLatitude(), cinemalist.get(i).getLongitude()))
-                                                    .title(cinemalist.get(i).getCinemaName())
-                                                    .snippet(cinemalist.get(i).getCinemaAddress())
-                                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.cinema_around)));
-
-                                            Location loc1 = new Location("");
-                                            loc1.setLatitude(latitude);
-                                            loc1.setLongitude(longitude);
-
-                                            Location loc2 = new Location("");
-                                            loc2.setLatitude(cinemalist.get(i).getLatitude());
-                                            loc2.setLongitude(cinemalist.get(i).getLongitude());
-                                            distance.add(loc1.distanceTo(loc2)/1000);
-                                            cinemalist.get(i).setDistance(loc1.distanceTo(loc2)/1000);
-                                        }
-
-
-                                        Marker marker = map.addMarker(new MarkerOptions()
-                                                .position(new LatLng(latitude, longitude))
-                                                .title("here i am")
-                                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.current_location)));
-                                        CameraUpdate center =
-                                                CameraUpdateFactory.newLatLng(marker.getPosition()
-                                                );
-                                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
-
-                                        map.moveCamera(center);
-                                        map.animateCamera(zoom);
-
-
-                                        final List<Cinema> cinemaList = selectionSort(cinemalist);
-
-                                        for(int i = 0; i < cinemaList.size(); i ++){
-                                            Log.i("LIST DISTANCE", "" + cinemaList.get(i).getDistance());
-                                        }
-                                        mAdapter = new AroundDetailAdapter(getContext(),cinemaList,mPage);
-                                        mRecyclerView .setLayoutManager(new LinearLayoutManager(getActivity()));
-                                        mRecyclerView.setAdapter(mAdapter);
-                                        final GestureDetector mGesture = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
-                                            @Override
-                                            public boolean onSingleTapUp(MotionEvent e) {
-                                                return true;
-                                            }
-                                        });
-                                        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-                                            @Override
-                                            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-
-                                                View childview = rv.findChildViewUnder(e.getX(), e.getY());
-
-
-                                                if (childview != null && mGesture.onTouchEvent(e))  {
-                                                    LatLng destiny = new LatLng(cinemaList.get(mRecyclerView.getChildAdapterPosition(childview)).getLatitude(),cinemaList.get(mRecyclerView.getChildAdapterPosition(childview)).getLongtitude());
-                                                    String url = getDirectionsUrl(curentposition[0].getPosition(), destiny);
-
-                                                    DownloadTask downloadTask = new DownloadTask();
-
-                                                    // Start downloading json data from Google Directions API
-                                                    downloadTask.execute(url);
-                                                    setmap(destiny);
-
-                                                }
-                                                return false;
-                                            }
-
-                                            @Override
-                                            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-
-                                            }
-
-                                            @Override
-                                            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-                                            }
-                                        });
-
-                                       map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                                           @Override
-                                           public boolean onMarkerClick(Marker marker) {
-                                               String url = getDirectionsUrl(curentposition[0].getPosition(), marker.getPosition());
-
-                                               DownloadTask downloadTask = new DownloadTask();
-
-                                               // Start downloading json data from Google Directions API
-                                               downloadTask.execute(url);
-                                               setmap(marker.getPosition());
-                                               return false;
-                                           }
-                                       });
-
-                                    }
-                                });
-                            }
-                            else{
-                                fm.beginTransaction().add(frameId, mapFragment, null).commit();
-                                mAdapter = new AroundDetailAdapter(getContext(),cinemalist,mPage);
-                                mRecyclerView .setLayoutManager(new LinearLayoutManager(getActivity()));
-                                mRecyclerView.setAdapter(mAdapter);
-                            }
-                        }
-                    });
+                    final CinemaFeedDataStore cinemaFDS = new CinemaFeedDataStore(getContext());
+                    displayCinemaList(cinemaFDS, inflater);
                     break;
 
                 case NEWS:
@@ -408,7 +218,6 @@ public class MovieTabFragment extends Fragment {
         }, 1000);
     }
 
-
     public void addOnTouchNewsItem(RecyclerView mRecyclerView, final List<News> newsList) {
         final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -441,22 +250,142 @@ public class MovieTabFragment extends Fragment {
         swipeLayout.setRefreshing(false);
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
+    public void displayCinemaList(FeedDataStore cinemaFDS, final LayoutInflater inflater){
+        cinemaFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+            @Override
+            public void onDataRetrievedListener(List<?> list, Exception ex) {
+                final List<Cinema> cinemaList = (List<Cinema>) list;
 
-        // Cancel all Volley requests that have not start yet
-//        SingletonQueue.getInstance(getContext()).cancelAllRequests();
+                FragmentManager fm = getChildFragmentManager();
+                mapFragment = (SupportMapFragment) fm.findFragmentByTag("map_fragment");
+                if (mapFragment == null) {
+                    mapFragment = new SupportMapFragment();
+                    fm.beginTransaction().add(frameId, mapFragment, "map_fragment").commit();
+                    loadMapData(inflater, cinemaList);
 
-        // Cancel all tasks running on thread
-        handlerFDS.removeCallbacksAndMessages(null);}
-
-    public void stopGetData(){
-        handlerFDS.removeCallbacksAndMessages(null);
-        swipeLayout.setRefreshing(false);
+                } else {
+                    fm.beginTransaction().add(frameId, mapFragment, null).commit();
+                    mAdapter = new CinemaDetailAdapter(getContext(), cinemaList);
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    mRecyclerView.setAdapter(mAdapter);
+                }
+            }
+        });
     }
 
-    public View inflateListView(LayoutInflater inflater, ViewGroup container){
+    public void loadMapData(final LayoutInflater inflater, final List<Cinema> cinemaList){
+        final MarkerOptions[] currentPosition = new MarkerOptions[1];
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googlemap) {
+                double latitude, longitude;
+                map = googlemap;
+                map.setInfoWindowAdapter(new MyInfoWindowAdapter(inflater));
+
+                LocationManager locationManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                    return;
+                } else {
+                    Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
+                    currentPosition[0] = new MarkerOptions()
+                            .position(new LatLng(latitude, longitude));
+                }
+
+                for (int i = 0; i < cinemaList.size(); i++) {
+                    map.addMarker(new MarkerOptions()
+                            .position(new LatLng(cinemaList.get(i).getLatitude(), cinemaList.get(i).getLongitude()))
+                            .title(cinemaList.get(i).getCinemaName())
+                            .snippet(cinemaList.get(i).getCinemaAddress())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.cinema_around)));
+
+                    Location loc1 = new Location("");
+                    loc1.setLatitude(latitude);
+                    loc1.setLongitude(longitude);
+
+                    Location loc2 = new Location("");
+                    loc2.setLatitude(cinemaList.get(i).getLatitude());
+                    loc2.setLongitude(cinemaList.get(i).getLongitude());
+                    cinemaList.get(i).setDistance(loc1.distanceTo(loc2) / 1000);
+                }
+
+                Marker marker = map.addMarker(new MarkerOptions()
+                        .position(new LatLng(latitude, longitude))
+                        .title("here i am")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.current_location)));
+                CameraUpdate center =
+                        CameraUpdateFactory.newLatLng(marker.getPosition()
+                        );
+                CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+
+                map.moveCamera(center);
+                map.animateCamera(zoom);
+
+                final List<Cinema> sortedCinemaList = selectionSort(cinemaList);
+//                for (int i = 0; i < sortedCinemaList.size(); i++) {
+//                    Log.i("LIST DISTANCE", "" + sortedCinemaList.get(i).getDistance());
+//                }
+
+                mAdapter = new CinemaDetailAdapter(getContext(), sortedCinemaList);
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                mRecyclerView.setAdapter(mAdapter);
+                addOnTouchMapItem(mRecyclerView, sortedCinemaList, currentPosition);
+            }
+        });
+    }
+
+    public void addOnTouchMapItem(final RecyclerView mRecyclerView, final List<Cinema> cinemaList, final MarkerOptions[] currentPosition ){
+        final GestureDetector mGesture = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return true;
+            }
+        });
+
+        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                View childView = rv.findChildViewUnder(e.getX(), e.getY());
+                if (childView != null && mGesture.onTouchEvent(e)) {
+                    LatLng destiny = new LatLng(cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLatitude(), cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLongitude());
+                    String url = getDirectionsUrl(currentPosition[0].getPosition(), destiny);
+
+                    DownloadTask downloadTask = new DownloadTask();
+
+                    // Start downloading json data from Google Directions API
+                    downloadTask.execute(url);
+                    setmap(destiny);
+                }
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+            }
+        });
+
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                String url = getDirectionsUrl(currentPosition[0].getPosition(), marker.getPosition());
+
+                DownloadTask downloadTask = new DownloadTask();
+
+                // Start downloading json data from Google Directions API
+                downloadTask.execute(url);
+                setmap(marker.getPosition());
+                return false;
+            }
+        });
+    }
+
+    public View inflateListView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.movietabrecycler, container, false);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
@@ -475,22 +404,12 @@ public class MovieTabFragment extends Fragment {
         return view;
     }
 
-    public View inflateMapView(LayoutInflater inflater, ViewGroup container){
-       View view = inflater.inflate(R.layout.googlemap, container, false);
-       return view;
+    public View inflateMapView(LayoutInflater inflater, ViewGroup container) {
+        View view = inflater.inflate(R.layout.googlemap, container, false);
+        return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-//        if(mPage == 2) { // CINEMA TAB
-//            FragmentManager fm = getChildFragmentManager();
-//            Fragment fragment = fm.findFragmentById(R.id.map_fragment);
-//            fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
-//        }
-    }
-
-    public void displayNewsDetail(RecyclerView rv, View childView, List<News> newsList){
+    public void displayNewsDetail(RecyclerView rv, View childView, List<News> newsList) {
 //        FeedDataStore movieDetailFDS = new MovieDetailFeedDataStore(getContext(), 1165);
 //        movieDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
 //            @Override
@@ -499,17 +418,16 @@ public class MovieTabFragment extends Fragment {
 //                Log.i("DIRECTOR NAME", "" + ((MovieDetail) list.get(0)).getDirectorName());
 //            }
 //        });
-//
 
-        FeedDataStore scheduleFDS = new ScheduleFeedDataStore(getContext(), "840", "2016-11-17");
-        scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
-            @Override
-            public void onDataRetrievedListener(List<?> list, Exception ex) {
-                Log.i("CINEMA NAME", "" + ((Schedule) list.get(0)).getCinemaName());
-                Log.i("SESSION INFO", "" + ((Schedule) list.get(0)).getListSessionInfo().get(0));
-                Log.i("SESSION TIME", "" + ((Schedule) list.get(0)).getListSessions().get(0).get(0).getSessionTime());
-            }
-        });
+//        FeedDataStore scheduleFDS = new ScheduleFeedDataStore(getContext(), "840", "2016-11-17");
+//        scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+//            @Override
+//            public void onDataRetrievedListener(List<?> list, Exception ex) {
+//                Log.i("CINEMA NAME", "" + ((Schedule) list.get(0)).getCinemaName());
+//                Log.i("SESSION INFO", "" + ((Schedule) list.get(0)).getListSessionInfo().get(0));
+//                Log.i("SESSION TIME", "" + ((Schedule) list.get(0)).getListSessions().get(0).get(0).getSessionTime());
+//            }
+//        });
 
         FeedDataStore newsDetailFDS = new NewsDetailFeedDataStore(getContext(), newsList.get(rv.getChildAdapterPosition(childView)).getNewsId());
         newsDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
@@ -526,24 +444,51 @@ public class MovieTabFragment extends Fragment {
         });
     }
 
-    private String getDirectionsUrl(LatLng origin,LatLng dest){
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // Cancel all Volley requests that have not start yet
+//        SingletonQueue.getInstance(getContext()).cancelAllRequests();
+
+        // Cancel all tasks running on thread
+        handlerFDS.removeCallbacksAndMessages(null);
+
+        if(mTab == TAB.CINEMA) {
+            FragmentManager fm = getChildFragmentManager();
+            Fragment fragment = fm.findFragmentByTag("map_fragment");
+            fm.beginTransaction()
+                    .remove(fragment)
+                    .addToBackStack(null)
+                    .commitAllowingStateLoss();
+        }
+    }
+
+    public void stopGetData() {
+        handlerFDS.removeCallbacksAndMessages(null);
+        swipeLayout.setRefreshing(false);
+    }
+
+    // Google Map functions
+
+    private String getDirectionsUrl(LatLng origin, LatLng dest) {
         // Origin of route
-        String str_origin = "origin="+origin.latitude+","+origin.longitude;
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
 
         // Destination of route
-        String str_dest = "destination="+dest.latitude+","+dest.longitude;
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
 
         // Sensor enabled
         String sensor = "sensor=false";
 
         // Building the parameters to the web service
-        String parameters = str_origin+"&"+str_dest+"&"+sensor;
+        String parameters = str_origin + "&" + str_dest + "&" + sensor;
 
         // Output format
         String output = "json";
 
         // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
 
         return url;
     }
@@ -552,7 +497,7 @@ public class MovieTabFragment extends Fragment {
         String data = "";
         InputStream iStream = null;
         HttpURLConnection urlConnection = null;
-        try{
+        try {
             URL url = new URL(strUrl);
 
             // Creating an http connection to communicate with url
@@ -563,45 +508,36 @@ public class MovieTabFragment extends Fragment {
 
             // Reading data from url
             iStream = urlConnection.getInputStream();
-
             BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb  = new StringBuffer();
-
+            StringBuffer sb = new StringBuffer();
             String line = "";
-            while( ( line = br.readLine())  != null){
+            while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
-
             data = sb.toString();
-
             br.close();
-
-        }catch(Exception e){
-        }finally{
+        } catch (Exception e) {
+        } finally {
             iStream.close();
             urlConnection.disconnect();
         }
         return data;
     }
 
-
-
-    /** A class to download data from Google Directions URL */
-    private class DownloadTask extends AsyncTask<String, Void, String>{
-
+    /**
+     * A class to download data from Google Directions URL
+     */
+    private class DownloadTask extends AsyncTask<String, Void, String> {
         // Downloading data in non-ui thread
         @Override
         protected String doInBackground(String... url) {
-
             // For storing data from web service
             String data = "";
-
-            try{
+            try {
                 // Fetching the data from web service
                 data = downloadUrl(url[0]);
-            }catch(Exception e){
-                Log.d("Background Task",e.toString());
+            } catch (Exception e) {
+                Log.d("Background Task", e.toString());
             }
             return data;
         }
@@ -619,23 +555,19 @@ public class MovieTabFragment extends Fragment {
         }
     }
 
-    public class Parser extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> > {
-
-
+    public class Parser extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
         // Parsing the data in non-ui thread
         @Override
         protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
-
             JSONObject jObject;
             List<List<HashMap<String, String>>> routes = null;
-
-            try{
+            try {
                 jObject = new JSONObject(jsonData[0]);
                 DirectionParser parser = new DirectionParser();
 
                 // Starts parsing data
                 routes = parser.parse(jObject);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return routes;
@@ -648,7 +580,7 @@ public class MovieTabFragment extends Fragment {
             PolylineOptions lineOptions = null;
 
             // Traversing through all the routes
-            for(int i=0;i<result.size();i++){
+            for (int i = 0; i < result.size(); i++) {
                 points = new ArrayList<LatLng>();
                 lineOptions = new PolylineOptions();
 
@@ -656,8 +588,8 @@ public class MovieTabFragment extends Fragment {
                 List<HashMap<String, String>> path = result.get(i);
 
                 // Fetching all the points in i-th route
-                for(int j=0;j<path.size();j++){
-                    HashMap<String,String> point = path.get(j);
+                for (int j = 0; j < path.size(); j++) {
+                    HashMap<String, String> point = path.get(j);
 
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
@@ -665,27 +597,20 @@ public class MovieTabFragment extends Fragment {
 
                     points.add(position);
                 }
-
                 // Adding all the points in the route to LineOptions
                 lineOptions.addAll(points);
                 lineOptions.width(20);
                 lineOptions.color(Color.RED);
             }
-            if(polyline!=null){
+            if (polyline != null) {
                 polyline.remove();
             }
-         polyline=   map.addPolyline(lineOptions);
-
-
-
             // Drawing polyline in the Google Map for the i-th route
-
+            polyline = map.addPolyline(lineOptions);
         }
-
-
     }
-    public static List<Cinema> selectionSort(List<Cinema> data) {
 
+    public static List<Cinema> selectionSort(List<Cinema> data) {
         // just return if the array list is null
         if (data == null)
             return data;
@@ -704,7 +629,6 @@ public class MovieTabFragment extends Fragment {
 
         // for each index in the array list
         for (int curIndex = 0; curIndex < data.size(); curIndex++) {
-
 			/* find the index at which the element has smallest value */
             // initialize variables
             smallest = data.get(curIndex).getDistance();
@@ -730,12 +654,10 @@ public class MovieTabFragment extends Fragment {
                 data.set(smallestIndex, temp);
             }
         }
-//        for(int i = 0; i < data.size(); i ++){
-//            Log.i("LIST DISTANCE", "" + data.get(i).getDistance());
-//        }
         return data;
     }
-    public void setmap(LatLng position){
+
+    public void setmap(LatLng position) {
         CameraUpdate center =
                 CameraUpdateFactory.newLatLng(position
                 );
@@ -745,7 +667,33 @@ public class MovieTabFragment extends Fragment {
         map.animateCamera(zoom);
     }
 
+    class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+        private View myContentsView;
 
+        protected MyInfoWindowAdapter(LayoutInflater inflater){
+            myContentsView = inflater.inflate(R.layout.locationdetail, null);
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            return null;
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+            myContentsView.setBackgroundColor(Color.BLACK);
+            LinearLayout distanceLinear = (LinearLayout) myContentsView.findViewById(R.id.lineardistance);
+            distanceLinear.setVisibility(View.GONE);
+            ImageView cinemaIcon = (ImageView) myContentsView.findViewById(R.id.locationicon);
+            cinemaIcon.getPaddingLeft();
+            cinemaIcon.setImageResource(R.drawable.cinema_holder);
+            TextView tvTitle = ((TextView) myContentsView.findViewById(R.id.cinema_name));
+            tvTitle.setText(marker.getTitle());
+            TextView tvSnippet = ((TextView) myContentsView.findViewById(R.id.address));
+            tvSnippet.setText(marker.getSnippet());
+            return myContentsView;
+        }
+    }
 }
 
 

@@ -2,7 +2,6 @@ package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,26 +10,18 @@ import android.widget.TextView;
 
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.model.Cinema;
-import com.example.dangtuanvn.movie_app.model.Movie;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
  * Created by sinhhx on 11/11/16.
  */
-public class AroundDetailAdapter extends DetailAdapter {
+public class CinemaDetailAdapter extends DetailAdapter {
     private List<Cinema> cinemaList;
-    private int mPage;
-    List<Float> distance;
 
-    public AroundDetailAdapter(Context context, List<Cinema> cinemaList, int mPage) {
+    public CinemaDetailAdapter(Context context, List<Cinema> cinemaList) {
         super(context, cinemaList);
         this.cinemaList = cinemaList;
-        this.mPage = mPage;
-        this.distance =distance;
     }
 
 
@@ -48,7 +39,7 @@ public class AroundDetailAdapter extends DetailAdapter {
         }
     }
 
-    public AroundDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CinemaDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.locationdetail, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
@@ -56,7 +47,7 @@ public class AroundDetailAdapter extends DetailAdapter {
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-        AroundDetailAdapter.ViewHolder cinemaHolder = (AroundDetailAdapter.ViewHolder) holder;
+        CinemaDetailAdapter.ViewHolder cinemaHolder = (CinemaDetailAdapter.ViewHolder) holder;
         cinemaHolder.cinemaicon.setImageResource(R.drawable.cinema_holder);
         cinemaHolder.cinemaname.setText(cinemaList.get(position).getCinemaName());
         cinemaHolder.cinemaadress.setText(cinemaList.get(position).getCinemaAddress());
