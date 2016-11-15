@@ -50,6 +50,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -322,14 +323,16 @@ public class MovieTabFragment extends Fragment {
 
                 Marker marker = map.addMarker(new MarkerOptions()
                         .position(new LatLng(latitude, longitude))
-                        .title("here i am")
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.current_location)));
                 CameraUpdate center =
                         CameraUpdateFactory.newLatLng(marker.getPosition()
                         );
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
 
+
+
                 map.moveCamera(center);
+
                 map.animateCamera(zoom);
 
                 List<Cinema> sortedCinemaList = selectionSort(cinemaList);
@@ -365,7 +368,7 @@ public class MovieTabFragment extends Fragment {
 
                     // Start downloading json data from Google Directions API
                     downloadTask.execute(url);
-                    setmap(destiny);
+                    setmap(destiny, currentPosition.getPosition());
                 }
                 return false;
             }
@@ -382,15 +385,21 @@ public class MovieTabFragment extends Fragment {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                String url = getDirectionsUrl(currentPosition.getPosition(), marker.getPosition());
 
-                DownloadTask downloadTask = new DownloadTask();
 
-                // Start downloading json data from Google Directions API
-                downloadTask.execute(url);
-                setmap(marker.getPosition());
-                return false;
-            }
+                if(marker.getPosition()==currentPosition.getPosition()){
+                    marker.hideInfoWindow();
+                    return true;
+                }else{
+                    String url = getDirectionsUrl(currentPosition.getPosition(), marker.getPosition());
+
+                    DownloadTask downloadTask = new DownloadTask();
+
+                    // Start downloading json data from Google Directions API
+                    downloadTask.execute(url);
+                    setmap(marker.getPosition(),currentPosition.getPosition());
+                    return false;
+            }}
         });
     }
 
@@ -670,14 +679,23 @@ public class MovieTabFragment extends Fragment {
         return data;
     }
 
-    public void setmap(LatLng position) {
+    public void setmap(LatLng position, LatLng currentLocation) {
         CameraUpdate center =
                 CameraUpdateFactory.newLatLng(position
                 );
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        map.moveCamera(center);
-        map.animateCamera(zoom);
+        builder.include(position);
+        builder.include(currentLocation);
+
+        LatLngBounds bounds = builder.build();
+        int padding = 150
+                ; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+
+        map.moveCamera(cu);
+        map.animateCamera(cu);
     }
 
     class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
