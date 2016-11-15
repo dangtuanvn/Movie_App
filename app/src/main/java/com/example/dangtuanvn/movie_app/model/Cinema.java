@@ -22,10 +22,15 @@ public class Cinema implements Serializable {
     private String logoUrl;
     private String listPrice;
     private String cinemaImage;
+    private float distance;
 
     public int getLocationId() {
         return locationId;
     }
+
+    public float getDistance(){return distance;}
+
+    public void setDistance(float distance){this.distance=distance;}
 
     public void setLocationId(int locationId) {
         this.locationId = locationId;
