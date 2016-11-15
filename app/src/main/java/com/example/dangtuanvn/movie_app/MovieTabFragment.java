@@ -5,11 +5,17 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -27,6 +33,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.dangtuanvn.movie_app.adapter.AroundDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
@@ -41,6 +50,7 @@ import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.example.dangtuanvn.movie_app.model.Schedule;
 import com.example.dangtuanvn.movie_app.model.Session;
 import com.google.android.gms.maps.CameraUpdate;
@@ -52,8 +62,19 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -79,6 +100,9 @@ public class MovieTabFragment extends Fragment {
     private RecyclerView recyclerview;
     double latitude;
     double longitude;
+    Polyline polyline;
+    GoogleMap map;
+    SupportMapFragment mapFragment;
 
     private RecyclerView.Adapter nAdapter;
     private SwipeRefreshLayout swipeLayout;
@@ -104,9 +128,41 @@ public class MovieTabFragment extends Fragment {
 
     @Override
     @SuppressWarnings("unchecked")
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = null;
         // Check for network connection
+        class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+            private final View myContentsView;
+
+            MyInfoWindowAdapter(){
+                myContentsView = inflater.inflate(R.layout.locationdetail, null);
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+
+
+
+               return null;
+            }
+
+            @Override
+            public View getInfoWindow(Marker marker) {
+                myContentsView.setBackgroundColor(Color.BLACK);
+                LinearLayout distancelinear = (LinearLayout) myContentsView.findViewById(R.id.lineardistacne);
+                distancelinear.setVisibility(View.GONE);
+                ImageView cinemaicon = (ImageView) myContentsView.findViewById(R.id.locationicon);
+                cinemaicon.getPaddingLeft();
+                cinemaicon.setImageResource(R.drawable.cinema_holder);
+                TextView tvTitle = ((TextView)myContentsView.findViewById(R.id.cinema_name));
+                tvTitle.setText(marker.getTitle());
+                TextView tvSnippet = ((TextView)myContentsView.findViewById(R.id.address));
+                tvSnippet.setText(marker.getSnippet());
+                return myContentsView;
+            }
+
+        }
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
@@ -138,6 +194,7 @@ public class MovieTabFragment extends Fragment {
 
                 case CINEMA:
                     view = inflateMapView(inflater, container);
+
                     mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view2);
 
                     final CinemaFeedDataStore localcinema = new CinemaFeedDataStore(getContext());
@@ -150,11 +207,13 @@ public class MovieTabFragment extends Fragment {
                             final List<Cinema> cinemalist = (List<Cinema>) list;
 
 
+
                             FragmentManager fm = getChildFragmentManager();
-                            SupportMapFragment mapFragment = (SupportMapFragment) fm.findFragmentByTag("map_fragment");
+                           mapFragment = (SupportMapFragment) fm.findFragmentByTag("map_fragment");
                             final List<Float> distance = new ArrayList<Float>();
                             if(mapFragment == null) {
                                 mapFragment = new SupportMapFragment();
+                                final MarkerOptions[] curentposition = new MarkerOptions[1];
 
                                 fm.beginTransaction().add(frameId, mapFragment, "map_fragment").commit();
 
@@ -164,11 +223,11 @@ public class MovieTabFragment extends Fragment {
                                 mapFragment.getMapAsync(new OnMapReadyCallback() {
 
                                     @Override
-                                    public void onMapReady(GoogleMap map) {
+                                    public void onMapReady(GoogleMap googlemap) {
+                                        map = googlemap;
+                                        map.setInfoWindowAdapter(new MyInfoWindowAdapter());
 //                                        List<Float> distance = new ArrayList<Float>();
                                         LocationManager locationManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
-
-                                        Criteria criteria = new Criteria();
                                         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                                             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
                                             return;
@@ -176,13 +235,16 @@ public class MovieTabFragment extends Fragment {
                                             Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                                            latitude  = location.getLatitude();
                                            longitude = location.getLongitude();
+                                            curentposition[0] = new MarkerOptions()
+                                                    .position(new LatLng(latitude,longitude));
 
                                         }
                                         for (int i = 0; i < cinemalist.size(); i++) {
                                             map.addMarker(new MarkerOptions()
                                                     .position(new LatLng(cinemalist.get(i).getLatitude(), cinemalist.get(i).getLongitude()))
                                                     .title(cinemalist.get(i).getCinemaName())
-                                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_around_highlight)));
+                                                    .snippet(cinemalist.get(i).getCinemaAddress())
+                                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.cinema_around)));
 
                                             Location loc1 = new Location("");
                                             loc1.setLatitude(latitude);
@@ -192,29 +254,90 @@ public class MovieTabFragment extends Fragment {
                                             loc2.setLatitude(cinemalist.get(i).getLatitude());
                                             loc2.setLongitude(cinemalist.get(i).getLongitude());
                                             distance.add(loc1.distanceTo(loc2)/1000);
+                                            cinemalist.get(i).setDistance(loc1.distanceTo(loc2)/1000);
                                         }
+
 
                                         Marker marker = map.addMarker(new MarkerOptions()
                                                 .position(new LatLng(latitude, longitude))
-                                                .title("here i am"));
+                                                .title("here i am")
+                                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.current_location)));
                                         CameraUpdate center =
                                                 CameraUpdateFactory.newLatLng(marker.getPosition()
                                                 );
-                                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(12);
+                                        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
 
                                         map.moveCamera(center);
                                         map.animateCamera(zoom);
 
 
-                                        mAdapter = new AroundDetailAdapter(getContext(),cinemalist,mPage,distance);
+                                        final List<Cinema> cinemaList = selectionSort(cinemalist);
+
+                                        for(int i = 0; i < cinemaList.size(); i ++){
+                                            Log.i("LIST DISTANCE", "" + cinemaList.get(i).getDistance());
+                                        }
+                                        mAdapter = new AroundDetailAdapter(getContext(),cinemaList,mPage);
                                         mRecyclerView .setLayoutManager(new LinearLayoutManager(getActivity()));
                                         mRecyclerView.setAdapter(mAdapter);
+                                        final GestureDetector mGesture = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+                                            @Override
+                                            public boolean onSingleTapUp(MotionEvent e) {
+                                                return true;
+                                            }
+                                        });
+                                        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+                                            @Override
+                                            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+
+                                                View childview = rv.findChildViewUnder(e.getX(), e.getY());
+
+
+                                                if (childview != null && mGesture.onTouchEvent(e))  {
+                                                    LatLng destiny = new LatLng(cinemaList.get(mRecyclerView.getChildAdapterPosition(childview)).getLatitude(),cinemaList.get(mRecyclerView.getChildAdapterPosition(childview)).getLongtitude());
+                                                    String url = getDirectionsUrl(curentposition[0].getPosition(), destiny);
+
+                                                    DownloadTask downloadTask = new DownloadTask();
+
+                                                    // Start downloading json data from Google Directions API
+                                                    downloadTask.execute(url);
+                                                    setmap(destiny);
+
+                                                }
+                                                return false;
+                                            }
+
+                                            @Override
+                                            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+
+                                            }
+
+                                            @Override
+                                            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+                                            }
+                                        });
+
+                                       map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                           @Override
+                                           public boolean onMarkerClick(Marker marker) {
+                                               String url = getDirectionsUrl(curentposition[0].getPosition(), marker.getPosition());
+
+                                               DownloadTask downloadTask = new DownloadTask();
+
+                                               // Start downloading json data from Google Directions API
+                                               downloadTask.execute(url);
+                                               setmap(marker.getPosition());
+                                               return false;
+                                           }
+                                       });
+
                                     }
                                 });
                             }
                             else{
                                 fm.beginTransaction().add(frameId, mapFragment, null).commit();
-                                mAdapter = new AroundDetailAdapter(getContext(),cinemalist,mPage,distance);
+                                mAdapter = new AroundDetailAdapter(getContext(),cinemalist,mPage);
                                 mRecyclerView .setLayoutManager(new LinearLayoutManager(getActivity()));
                                 mRecyclerView.setAdapter(mAdapter);
                             }
@@ -402,5 +525,230 @@ public class MovieTabFragment extends Fragment {
             }
         });
     }
+
+    private String getDirectionsUrl(LatLng origin,LatLng dest){
+        // Origin of route
+        String str_origin = "origin="+origin.latitude+","+origin.longitude;
+
+        // Destination of route
+        String str_dest = "destination="+dest.latitude+","+dest.longitude;
+
+        // Sensor enabled
+        String sensor = "sensor=false";
+
+        // Building the parameters to the web service
+        String parameters = str_origin+"&"+str_dest+"&"+sensor;
+
+        // Output format
+        String output = "json";
+
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/"+output+"?"+parameters;
+
+        return url;
+    }
+
+    private String downloadUrl(String strUrl) throws IOException {
+        String data = "";
+        InputStream iStream = null;
+        HttpURLConnection urlConnection = null;
+        try{
+            URL url = new URL(strUrl);
+
+            // Creating an http connection to communicate with url
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            // Connecting to url
+            urlConnection.connect();
+
+            // Reading data from url
+            iStream = urlConnection.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
+
+            StringBuffer sb  = new StringBuffer();
+
+            String line = "";
+            while( ( line = br.readLine())  != null){
+                sb.append(line);
+            }
+
+            data = sb.toString();
+
+            br.close();
+
+        }catch(Exception e){
+        }finally{
+            iStream.close();
+            urlConnection.disconnect();
+        }
+        return data;
+    }
+
+
+
+    /** A class to download data from Google Directions URL */
+    private class DownloadTask extends AsyncTask<String, Void, String>{
+
+        // Downloading data in non-ui thread
+        @Override
+        protected String doInBackground(String... url) {
+
+            // For storing data from web service
+            String data = "";
+
+            try{
+                // Fetching the data from web service
+                data = downloadUrl(url[0]);
+            }catch(Exception e){
+                Log.d("Background Task",e.toString());
+            }
+            return data;
+        }
+
+        // Executes in UI thread, after the execution of
+        // doInBackground()
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            Parser parserTask = new Parser();
+
+            // Invokes the thread for parsing the JSON data
+            parserTask.execute(result);
+        }
+    }
+
+    public class Parser extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> > {
+
+
+        // Parsing the data in non-ui thread
+        @Override
+        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+
+            JSONObject jObject;
+            List<List<HashMap<String, String>>> routes = null;
+
+            try{
+                jObject = new JSONObject(jsonData[0]);
+                DirectionParser parser = new DirectionParser();
+
+                // Starts parsing data
+                routes = parser.parse(jObject);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            return routes;
+        }
+
+        // Executes in UI thread, after the parsing process
+        @Override
+        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+            ArrayList<LatLng> points = null;
+            PolylineOptions lineOptions = null;
+
+            // Traversing through all the routes
+            for(int i=0;i<result.size();i++){
+                points = new ArrayList<LatLng>();
+                lineOptions = new PolylineOptions();
+
+                // Fetching i-th route
+                List<HashMap<String, String>> path = result.get(i);
+
+                // Fetching all the points in i-th route
+                for(int j=0;j<path.size();j++){
+                    HashMap<String,String> point = path.get(j);
+
+                    double lat = Double.parseDouble(point.get("lat"));
+                    double lng = Double.parseDouble(point.get("lng"));
+                    LatLng position = new LatLng(lat, lng);
+
+                    points.add(position);
+                }
+
+                // Adding all the points in the route to LineOptions
+                lineOptions.addAll(points);
+                lineOptions.width(20);
+                lineOptions.color(Color.RED);
+            }
+            if(polyline!=null){
+                polyline.remove();
+            }
+         polyline=   map.addPolyline(lineOptions);
+
+
+
+            // Drawing polyline in the Google Map for the i-th route
+
+        }
+
+
+    }
+    public static List<Cinema> selectionSort(List<Cinema> data) {
+
+        // just return if the array list is null
+        if (data == null)
+            return data;
+
+        // just return if the array list is empty or only has a single element
+        if (data.size() == 0 || data.size() == 1)
+            return data;
+
+        // declare an int variable to hold value of index at which the element
+        // has the smallest value
+        int smallestIndex;
+
+        // declare an int variable to hold the smallest value for each iteration
+        // of the outer loop
+        float smallest;
+
+        // for each index in the array list
+        for (int curIndex = 0; curIndex < data.size(); curIndex++) {
+
+			/* find the index at which the element has smallest value */
+            // initialize variables
+            smallest = data.get(curIndex).getDistance();
+            smallestIndex = curIndex;
+
+            for (int i = curIndex + 1; i < data.size(); i++) {
+                if (smallest > data.get(i).getDistance()) {
+                    // update smallest
+                    smallest = data.get(i).getDistance();
+                    smallestIndex = i;
+                }
+            }
+
+			/* swap the value */
+            // do nothing if the curIndex has the smallest value
+            if (smallestIndex == curIndex)
+                ;
+                // swap values otherwise
+            else {
+                Log.i("SWAP", "SWAP");
+                Cinema temp = data.get(curIndex);
+                data.set(curIndex, data.get(smallestIndex));
+                data.set(smallestIndex, temp);
+            }
+        }
+//        for(int i = 0; i < data.size(); i ++){
+//            Log.i("LIST DISTANCE", "" + data.get(i).getDistance());
+//        }
+        return data;
+    }
+    public void setmap(LatLng position){
+        CameraUpdate center =
+                CameraUpdateFactory.newLatLng(position
+                );
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+
+        map.moveCamera(center);
+        map.animateCamera(zoom);
+    }
+
+
 }
+
+
+
+
 

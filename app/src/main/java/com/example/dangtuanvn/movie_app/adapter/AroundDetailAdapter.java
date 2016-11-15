@@ -26,7 +26,7 @@ public class AroundDetailAdapter extends DetailAdapter {
     private int mPage;
     List<Float> distance;
 
-    public AroundDetailAdapter(Context context, List<Cinema> cinemaList, int mPage, List<Float> distance) {
+    public AroundDetailAdapter(Context context, List<Cinema> cinemaList, int mPage) {
         super(context, cinemaList);
         this.cinemaList = cinemaList;
         this.mPage = mPage;
@@ -60,6 +60,6 @@ public class AroundDetailAdapter extends DetailAdapter {
         cinemaHolder.cinemaicon.setImageResource(R.drawable.cinema_holder);
         cinemaHolder.cinemaname.setText(cinemaList.get(position).getCinemaName());
         cinemaHolder.cinemaadress.setText(cinemaList.get(position).getCinemaAddress());
-        cinemaHolder.distance.setText(String.format("%.2f", distance.get(position)));
+        cinemaHolder.distance.setText(String.format("%.2f", cinemaList.get(position).getDistance()));
     }
 }
