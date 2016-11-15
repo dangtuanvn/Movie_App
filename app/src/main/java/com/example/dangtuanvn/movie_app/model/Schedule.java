@@ -1,13 +1,30 @@
 package com.example.dangtuanvn.movie_app.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
- * Created by dangtuanvn on 11/8/16.
+ * Created by dangtuanvn on 11/14/16.
  */
 
-public class Cinema implements Serializable {
-    private int locationId;
+public class Schedule implements Serializable {
+    /* version_id
+        1 - imax
+        2 - 2d
+        3 - 3d
+        5 - gold class
+        6 - L'amour
+
+        is_voice
+        0: digital
+        1: lồng tiếng
+
+        status_id
+        1: available
+        2: full?
+        3: past time
+    */
+
     private int pCinemaId;
     private String pCinemaName;
     private int cinemaId;
@@ -17,19 +34,13 @@ public class Cinema implements Serializable {
     private String cinemaAddress;
     private double latitude;
     private double longitude;
-    private String cinemaLogo;
-    private String cinemaPhone;
-    private String logoUrl;
     private String listPrice;
-    private String cinemaImage;
-
-    public int getLocationId() {
-        return locationId;
-    }
-
-    public void setLocationId(int locationId) {
-        this.locationId = locationId;
-    }
+    private int maxSeat;
+    private String cinemaLogo;
+    private String lastSync;
+    private boolean useVoucher;
+    private List<List<Session>> listSessions;
+    private List<String> listSessionInfo;
 
     public int getpCinemaId() {
         return pCinemaId;
@@ -99,32 +110,8 @@ public class Cinema implements Serializable {
         return longitude;
     }
 
-    public void setLongitude(double longtitude) {
-        this.longitude = longtitude;
-    }
-
-    public String getCinemaLogo() {
-        return cinemaLogo;
-    }
-
-    public void setCinemaLogo(String cinemaLogo) {
-        this.cinemaLogo = cinemaLogo;
-    }
-
-    public String getCinemaPhone() {
-        return cinemaPhone;
-    }
-
-    public void setCinemaPhone(String cinemaPhone) {
-        this.cinemaPhone = cinemaPhone;
-    }
-
-    public String getLogoUrl() {
-        return logoUrl;
-    }
-
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public String getListPrice() {
@@ -135,11 +122,51 @@ public class Cinema implements Serializable {
         this.listPrice = listPrice;
     }
 
-    public String getCinemaImage() {
-        return cinemaImage;
+    public int getMaxSeat() {
+        return maxSeat;
     }
 
-    public void setCinemaImage(String cinemaImage) {
-        this.cinemaImage = cinemaImage;
+    public void setMaxSeat(int maxSeat) {
+        this.maxSeat = maxSeat;
+    }
+
+    public String getCinemaLogo() {
+        return cinemaLogo;
+    }
+
+    public void setCinemaLogo(String cinemaLogo) {
+        this.cinemaLogo = cinemaLogo;
+    }
+
+    public String getLastSync() {
+        return lastSync;
+    }
+
+    public void setLastSync(String lastSync) {
+        this.lastSync = lastSync;
+    }
+
+    public boolean isUseVoucher() {
+        return useVoucher;
+    }
+
+    public void setUseVoucher(boolean useVoucher) {
+        this.useVoucher = useVoucher;
+    }
+
+    public List<List<Session>> getListSessions() {
+        return listSessions;
+    }
+
+    public void setListSessions(List<List<Session>> listSessions) {
+        this.listSessions = listSessions;
+    }
+
+    public List<String> getListSessionInfo() {
+        return listSessionInfo;
+    }
+
+    public void setListSessionInfo(List<String> listSessionInfo) {
+        this.listSessionInfo = listSessionInfo;
     }
 }

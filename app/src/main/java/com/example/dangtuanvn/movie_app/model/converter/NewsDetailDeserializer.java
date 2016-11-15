@@ -30,12 +30,11 @@ public class NewsDetailDeserializer extends EasyDeserializer<NewsDetail> {
             newsDetail.setUrl(getStringValue(jsonObject.get("url"), null));
             newsDetail.setDateAdd(getStringValue(jsonObject.get("date_add"), null));
             newsDetail.setDateUpdate(getStringValue(jsonObject.get("date_update"), null));
-
             newsDetail.setBannerLarge(getStringValue(jsonObject.get("banner_large"), null));
 
-            JsonElement jsonlistRelated = jsonObject.get("list_related");
-            if (jsonlistRelated != null && jsonlistRelated.isJsonArray()) {
-                JsonArray listNewsRelated = jsonlistRelated.getAsJsonArray();
+            JsonElement jsonListRelated = jsonObject.get("list_related");
+            if (jsonListRelated != null && jsonListRelated.isJsonArray()) {
+                JsonArray listNewsRelated = jsonListRelated.getAsJsonArray();
                 List<Integer> listNewsId = new ArrayList<>();
                 for(int i = 0; i < listNewsRelated.size(); i++){
                     listNewsId.add(listNewsRelated.get(i).getAsJsonObject().get("news_id").getAsInt());

@@ -36,22 +36,22 @@ import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
-import com.example.dangtuanvn.movie_app.datastore.SingletonQueue;
+import com.example.dangtuanvn.movie_app.datastore.ScheduleFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
+import com.example.dangtuanvn.movie_app.model.Schedule;
+import com.example.dangtuanvn.movie_app.model.Session;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.squareup.picasso.Transformation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -180,7 +180,7 @@ public class MovieTabFragment extends Fragment {
                                         }
                                         for (int i = 0; i < cinemalist.size(); i++) {
                                             map.addMarker(new MarkerOptions()
-                                                    .position(new LatLng(cinemalist.get(i).getLatitude(), cinemalist.get(i).getLongtitude()))
+                                                    .position(new LatLng(cinemalist.get(i).getLatitude(), cinemalist.get(i).getLongitude()))
                                                     .title(cinemalist.get(i).getCinemaName())
                                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_around_highlight)));
 
@@ -190,7 +190,7 @@ public class MovieTabFragment extends Fragment {
 
                                             Location loc2 = new Location("");
                                             loc2.setLatitude(cinemalist.get(i).getLatitude());
-                                            loc2.setLongitude(cinemalist.get(i).getLongtitude());
+                                            loc2.setLongitude(cinemalist.get(i).getLongitude());
                                             distance.add(loc1.distanceTo(loc2)/1000);
                                         }
 
@@ -210,8 +210,6 @@ public class MovieTabFragment extends Fragment {
                                         mRecyclerView .setLayoutManager(new LinearLayoutManager(getActivity()));
                                         mRecyclerView.setAdapter(mAdapter);
                                     }
-
-
                                 });
                             }
                             else{
@@ -221,7 +219,6 @@ public class MovieTabFragment extends Fragment {
                                 mRecyclerView.setAdapter(mAdapter);
                             }
                         }
-
                     });
                     break;
 
@@ -275,11 +272,11 @@ public class MovieTabFragment extends Fragment {
                 newsFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
-                        final List<News> newsShowingList = (List<News>) list;
-                        mAdapter = new NewsDetailAdapter(getContext(), newsShowingList, mPage);
+                        final List<News> newsList = (List<News>) list;
+                        mAdapter = new NewsDetailAdapter(getContext(), newsList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
                         if (addTouch) {
-                            addOnTouchNewsItem(mRecyclerView, newsShowingList);
+                            addOnTouchNewsItem(mRecyclerView, newsList);
                         }
                         swipeLayout.setRefreshing(false);
                     }
@@ -289,7 +286,7 @@ public class MovieTabFragment extends Fragment {
     }
 
 
-    public void addOnTouchNewsItem(RecyclerView mRecyclerView, final List<News> newsShowingList) {
+    public void addOnTouchNewsItem(RecyclerView mRecyclerView, final List<News> newsList) {
         final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
@@ -305,21 +302,7 @@ public class MovieTabFragment extends Fragment {
                     // Cancel the current refreshing data
                     handlerFDS.removeCallbacksAndMessages(null);
                     swipeLayout.setRefreshing(false);
-
-
-                    FeedDataStore newsDetailFDS = new NewsDetailFeedDataStore(getContext(), newsShowingList.get(rv.getChildAdapterPosition(childView)).getNewsId());
-                    newsDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
-                        @Override
-                        public void onDataRetrievedListener(List<?> list, Exception ex) {
-                            // Start web view
-                            Intent intent = new Intent(getContext(), WebViewDisplay.class);
-                            intent.putExtra("data", ((NewsDetail) list.get(0)).getContent());
-                            handlerFDS.removeCallbacksAndMessages(null);
-                            swipeLayout.setRefreshing(false);
-                            startActivity(intent);
-                        }
-                    });
-
+                    displayNewsDetail(rv, childView, newsList);
                 }
                 return false;
             }
@@ -382,10 +365,42 @@ public class MovieTabFragment extends Fragment {
 //            Fragment fragment = fm.findFragmentById(R.id.map_fragment);
 //            fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
 //        }
-
-
     }
 
+    public void displayNewsDetail(RecyclerView rv, View childView, List<News> newsList){
+//        FeedDataStore movieDetailFDS = new MovieDetailFeedDataStore(getContext(), 1165);
+//        movieDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+//            @Override
+//            public void onDataRetrievedListener(List<?> list, Exception ex) {
+//                Log.i("ACTOR NAME", "" + ((MovieDetail) list.get(0)).getListActors().get(0));
+//                Log.i("DIRECTOR NAME", "" + ((MovieDetail) list.get(0)).getDirectorName());
+//            }
+//        });
+//
 
+        FeedDataStore scheduleFDS = new ScheduleFeedDataStore(getContext(), "840", "2016-11-17");
+        scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+            @Override
+            public void onDataRetrievedListener(List<?> list, Exception ex) {
+                Log.i("CINEMA NAME", "" + ((Schedule) list.get(0)).getCinemaName());
+                Log.i("SESSION INFO", "" + ((Schedule) list.get(0)).getListSessionInfo().get(0));
+                Log.i("SESSION TIME", "" + ((Schedule) list.get(0)).getListSessions().get(0).get(0).getSessionTime());
+            }
+        });
+
+        FeedDataStore newsDetailFDS = new NewsDetailFeedDataStore(getContext(), newsList.get(rv.getChildAdapterPosition(childView)).getNewsId());
+        newsDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+            @Override
+            public void onDataRetrievedListener(List<?> list, Exception ex) {
+                // Start web view
+                Intent intent = new Intent(getContext(), WebViewDisplay.class);
+                intent.putExtra("data", ((NewsDetail) list.get(0)).getContent());
+//                Log.i("RELATED NEWS", "" + ((NewsDetail) list.get(0)).getRelatedNewsList().get(0).toString());
+                handlerFDS.removeCallbacksAndMessages(null);
+                swipeLayout.setRefreshing(false);
+                startActivity(intent);
+            }
+        });
+    }
 }
 
