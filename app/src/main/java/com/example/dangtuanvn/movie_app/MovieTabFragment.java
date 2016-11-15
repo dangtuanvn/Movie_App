@@ -1,6 +1,5 @@
 package com.example.dangtuanvn.movie_app;
 
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -62,6 +61,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -82,21 +82,23 @@ public class MovieTabFragment extends Fragment {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private int mPage;
+    private TAB mTab;
     public static final String ARG_PAGE = "ARG_PAGE";
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
     private GoogleMap map;
-    private SupportMapFragment mapFragment;
     private Polyline polyline;
+    private SupportMapFragment mapFragment;
     private SwipeRefreshLayout swipeLayout;
     private Handler handlerFDS = new Handler();
     private static int frameId = View.generateViewId();
-    private TAB mTab;
+    static List<Cinema> cinemaList;
 
     public static MovieTabFragment newInstance(int page) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
         args.putInt("frame_id", frameId);
+        args.putSerializable("cinema_list", (Serializable) cinemaList);
         MovieTabFragment fragment = new MovieTabFragment();
         fragment.setArguments(args);
         return fragment;
@@ -107,6 +109,7 @@ public class MovieTabFragment extends Fragment {
         super.onCreate(savedInstanceState);
         frameId = getArguments().getInt("frame_id");
         mPage = getArguments().getInt(ARG_PAGE);
+        cinemaList = (List<Cinema>) getArguments().getSerializable("cinema_list");
         mTab = TAB.values()[mPage];
     }
 
@@ -205,7 +208,7 @@ public class MovieTabFragment extends Fragment {
                 newsFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
-                        final List<News> newsList = (List<News>) list;
+                        List<News> newsList = (List<News>) list;
                         mAdapter = new NewsDetailAdapter(getContext(), newsList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
                         if (addTouch) {
@@ -250,49 +253,55 @@ public class MovieTabFragment extends Fragment {
         swipeLayout.setRefreshing(false);
     }
 
-    public void displayCinemaList(FeedDataStore cinemaFDS, final LayoutInflater inflater){
+    public void displayCinemaList(FeedDataStore cinemaFDS, final LayoutInflater inflater) {
         cinemaFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
             @Override
             public void onDataRetrievedListener(List<?> list, Exception ex) {
-                final List<Cinema> cinemaList = (List<Cinema>) list;
-
                 FragmentManager fm = getChildFragmentManager();
                 mapFragment = (SupportMapFragment) fm.findFragmentByTag("map_fragment");
                 if (mapFragment == null) {
+                    cinemaList = (List<Cinema>) list;
                     mapFragment = new SupportMapFragment();
                     fm.beginTransaction().add(frameId, mapFragment, "map_fragment").commit();
                     loadMapData(inflater, cinemaList);
 
                 } else {
                     fm.beginTransaction().add(frameId, mapFragment, null).commit();
+                    cinemaList = selectionSort(cinemaList);
+                    MarkerOptions currentPosition = getCurrentPosition();
+
                     mAdapter = new CinemaDetailAdapter(getContext(), cinemaList);
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     mRecyclerView.setAdapter(mAdapter);
+                    addOnTouchMapItem(mRecyclerView, cinemaList, currentPosition);
                 }
             }
         });
     }
 
-    public void loadMapData(final LayoutInflater inflater, final List<Cinema> cinemaList){
-        final MarkerOptions[] currentPosition = new MarkerOptions[1];
+    public MarkerOptions getCurrentPosition() {
+        LocationManager locationManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return null;
+            // TODO: check return of request
+        } else {
+            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            return new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()));
+        }
+    }
+
+    public void loadMapData(final LayoutInflater inflater, final List<Cinema> cinemaList) {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
-            public void onMapReady(GoogleMap googlemap) {
-                double latitude, longitude;
-                map = googlemap;
+            public void onMapReady(GoogleMap googleMap) {
+                map = googleMap;
                 map.setInfoWindowAdapter(new MyInfoWindowAdapter(inflater));
 
-                LocationManager locationManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
-                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-                    return;
-                } else {
-                    Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    latitude = location.getLatitude();
-                    longitude = location.getLongitude();
-                    currentPosition[0] = new MarkerOptions()
-                            .position(new LatLng(latitude, longitude));
-                }
+                MarkerOptions currentPosition = getCurrentPosition();
+                double latitude = currentPosition.getPosition().latitude;
+                double longitude = currentPosition.getPosition().longitude;
 
                 for (int i = 0; i < cinemaList.size(); i++) {
                     map.addMarker(new MarkerOptions()
@@ -323,7 +332,7 @@ public class MovieTabFragment extends Fragment {
                 map.moveCamera(center);
                 map.animateCamera(zoom);
 
-                final List<Cinema> sortedCinemaList = selectionSort(cinemaList);
+                List<Cinema> sortedCinemaList = selectionSort(cinemaList);
 //                for (int i = 0; i < sortedCinemaList.size(); i++) {
 //                    Log.i("LIST DISTANCE", "" + sortedCinemaList.get(i).getDistance());
 //                }
@@ -336,7 +345,7 @@ public class MovieTabFragment extends Fragment {
         });
     }
 
-    public void addOnTouchMapItem(final RecyclerView mRecyclerView, final List<Cinema> cinemaList, final MarkerOptions[] currentPosition ){
+    public void addOnTouchMapItem(final RecyclerView mRecyclerView, final List<Cinema> cinemaList, final MarkerOptions currentPosition) {
         final GestureDetector mGesture = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
@@ -350,7 +359,7 @@ public class MovieTabFragment extends Fragment {
                 View childView = rv.findChildViewUnder(e.getX(), e.getY());
                 if (childView != null && mGesture.onTouchEvent(e)) {
                     LatLng destiny = new LatLng(cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLatitude(), cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLongitude());
-                    String url = getDirectionsUrl(currentPosition[0].getPosition(), destiny);
+                    String url = getDirectionsUrl(currentPosition.getPosition(), destiny);
 
                     DownloadTask downloadTask = new DownloadTask();
 
@@ -373,7 +382,7 @@ public class MovieTabFragment extends Fragment {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                String url = getDirectionsUrl(currentPosition[0].getPosition(), marker.getPosition());
+                String url = getDirectionsUrl(currentPosition.getPosition(), marker.getPosition());
 
                 DownloadTask downloadTask = new DownloadTask();
 
@@ -453,8 +462,12 @@ public class MovieTabFragment extends Fragment {
 
         // Cancel all tasks running on thread
         handlerFDS.removeCallbacksAndMessages(null);
+    }
 
-        if(mTab == TAB.CINEMA) {
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mTab == TAB.CINEMA) {
             FragmentManager fm = getChildFragmentManager();
             Fragment fragment = fm.findFragmentByTag("map_fragment");
             fm.beginTransaction()
@@ -629,7 +642,7 @@ public class MovieTabFragment extends Fragment {
 
         // for each index in the array list
         for (int curIndex = 0; curIndex < data.size(); curIndex++) {
-			/* find the index at which the element has smallest value */
+            /* find the index at which the element has smallest value */
             // initialize variables
             smallest = data.get(curIndex).getDistance();
             smallestIndex = curIndex;
@@ -648,7 +661,7 @@ public class MovieTabFragment extends Fragment {
                 ;
                 // swap values otherwise
             else {
-                Log.i("SWAP", "SWAP");
+//                Log.i("SWAP", "SWAP");
                 Cinema temp = data.get(curIndex);
                 data.set(curIndex, data.get(smallestIndex));
                 data.set(smallestIndex, temp);
@@ -670,7 +683,7 @@ public class MovieTabFragment extends Fragment {
     class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         private View myContentsView;
 
-        protected MyInfoWindowAdapter(LayoutInflater inflater){
+        protected MyInfoWindowAdapter(LayoutInflater inflater) {
             myContentsView = inflater.inflate(R.layout.locationdetail, null);
         }
 
@@ -695,8 +708,3 @@ public class MovieTabFragment extends Fragment {
         }
     }
 }
-
-
-
-
-
