@@ -12,10 +12,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.List;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by dangtuanvn on 11/14/16.

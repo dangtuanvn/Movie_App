@@ -16,34 +16,30 @@ import java.util.List;
 /**
  * Created by sinhhx on 11/11/16.
  */
-public class AroundDetailAdapter extends DetailAdapter {
+public class CinemaDetailAdapter extends DetailAdapter {
     private List<Cinema> cinemaList;
-    private int mPage;
-    List<Float> distance;
 
-    public AroundDetailAdapter(Context context, List<Cinema> cinemaList, int mPage) {
+    public CinemaDetailAdapter(Context context, List<Cinema> cinemaList) {
         super(context, cinemaList);
         this.cinemaList = cinemaList;
-        this.mPage = mPage;
-        this.distance =distance;
     }
 
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView cinemaicon;
-        private TextView cinemaname;
-        private TextView cinemaadress;
+        private ImageView cinemaIcon;
+        private TextView cinemaName;
+        private TextView cinemaAddress;
         private TextView distance;
         private ViewHolder(View itemView) {
             super(itemView);
-            cinemaicon = (ImageView) itemView.findViewById(R.id.locationicon);
-            cinemaname= (TextView) itemView.findViewById(R.id.cinema_name);
-            cinemaadress = (TextView) itemView.findViewById(R.id.address);
+            cinemaIcon = (ImageView) itemView.findViewById(R.id.locationicon);
+            cinemaName = (TextView) itemView.findViewById(R.id.cinema_name);
+            cinemaAddress = (TextView) itemView.findViewById(R.id.address);
             distance = (TextView) itemView.findViewById(R.id.distance);
         }
     }
 
-    public AroundDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CinemaDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.location_detail, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
@@ -51,10 +47,10 @@ public class AroundDetailAdapter extends DetailAdapter {
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-        AroundDetailAdapter.ViewHolder cinemaHolder = (AroundDetailAdapter.ViewHolder) holder;
-        cinemaHolder.cinemaicon.setImageResource(R.drawable.cinema_holder);
-        cinemaHolder.cinemaname.setText(cinemaList.get(position).getCinemaName());
-        cinemaHolder.cinemaadress.setText(cinemaList.get(position).getCinemaAddress());
+        CinemaDetailAdapter.ViewHolder cinemaHolder = (CinemaDetailAdapter.ViewHolder) holder;
+        cinemaHolder.cinemaIcon.setImageResource(R.drawable.cinema_holder);
+        cinemaHolder.cinemaName.setText(cinemaList.get(position).getCinemaName());
+        cinemaHolder.cinemaAddress.setText(cinemaList.get(position).getCinemaAddress());
         cinemaHolder.distance.setText(String.format("%.2f", cinemaList.get(position).getDistance()));
     }
 }

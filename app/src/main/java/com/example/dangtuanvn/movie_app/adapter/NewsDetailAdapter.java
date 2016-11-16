@@ -10,8 +10,6 @@ import android.widget.TextView;
 
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.model.News;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
 import java.util.List;
 

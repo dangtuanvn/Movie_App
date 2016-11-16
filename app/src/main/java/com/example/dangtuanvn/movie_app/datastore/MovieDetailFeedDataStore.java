@@ -3,7 +3,7 @@ package com.example.dangtuanvn.movie_app.datastore;
 import android.content.Context;
 
 import com.example.dangtuanvn.movie_app.model.MovieDetail;
-import com.example.dangtuanvn.movie_app.model.converter.MovieTrailerDeserializer;
+import com.example.dangtuanvn.movie_app.model.converter.MovieDetailDeserializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -34,14 +34,11 @@ public class MovieDetailFeedDataStore extends DataStore {
         MovieDetail movieDetail;
         Type type = new TypeToken<MovieDetail>() {}.getType();
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(MovieDetail.class, new MovieTrailerDeserializer());
+        gsonBuilder.registerTypeAdapter(MovieDetail.class, new MovieDetailDeserializer());
         Gson gson = gsonBuilder.create();
         movieDetail = gson.fromJson(jsonObject.get("result").getAsJsonObject(), type);
 
         return Collections.singletonList(movieDetail);
-//        List<MovieTrailer> list = new ArrayList<>();
-//        list.add(movieTrailer);
-//        return Arrays.asList(movieTrailer);
     }
 
     @Override

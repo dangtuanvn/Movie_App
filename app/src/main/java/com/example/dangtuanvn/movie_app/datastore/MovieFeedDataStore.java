@@ -1,7 +1,6 @@
 package com.example.dangtuanvn.movie_app.datastore;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.example.dangtuanvn.movie_app.model.Movie;
 

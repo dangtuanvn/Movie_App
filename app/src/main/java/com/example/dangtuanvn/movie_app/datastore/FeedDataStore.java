@@ -1,6 +1,5 @@
 package com.example.dangtuanvn.movie_app.datastore;
 
-import com.example.dangtuanvn.movie_app.model.Movie;
 
 import java.util.List;
 
