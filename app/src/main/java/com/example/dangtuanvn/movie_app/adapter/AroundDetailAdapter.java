@@ -2,7 +2,6 @@ package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,11 +10,7 @@ import android.widget.TextView;
 
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.model.Cinema;
-import com.example.dangtuanvn.movie_app.model.Movie;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,7 +44,7 @@ public class AroundDetailAdapter extends DetailAdapter {
     }
 
     public AroundDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.locationdetail, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.location_detail, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }

@@ -4,13 +4,9 @@ package com.example.dangtuanvn.movie_app;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -34,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.dangtuanvn.movie_app.adapter.AroundDetailAdapter;
@@ -50,6 +45,14 @@ import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -88,6 +91,7 @@ public class MovieTabFragment extends Fragment {
     }
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final int REQUEST_CHECK_SETTINGS =2;
 
     private int mPage;
 //    private RecyclerView.LayoutManager mLayoutManager;
@@ -100,6 +104,7 @@ public class MovieTabFragment extends Fragment {
     Polyline polyline;
     GoogleMap map;
     SupportMapFragment mapFragment;
+
 
     private RecyclerView.Adapter nAdapter;
     private SwipeRefreshLayout swipeLayout;
@@ -133,7 +138,7 @@ public class MovieTabFragment extends Fragment {
             private final View myContentsView;
 
             MyInfoWindowAdapter(){
-                myContentsView = inflater.inflate(R.layout.locationdetail, null);
+                myContentsView = inflater.inflate(R.layout.info_window_layout, null);
             }
 
             @Override
@@ -147,8 +152,6 @@ public class MovieTabFragment extends Fragment {
             @Override
             public View getInfoWindow(Marker marker) {
                 myContentsView.setBackgroundColor(Color.BLACK);
-                LinearLayout distancelinear = (LinearLayout) myContentsView.findViewById(R.id.lineardistacne);
-                distancelinear.setVisibility(View.GONE);
                 ImageView cinemaicon = (ImageView) myContentsView.findViewById(R.id.locationicon);
                 cinemaicon.getPaddingLeft();
                 cinemaicon.setImageResource(R.drawable.cinema_holder);
@@ -190,6 +193,19 @@ public class MovieTabFragment extends Fragment {
                     break;
 
                 case CINEMA:
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            displayLocationSettingsRequest(getContext());
+                        }});
+                    t.start();
+                    try {
+                        t.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
                     view = inflateMapView(inflater, container);
 
                     mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view2);
@@ -471,7 +487,7 @@ public class MovieTabFragment extends Fragment {
     }
 
     public View inflateListView(LayoutInflater inflater, ViewGroup container){
-        View view = inflater.inflate(R.layout.movietabrecycler, container, false);
+        View view = inflater.inflate(R.layout.movie_tab_recycler, container, false);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
@@ -724,6 +740,49 @@ public class MovieTabFragment extends Fragment {
         map.moveCamera(center);
         map.animateCamera(zoom);
     }
+    private void displayLocationSettingsRequest(Context context) {
+
+        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
+                .addApi(LocationServices.API).build();
+        googleApiClient.connect();
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(10000 / 2);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        Log.i("satisfy", "All location settings are satisfied.");
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        Log.i("update", "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
+
+                        try {
+                            // Show the dialog by calling startResolutionForResult(), and check the result
+                            // in onActivityResult().
+                            status.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            Log.i("pending", "PendingIntent unable to execute request.");
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        Log.i("not created", "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
+                        break;
+                }
+            }
+        });
+    }
+
+
 
 
 }
