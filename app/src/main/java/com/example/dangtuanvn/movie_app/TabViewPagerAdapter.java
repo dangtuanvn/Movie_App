@@ -1,18 +1,7 @@
 package com.example.dangtuanvn.movie_app;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
-
-import com.example.dangtuanvn.movie_app.model.Movie;
-
-import java.util.List;
-
 
 /**
  * Created by sinhhx on 11/7/16.
@@ -21,11 +10,9 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
 
     public final static int PAGE_COUNT = 4;
     private String tabTitles[] = new String[] { "Showing", "Upcoming", "Cinema around","News"};
-    private Context context;
 
-    public TabViewPagerAdapter(FragmentManager fm, Context context) {
+    public TabViewPagerAdapter(FragmentManager fm) {
         super(fm);
-        this.context = context;
     }
 
     @Override

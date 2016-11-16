@@ -39,10 +39,12 @@ import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
+import com.example.dangtuanvn.movie_app.datastore.ScheduleFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
+import com.example.dangtuanvn.movie_app.model.Schedule;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -150,10 +152,6 @@ public class MovieTabFragment extends Fragment {
 
                 case CINEMA:
                     view = inflateMapView(inflater, container);
-                    mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view2);
-
-                    FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.map_fragment);
-                    frameLayout.setId(frameId);
 
                     final CinemaFeedDataStore cinemaFDS = new CinemaFeedDataStore(getContext());
                     displayCinemaList(cinemaFDS, inflater);
@@ -235,7 +233,7 @@ public class MovieTabFragment extends Fragment {
             public boolean onInterceptTouchEvent(final RecyclerView rv, MotionEvent e) {
                 final View childView = rv.findChildViewUnder(e.getX(), e.getY());
                 if (childView != null && mGestureDetector.onTouchEvent(e)) {
-                    // Cancel the current refreshing data
+                    // Cancel getting data tasks
                     handlerFDS.removeCallbacksAndMessages(null);
                     swipeLayout.setRefreshing(false);
                     displayNewsDetail(rv, childView, newsList);
@@ -272,7 +270,6 @@ public class MovieTabFragment extends Fragment {
                     MarkerOptions currentPosition = getCurrentPosition();
 
                     mAdapter = new CinemaDetailAdapter(getContext(), cinemaList);
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     mRecyclerView.setAdapter(mAdapter);
                     addOnTouchMapItem(mRecyclerView, cinemaList, currentPosition);
                 }
@@ -329,8 +326,6 @@ public class MovieTabFragment extends Fragment {
                         );
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
 
-
-
                 map.moveCamera(center);
 
                 map.animateCamera(zoom);
@@ -361,14 +356,16 @@ public class MovieTabFragment extends Fragment {
             public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
                 View childView = rv.findChildViewUnder(e.getX(), e.getY());
                 if (childView != null && mGesture.onTouchEvent(e)) {
-                    LatLng destiny = new LatLng(cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLatitude(), cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLongitude());
-                    String url = getDirectionsUrl(currentPosition.getPosition(), destiny);
+                    LatLng destination = new LatLng(
+                            cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLatitude(),
+                            cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLongitude());
+                    String url = getDirectionsUrl(currentPosition.getPosition(), destination);
 
                     DownloadTask downloadTask = new DownloadTask();
 
                     // Start downloading json data from Google Directions API
                     downloadTask.execute(url);
-                    setmap(destiny, currentPosition.getPosition());
+                    setMap(destination, currentPosition.getPosition());
                 }
                 return false;
             }
@@ -385,26 +382,24 @@ public class MovieTabFragment extends Fragment {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-
-
-                if(marker.getPosition()==currentPosition.getPosition()){
+                if(marker.getPosition() == currentPosition.getPosition()){
                     marker.hideInfoWindow();
                     return true;
-                }else{
+                } else{
                     String url = getDirectionsUrl(currentPosition.getPosition(), marker.getPosition());
 
                     DownloadTask downloadTask = new DownloadTask();
 
                     // Start downloading json data from Google Directions API
                     downloadTask.execute(url);
-                    setmap(marker.getPosition(),currentPosition.getPosition());
+                    setMap(marker.getPosition(), currentPosition.getPosition());
                     return false;
             }}
         });
     }
 
     public View inflateListView(LayoutInflater inflater, ViewGroup container) {
-        View view = inflater.inflate(R.layout.movietabrecycler, container, false);
+        View view = inflater.inflate(R.layout.movie_tab_recycler, container, false);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
@@ -415,15 +410,17 @@ public class MovieTabFragment extends Fragment {
         /* Use this setting to improve performance if you know that changes
         in content do not change the layout size of the RecyclerView */
         mRecyclerView.setHasFixedSize(true);
-
-//        mLayoutManager = new LinearLayoutManager(getContext());
-//        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         return view;
     }
 
     public View inflateMapView(LayoutInflater inflater, ViewGroup container) {
-        View view = inflater.inflate(R.layout.googlemap, container, false);
+        View view = inflater.inflate(R.layout.google_map, container, false);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view2);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.map_fragment);
+        frameLayout.setId(frameId);
         return view;
     }
 
@@ -437,15 +434,15 @@ public class MovieTabFragment extends Fragment {
 //            }
 //        });
 
-//        FeedDataStore scheduleFDS = new ScheduleFeedDataStore(getContext(), "840", "2016-11-17");
-//        scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
-//            @Override
-//            public void onDataRetrievedListener(List<?> list, Exception ex) {
-//                Log.i("CINEMA NAME", "" + ((Schedule) list.get(0)).getCinemaName());
-//                Log.i("SESSION INFO", "" + ((Schedule) list.get(0)).getListSessionInfo().get(0));
-//                Log.i("SESSION TIME", "" + ((Schedule) list.get(0)).getListSessions().get(0).get(0).getSessionTime());
-//            }
-//        });
+        FeedDataStore scheduleFDS = new ScheduleFeedDataStore(getContext(), "840", "2016-11-17");
+        scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+            @Override
+            public void onDataRetrievedListener(List<?> list, Exception ex) {
+                Log.i("CINEMA NAME", "" + ((Schedule) list.get(0)).getCinemaName());
+                Log.i("SESSION INFO", "" + ((Schedule) list.get(0)).getListSessionInfo().get(0));
+                Log.i("SESSION TIME", "" + ((Schedule) list.get(0)).getListSessions().get(0).get(0).getSessionTime());
+            }
+        });
 
         FeedDataStore newsDetailFDS = new NewsDetailFeedDataStore(getContext(), newsList.get(rv.getChildAdapterPosition(childView)).getNewsId());
         newsDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
@@ -665,11 +662,8 @@ public class MovieTabFragment extends Fragment {
             }
 
 			/* swap the value */
-            // do nothing if the curIndex has the smallest value
-            if (smallestIndex == curIndex)
-                ;
-                // swap values otherwise
-            else {
+            // swap if the curIndex is not the smallest
+            if (smallestIndex != curIndex) {
 //                Log.i("SWAP", "SWAP");
                 Cinema temp = data.get(curIndex);
                 data.set(curIndex, data.get(smallestIndex));
@@ -679,11 +673,11 @@ public class MovieTabFragment extends Fragment {
         return data;
     }
 
-    public void setmap(LatLng position, LatLng currentLocation) {
-        CameraUpdate center =
-                CameraUpdateFactory.newLatLng(position
-                );
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+    public void setMap(LatLng position, LatLng currentLocation) {
+//        CameraUpdate center =
+//                CameraUpdateFactory.newLatLng(position
+//                );
+//        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         builder.include(position);
@@ -698,11 +692,11 @@ public class MovieTabFragment extends Fragment {
         map.animateCamera(cu);
     }
 
-    class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+    private class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         private View myContentsView;
 
-        protected MyInfoWindowAdapter(LayoutInflater inflater) {
-            myContentsView = inflater.inflate(R.layout.locationdetail, null);
+        private MyInfoWindowAdapter(LayoutInflater inflater) {
+            myContentsView = inflater.inflate(R.layout.location_detail, null);
         }
 
         @Override

@@ -26,21 +26,21 @@ public class CinemaDetailAdapter extends DetailAdapter {
 
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView cinemaicon;
-        private TextView cinemaname;
-        private TextView cinemaadress;
+        private ImageView cinemaIcon;
+        private TextView cinemaName;
+        private TextView cinemaAddress;
         private TextView distance;
         private ViewHolder(View itemView) {
             super(itemView);
-            cinemaicon = (ImageView) itemView.findViewById(R.id.locationicon);
-            cinemaname= (TextView) itemView.findViewById(R.id.cinema_name);
-            cinemaadress = (TextView) itemView.findViewById(R.id.address);
+            cinemaIcon = (ImageView) itemView.findViewById(R.id.locationicon);
+            cinemaName = (TextView) itemView.findViewById(R.id.cinema_name);
+            cinemaAddress = (TextView) itemView.findViewById(R.id.address);
             distance = (TextView) itemView.findViewById(R.id.distance);
         }
     }
 
     public CinemaDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.locationdetail, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.location_detail, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
@@ -48,9 +48,9 @@ public class CinemaDetailAdapter extends DetailAdapter {
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         CinemaDetailAdapter.ViewHolder cinemaHolder = (CinemaDetailAdapter.ViewHolder) holder;
-        cinemaHolder.cinemaicon.setImageResource(R.drawable.cinema_holder);
-        cinemaHolder.cinemaname.setText(cinemaList.get(position).getCinemaName());
-        cinemaHolder.cinemaadress.setText(cinemaList.get(position).getCinemaAddress());
+        cinemaHolder.cinemaIcon.setImageResource(R.drawable.cinema_holder);
+        cinemaHolder.cinemaName.setText(cinemaList.get(position).getCinemaName());
+        cinemaHolder.cinemaAddress.setText(cinemaList.get(position).getCinemaAddress());
         cinemaHolder.distance.setText(String.format("%.2f", cinemaList.get(position).getDistance()));
     }
 }

@@ -1,7 +1,5 @@
 package com.example.dangtuanvn.movie_app.model.converter;
 
-import com.example.dangtuanvn.movie_app.model.Movie;
-import com.example.dangtuanvn.movie_app.model.MovieDetail;
 import com.example.dangtuanvn.movie_app.model.Schedule;
 import com.example.dangtuanvn.movie_app.model.Session;
 import com.google.gson.Gson;
@@ -11,7 +9,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
+
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;

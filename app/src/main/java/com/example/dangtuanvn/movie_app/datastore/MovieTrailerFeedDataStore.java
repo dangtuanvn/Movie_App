@@ -3,7 +3,6 @@ package com.example.dangtuanvn.movie_app.datastore;
 import android.content.Context;
 
 import com.example.dangtuanvn.movie_app.model.MovieTrailer;
-import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.converter.MovieTrailerDeserializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -12,8 +11,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
