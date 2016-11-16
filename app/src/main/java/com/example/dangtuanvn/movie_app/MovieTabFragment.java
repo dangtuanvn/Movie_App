@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.dangtuanvn.movie_app.adapter.CinemaDetailAdapter;
@@ -683,9 +684,7 @@ public class MovieTabFragment extends Fragment {
         return data;
     }
 
-        map.moveCamera(center);
-        map.animateCamera(zoom);
-    }
+
     private void displayLocationSettingsRequest(Context context) {
 
         GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
@@ -730,10 +729,7 @@ public class MovieTabFragment extends Fragment {
 
 
     public void setMap(LatLng position, LatLng currentLocation) {
-//        CameraUpdate center =
-//                CameraUpdateFactory.newLatLng(position
-//                );
-//        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         builder.include(position);
