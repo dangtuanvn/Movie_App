@@ -3,7 +3,6 @@ package com.example.dangtuanvn.movie_app.datastore;
 import android.content.Context;
 
 import com.example.dangtuanvn.movie_app.model.Schedule;
-import com.example.dangtuanvn.movie_app.model.Session;
 import com.example.dangtuanvn.movie_app.model.converter.ScheduleDeserializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,7 +18,7 @@ import java.util.List;
  */
 
 public class ScheduleFeedDataStore extends DataStore {
-    private String url = BASEURL + "session/cinema?film_id=840&date=2016-11-17";
+    private String url = BASEURL + "session/cinema";
     private String movieId;
     private String date;
 
@@ -28,7 +27,6 @@ public class ScheduleFeedDataStore extends DataStore {
         this.movieId = movieId;
         this.date = date;
     }
-
 
     @Override
     protected List<Schedule> handleData(String response) {

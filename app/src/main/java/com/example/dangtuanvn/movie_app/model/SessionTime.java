@@ -6,11 +6,18 @@ import java.io.Serializable;
  * Created by dangtuanvn on 11/14/16.
  */
 
-public class Session implements Serializable {
+public class SessionTime implements Serializable {
+    public enum StatusId{
+        UNKNOWN,
+        AVAILABLE,
+        FULL,
+        OVERTIME
+    }
+
     private int sessionId;
     private String sessionTime;
     private String sessionLink;
-    private int statusId;
+    private StatusId statusId;
     private int roomId;
     private String roomName;
     private boolean useVoucher;
@@ -39,11 +46,11 @@ public class Session implements Serializable {
         this.sessionLink = sessionLink;
     }
 
-    public int getStatusId() {
+    public StatusId getStatusId() {
         return statusId;
     }
 
-    public void setStatusId(int statusId) {
+    public void setStatusId(StatusId statusId) {
         this.statusId = statusId;
     }
 

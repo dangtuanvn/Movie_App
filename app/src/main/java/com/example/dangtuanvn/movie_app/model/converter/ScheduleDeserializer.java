@@ -1,7 +1,7 @@
 package com.example.dangtuanvn.movie_app.model.converter;
 
 import com.example.dangtuanvn.movie_app.model.Schedule;
-import com.example.dangtuanvn.movie_app.model.Session;
+import com.example.dangtuanvn.movie_app.model.SessionTime;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -41,25 +41,22 @@ public class ScheduleDeserializer extends EasyDeserializer<Schedule> {
             schedule.setUseVoucher(getBooleanValue(jsonObject.get("is_use_voucher"), false));
             JsonElement jsonListSchedule = jsonObject.get("group_sessions");
             if (jsonListSchedule != null && jsonListSchedule.isJsonArray()) {
-                List<String> listSessionInfo = new ArrayList<>();
-                List<List<Session>> listSessions = new ArrayList<>();
-
+                List<Schedule.Session> listSessions = new ArrayList<>();
                 JsonArray jsonArrayListSchedule = jsonListSchedule.getAsJsonArray();
-
                 for(int i = 0; i < jsonArrayListSchedule.size(); i++){
-                    listSessionInfo.add(jsonArrayListSchedule.get(i).getAsJsonObject().get("version_id")
-                            + "_" + jsonArrayListSchedule.get(i).getAsJsonObject().get("is_voice"));
+                    Schedule.VersionId versionId = Schedule.VersionId.values()[jsonArrayListSchedule.get(i).getAsJsonObject().get("version_id").getAsInt()];
+                    Boolean isVoice = jsonArrayListSchedule.get(i).getAsJsonObject().get("is_voice").getAsBoolean();
 
-                    List<Session> sessions;
-                    Type type = new TypeToken<List<Session>>() {}.getType();
+                    List<SessionTime> sessionsTime;
+                    Type type = new TypeToken<List<SessionTime>>() {}.getType();
                     GsonBuilder gsonBuilder = new GsonBuilder();
-                    gsonBuilder.registerTypeAdapter(Session.class, new SessionDeserializer());
+                    gsonBuilder.registerTypeAdapter(SessionTime.class, new SessionTimeDeserializer());
                     Gson gson = gsonBuilder.create();
-                    sessions = gson.fromJson(jsonArrayListSchedule.get(i).getAsJsonObject().get("sessions").getAsJsonArray(), type);
+                    sessionsTime = gson.fromJson(jsonArrayListSchedule.get(i).getAsJsonObject().get("sessions").getAsJsonArray(), type);
 
-                    listSessions.add(sessions);
+                    listSessions.add(new Schedule.Session(sessionsTime, versionId, isVoice));
                 }
-                schedule.setListSessionInfo(listSessionInfo);
+
                 schedule.setListSessions(listSessions);
             }
         }

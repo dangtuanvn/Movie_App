@@ -75,17 +75,17 @@ import java.util.List;
  * Created by sinhhx on 11/7/16.
  */
 public class MovieTabFragment extends Fragment {
-    private enum TAB {
-        SHOWING,
-        UPCOMING,
-        CINEMA,
-        NEWS
+    private enum Tab {
+        Showing,
+        Upcoming,
+        Cinema,
+        News
     }
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private int mPage;
-    private TAB mTab;
+    private Tab mTab;
     public static final String ARG_PAGE = "ARG_PAGE";
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -113,7 +113,7 @@ public class MovieTabFragment extends Fragment {
         frameId = getArguments().getInt("frame_id");
         mPage = getArguments().getInt(ARG_PAGE);
         cinemaList = (List<Cinema>) getArguments().getSerializable("cinema_list");
-        mTab = TAB.values()[mPage];
+        mTab = Tab.values()[mPage];
     }
 
     @Override
@@ -126,7 +126,7 @@ public class MovieTabFragment extends Fragment {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             switch (mTab) {
-                case SHOWING:
+                case Showing:
                     view = inflateListView(inflater, container);
                     final MovieFeedDataStore movieShowingFDS = new MovieFeedDataStore(getContext(),
                             MovieFeedDataStore.DataType.SHOWING);
@@ -139,7 +139,7 @@ public class MovieTabFragment extends Fragment {
                     displayMovieList(movieShowingFDS);
                     break;
 
-                case UPCOMING:
+                case Upcoming:
                     view = inflateListView(inflater, container);
                     final MovieFeedDataStore movieUpcomingFDS = new MovieFeedDataStore(getContext(), MovieFeedDataStore.DataType.UPCOMING);
                     swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -150,14 +150,14 @@ public class MovieTabFragment extends Fragment {
                     displayMovieList(movieUpcomingFDS);
                     break;
 
-                case CINEMA:
+                case Cinema:
                     view = inflateMapView(inflater, container);
 
                     final CinemaFeedDataStore cinemaFDS = new CinemaFeedDataStore(getContext());
                     displayCinemaList(cinemaFDS, inflater);
                     break;
 
-                case NEWS:
+                case News:
                     view = inflateListView(inflater, container);
                     final NewsFeedDataStore newsFDS = new NewsFeedDataStore(getContext());
                     swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -439,8 +439,8 @@ public class MovieTabFragment extends Fragment {
             @Override
             public void onDataRetrievedListener(List<?> list, Exception ex) {
                 Log.i("CINEMA NAME", "" + ((Schedule) list.get(0)).getCinemaName());
-                Log.i("SESSION INFO", "" + ((Schedule) list.get(0)).getListSessionInfo().get(0));
-                Log.i("SESSION TIME", "" + ((Schedule) list.get(0)).getListSessions().get(0).get(0).getSessionTime());
+                Log.i("SESSION INFO", "" + ((Schedule) list.get(0)).getListSessions().get(0).getVersion());
+                Log.i("SESSION TIME", "" + ((Schedule) list.get(0)).getListSessions().get(0).getListTime().get(0).getSessionTime());
             }
         });
 
@@ -473,7 +473,7 @@ public class MovieTabFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mTab == TAB.CINEMA) {
+        if (mTab == Tab.Cinema) {
             FragmentManager fm = getChildFragmentManager();
             Fragment fragment = fm.findFragmentByTag("map_fragment");
             fm.beginTransaction()

@@ -25,6 +25,32 @@ public class Schedule implements Serializable {
         3: past time
     */
 
+    public enum VersionId {
+        UNKNOWN1,
+        iMax,
+        twoD,
+        threeD,
+        UNKNOWN2,
+        goldClass,
+        lAmour
+
+//        iMax(1),
+//        twoD(2),
+//        threeD(3),
+//        goldClass(5),
+//        lAmour(6);
+//
+//        private int number;
+//
+//        VersionId(int number) {
+//            this.number = number;
+//        }
+//
+//        public int getNumber() {
+//            return number;
+//        }
+    }
+
     private int pCinemaId;
     private String pCinemaName;
     private int cinemaId;
@@ -39,8 +65,7 @@ public class Schedule implements Serializable {
     private String cinemaLogo;
     private String lastSync;
     private boolean useVoucher;
-    private List<List<Session>> listSessions;
-    private List<String> listSessionInfo;
+    private List<Session> listSessions;
 
     public int getpCinemaId() {
         return pCinemaId;
@@ -154,19 +179,59 @@ public class Schedule implements Serializable {
         this.useVoucher = useVoucher;
     }
 
-    public List<List<Session>> getListSessions() {
+    public List<Session> getListSessions() {
         return listSessions;
     }
 
-    public void setListSessions(List<List<Session>> listSessions) {
+    public void setListSessions(List<Session> listSessions) {
         this.listSessions = listSessions;
     }
 
-    public List<String> getListSessionInfo() {
-        return listSessionInfo;
-    }
+    public static class Session{
+        private List<SessionTime> listTime;
+        private VersionId movieVersion;
+        private boolean isVoice;
+        public Session(List<SessionTime> listTime, VersionId movieVersion, boolean isVoice){
+            this.isVoice = isVoice;
+            this.listTime = listTime;
+            this.movieVersion = movieVersion;
+        }
 
-    public void setListSessionInfo(List<String> listSessionInfo) {
-        this.listSessionInfo = listSessionInfo;
+        public String getVersion(){
+            String version = null;
+            switch(movieVersion) {
+                case iMax:
+                    version = "IMAX";
+                    break;
+
+                case twoD:
+                    version = "2D";
+                    break;
+
+                case threeD:
+                    version = "3D";
+                    break;
+
+                case goldClass:
+                    version = "GOLD CLASS";
+                    break;
+
+                case lAmour:
+                    version = "L'AMOUR";
+                    break;
+            }
+
+            if(isVoice){
+                version += " LỒNG TIẾNG";
+            }
+            else{
+                version += " DIGITAL";
+            }
+            return version;
+        }
+
+        public List<SessionTime> getListTime(){
+            return listTime;
+        }
     }
 }
