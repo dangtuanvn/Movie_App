@@ -433,14 +433,13 @@ public class MovieTabFragment extends Fragment {
 //                Log.i("DIRECTOR NAME", "" + ((MovieDetail) list.get(0)).getDirectorName());
 //            }
 //        });
-
         FeedDataStore scheduleFDS = new ScheduleFeedDataStore(getContext(), "840", "2016-11-17");
         scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
             @Override
             public void onDataRetrievedListener(List<?> list, Exception ex) {
-                Log.i("CINEMA NAME", "" + ((Schedule) list.get(0)).getCinemaName());
-                Log.i("SESSION INFO", "" + ((Schedule) list.get(0)).getListSessions().get(0).getVersion());
-                Log.i("SESSION TIME", "" + ((Schedule) list.get(0)).getListSessions().get(0).getListTime().get(0).getSessionTime());
+                Log.i("CINEMA NAME", "" + ((Schedule) list.get(21)).getCinemaName());
+                Log.i("SESSION INFO", "" + ((Schedule) list.get(21)).getListSessions().get(1).getVersion());
+                Log.i("SESSION TIME", "" + ((Schedule) list.get(21)).getListSessions().get(1).getListTime().get(1).getSessionTime());
             }
         });
 
