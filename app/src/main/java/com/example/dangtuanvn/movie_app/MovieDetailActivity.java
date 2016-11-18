@@ -130,7 +130,7 @@ public class MovieDetailActivity extends AppCompatActivity implements ScheduleEx
             }
         });
 
-        FeedDataStore scheduleFDS = new ScheduleFeedDataStore(getApplicationContext(), 1070, "2016-11-18");
+        FeedDataStore scheduleFDS = new ScheduleFeedDataStore(getApplicationContext(), 840, "2016-11-18");
         scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
             @Override
             public void onDataRetrievedListener(List<?> list, Exception ex) {

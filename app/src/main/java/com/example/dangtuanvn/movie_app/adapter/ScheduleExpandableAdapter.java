@@ -126,7 +126,7 @@ public class ScheduleExpandableAdapter  extends ExpandableRecyclerAdapter<Schedu
 
         @Override
         public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
-            int left = parent.getPaddingLeft() + 190;
+            int left = parent.getPaddingLeft() + 195;
             int right = parent.getWidth() - parent.getPaddingRight() - 100;
 
             int childCount = parent.getChildCount();

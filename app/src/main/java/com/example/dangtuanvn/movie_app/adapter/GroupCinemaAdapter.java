@@ -47,6 +47,7 @@ public class GroupCinemaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View listView = inflater.inflate(R.layout.session_view_item, parent, false);
+
         return new ViewHolder(listView);
 
     }
@@ -74,6 +75,7 @@ public class GroupCinemaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         itemViewHolder.sessionGroupView.setAdapter(sessionAdapter);
         itemViewHolder.sessionGroupView.setLayoutManager(new GridLayoutManager(context, 4));
+
 //          viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View v) {
