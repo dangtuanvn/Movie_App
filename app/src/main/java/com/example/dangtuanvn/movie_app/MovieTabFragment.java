@@ -31,6 +31,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dangtuanvn.movie_app.adapter.CinemaDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
@@ -43,6 +44,7 @@ import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.ScheduleFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
+import com.example.dangtuanvn.movie_app.model.MovieDetail;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -165,7 +167,8 @@ public class MovieTabFragment extends Fragment {
                     view = inflateMapView(inflater, container);
 
                     final CinemaFeedDataStore cinemaFDS = new CinemaFeedDataStore(getContext());
-                    displayCinemaList(cinemaFDS, inflater);
+                    displayLocationSettingsRequest(getContext(), cinemaFDS, inflater);
+                  //  displayCinemaList(cinemaFDS, inflater);
                     break;
 
                 case News:
@@ -200,9 +203,39 @@ public class MovieTabFragment extends Fragment {
                 movieFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
-                        List<Movie> movieList = (List<Movie>) list;
+                        final List<Movie> movieList = (List<Movie>) list;
                         mAdapter = new MovieDetailAdapter(getContext(), movieList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
+                        final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+                            @Override
+                            public boolean onSingleTapUp(MotionEvent e) {
+                                return true;
+                            }
+                        });
+                        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+                            @Override
+                            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                                final View childView = rv.findChildViewUnder(e.getX(), e.getY());
+                                if (childView != null && mGestureDetector.onTouchEvent(e)) {
+                                    // Cancel getting data tasks
+
+                                    Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
+                                    intent.putExtra("movieId",movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
+                                    startActivity(intent);
+                                }
+                                return false;
+                            }
+
+                            @Override
+                            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+                            }
+
+                            @Override
+                            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+                            }
+                        });
                         swipeLayout.setRefreshing(false);
                     }
                 });
@@ -289,6 +322,7 @@ public class MovieTabFragment extends Fragment {
     }
 
     public MarkerOptions getCurrentPosition() {
+        Location location;
         LocationManager locationManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -296,21 +330,31 @@ public class MovieTabFragment extends Fragment {
             return null;
             // TODO: check return of request
         } else {
-            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);}
+        if(location==null){
+            return null;
+        }else {
             return new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()));
         }
+
     }
 
     public void loadMapData(final LayoutInflater inflater, final List<Cinema> cinemaList) {
+        if(getCurrentPosition()==null){
+            Toast.makeText(getActivity(), "Please enable location setting",
+                    Toast.LENGTH_LONG).show();
+        }else {
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 map = googleMap;
                 map.setInfoWindowAdapter(new MyInfoWindowAdapter(inflater));
 
-                MarkerOptions currentPosition = getCurrentPosition();
-                double latitude = currentPosition.getPosition().latitude;
-                double longitude = currentPosition.getPosition().longitude;
+                    MarkerOptions currentPosition = getCurrentPosition();
+
+                    double latitude = currentPosition.getPosition().latitude;
+                    double longitude = currentPosition.getPosition().longitude;
 
                 for (int i = 0; i < cinemaList.size(); i++) {
                     map.addMarker(new MarkerOptions()
@@ -352,7 +396,7 @@ public class MovieTabFragment extends Fragment {
                 addOnTouchMapItem(mRecyclerView, sortedCinemaList, currentPosition);
             }
         });
-    }
+    }}
 
     public void addOnTouchMapItem(final RecyclerView mRecyclerView, final List<Cinema> cinemaList, final MarkerOptions currentPosition) {
         final GestureDetector mGesture = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
@@ -684,7 +728,7 @@ public class MovieTabFragment extends Fragment {
     }
 
 
-    private void displayLocationSettingsRequest(Context context) {
+    private void displayLocationSettingsRequest(final Context context, final FeedDataStore cinemaFDS, final LayoutInflater inflater) {
 
         GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
                 .addApi(LocationServices.API).build();
@@ -699,12 +743,14 @@ public class MovieTabFragment extends Fragment {
         builder.setAlwaysShow(true);
 
         PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+
         result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
             @Override
             public void onResult(LocationSettingsResult result) {
                 final Status status = result.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
+                        displayCinemaList(cinemaFDS, inflater);
                         Log.i("satisfy", "All location settings are satisfied.");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
@@ -714,6 +760,7 @@ public class MovieTabFragment extends Fragment {
                             // Show the dialog by calling startResolutionForResult(), and check the result
                             // in onActivityResult().
                             status.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
+
                         } catch (IntentSender.SendIntentException e) {
                             Log.i("pending", "PendingIntent unable to execute request.");
                         }
