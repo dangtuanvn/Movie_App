@@ -168,6 +168,32 @@
             />
     </LinearLayout>
 
+    <HorizontalScrollView
+        android:id="@+id/hsv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:layout_below="@id/star"
+        android:measureAllChildren="false"
+        android:scrollbars="none" >
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+        <GridView
+            android:layout_width="500dp"
+            android:layout_height="400dp"
+            android:id="@+id/movie_schedule"
+            android:columnWidth="100dp"
+
+            android:numColumns="7"
+            android:horizontalSpacing="0dp"
+            android:scrollbars="horizontal"
+            ></GridView>
+        </LinearLayout>
+</HorizontalScrollView>
+
+
 
 
 </RelativeLayout>
