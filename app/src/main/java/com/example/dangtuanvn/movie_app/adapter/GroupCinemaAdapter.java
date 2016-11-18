@@ -2,7 +2,9 @@ package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -99,5 +101,7 @@ public class GroupCinemaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             sessionGroupView = (RecyclerView) itemView.findViewById(R.id.session_view);
         }
     }
+
+
 }
 

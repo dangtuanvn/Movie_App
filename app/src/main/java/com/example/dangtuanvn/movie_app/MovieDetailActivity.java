@@ -18,18 +18,15 @@ import android.widget.VideoView;
 import com.example.dangtuanvn.movie_app.adapter.ScheduleExpandableAdapter;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieDetailFeedDataStore;
+import com.example.dangtuanvn.movie_app.datastore.MovieTrailerFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.ScheduleFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.ScheduleCinemaGroupList;
 import com.example.dangtuanvn.movie_app.model.MovieDetail;
 import com.example.dangtuanvn.movie_app.model.MovieTrailer;
-import com.google.android.youtube.player.YouTubeBaseActivity;
-import com.google.android.youtube.player.YouTubeInitializationResult;
-import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerView;
+
 import com.example.dangtuanvn.movie_app.model.Schedule;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,21 +47,25 @@ public class MovieDetailActivity extends AppCompatActivity implements ScheduleEx
         //Creating MediaController
         final MediaController videoMediaController = new MediaController(this, false);
         videoMediaController.setVisibility(View.INVISIBLE);
-        int movieId = getIntent().getIntExtra("movieId",0);
+        int movieId = getIntent().getIntExtra("movieId", 0);
 
-        final VideoView video=(VideoView)findViewById(R.id.video_view);
-        FrameLayout videolayout =(FrameLayout) findViewById(R.id.video_layout);
+        final VideoView video = (VideoView) findViewById(R.id.video_view);
+        FrameLayout videolayout = (FrameLayout) findViewById(R.id.video_layout);
         final Button playbtn = (Button) findViewById(R.id.play_button);
         videoMediaController.setAnchorView(videolayout);
         videoMediaController.setMediaPlayer(video);
         video.setMediaController(videoMediaController);
-        FeedDataStore movieTrailerFDS = new MovieTrailerFeedDataStore(this,movieId);
+        FeedDataStore movieTrailerFDS = new MovieTrailerFeedDataStore(this, movieId);
         movieTrailerFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
             @Override
             public void onDataRetrievedListener(List<?> list, Exception ex) {
-            List<MovieTrailer> movieTrailer = (List<MovieTrailer>) list;
-                Uri uri=Uri.parse(movieTrailer.get(0).getV720p());
-                video.setVideoURI(uri);
+                List<MovieTrailer> movieTrailer = (List<MovieTrailer>) list;
+                try {
+                    Uri uri = Uri.parse(movieTrailer.get(0).getV720p());
+                    video.setVideoURI(uri);
+                } catch (NullPointerException e){
+                    // TODO: HANDLE NULL
+                }
             }
         });
         playbtn.setBackgroundResource(R.drawable.bt_play);
@@ -78,17 +79,15 @@ public class MovieDetailActivity extends AppCompatActivity implements ScheduleEx
         });
 
 
-
-
-        final TextView movieTitle = (TextView)findViewById(R.id.movie_title);
-        final TextView PG = (TextView)findViewById(R.id.PG);
-        final TextView IMDB = (TextView)findViewById(R.id.IMDB);
-        final TextView length = (TextView)findViewById(R.id.movie_duration);
-        final TextView date = (TextView)findViewById(R.id.date);
-        final TextView movieDescription = (TextView)findViewById(R.id.movie_description);
-        final TextView directorName = (TextView)findViewById(R.id.director_name);
-        final TextView writerName = (TextView)findViewById(R.id.writer_name);
-        final TextView starName = (TextView)findViewById(R.id.star_name);
+        final TextView movieTitle = (TextView) findViewById(R.id.movie_title);
+        final TextView PG = (TextView) findViewById(R.id.PG);
+        final TextView IMDB = (TextView) findViewById(R.id.IMDB);
+        final TextView length = (TextView) findViewById(R.id.movie_duration);
+        final TextView date = (TextView) findViewById(R.id.date);
+        final TextView movieDescription = (TextView) findViewById(R.id.movie_description);
+        final TextView directorName = (TextView) findViewById(R.id.director_name);
+        final TextView writerName = (TextView) findViewById(R.id.writer_name);
+        final TextView starName = (TextView) findViewById(R.id.star_name);
 
 
         IMDB.setCompoundDrawablesWithIntrinsicBounds(R.drawable.star_60, 0, 0, 0);
@@ -105,39 +104,40 @@ public class MovieDetailActivity extends AppCompatActivity implements ScheduleEx
                 IMDB.setText(detailList.get(0).getImdbPoint() + " IMDB");
                 length.setText(detailList.get(0).getDuration() + "");
                 date.setText(detailList.get(0).getPublishDate());
+
+                movieDescription.setText(" " + detailList.get(0).getDescriptionMobile());
+                directorName.setText(" " + detailList.get(0).getDirectorName());
+                String actor = "";
+                for (int i = 0; i < (detailList.get(0).getListActors().size()); i++) {
+                    actor = actor + detailList.get(0).getListActors().get(i) + " ";
+                }
+                starName.setText(" " + actor);
+
+
+                final Button more = (Button) findViewById(R.id.more);
+                more.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (movieDescription.getMaxLines() == 3) {
+                            movieDescription.setMaxLines(Integer.MAX_VALUE);
+                            more.setText("Less");
+                        } else {
+                            movieDescription.setMaxLines(3);
+                            more.setText("More");
+                        }
+                    }
+                });
             }
         });
-                movieDescription.setText(" "+detailList.get(0).getDescriptionMobile());
-                directorName.setText(" "+detailList.get(0).getDirectorName());
-                String actor="";
-                for(int i=0;i<(detailList.get(0).getListActors().size());i++){
-                actor = actor+ detailList.get(0).getListActors().get(i)+" ";
-                }
-                starName.setText(" "+actor);
 
-        FeedDataStore scheduleFDS = new ScheduleFeedDataStore(this, "840", "2016-11-18");
+        FeedDataStore scheduleFDS = new ScheduleFeedDataStore(getApplicationContext(), 1070, "2016-11-18");
         scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
             @Override
             public void onDataRetrievedListener(List<?> list, Exception ex) {
                 displayRecyclerExpandableList((List<Schedule>) list);
             }
         });
-        final Button more = (Button) findViewById(R.id.more);
-        more.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               if( movieDescription.getMaxLines()==3){
-                movieDescription.setMaxLines(Integer.MAX_VALUE);
-                   more.setText("Less");
-               }
-                else{
-                   movieDescription.setMaxLines(3);
-                   more.setText("More");
-               }
-            }
-        });
     }
-
 
     protected void displayRecyclerExpandableList(final List<Schedule> scheduleList) {
         RecyclerView expandableScheduleView = (RecyclerView) findViewById(R.id.all_schedule_view);
@@ -155,13 +155,13 @@ public class MovieDetailActivity extends AppCompatActivity implements ScheduleEx
         }
 
         List<ScheduleCinemaGroupList> groupList = new ArrayList<>();
-        for(int i = 0; i < cinemaGroupList.size(); i++) {
+        for (int i = 0; i < cinemaGroupList.size(); i++) {
             groupList.add(new ScheduleCinemaGroupList(cinemaGroupList.get(i)));
         }
 
 
-        for(Schedule schedule : scheduleList){
-            for(int i = 0; i < groupList.size(); i++) {
+        for (Schedule schedule : scheduleList) {
+            for (int i = 0; i < groupList.size(); i++) {
                 if (schedule.getpCinemaId() == groupList.get(i).getId()) {
                     groupList.get(i).addChildObjectList(schedule);
                     break;

@@ -1,6 +1,8 @@
 package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -48,7 +50,7 @@ public class ScheduleExpandableAdapter  extends ExpandableRecyclerAdapter<Schedu
     public GroupViewHolder onCreateParentViewHolder(ViewGroup parentViewGroup) {
 //        View view = inflater.inflate(R.layout.list_group, parentViewGroup, false);
 //        return new GroupViewHolder(view);
-        View view = inflater.inflate(R.layout.cinema_item, parentViewGroup, false);
+        View view = inflater.inflate(R.layout.group_cinema_item, parentViewGroup, false);
         return new GroupViewHolder(view);
     }
 
@@ -56,7 +58,7 @@ public class ScheduleExpandableAdapter  extends ExpandableRecyclerAdapter<Schedu
     public ChildViewHolder onCreateChildViewHolder(ViewGroup childViewGroup) {
 //        View view = inflater.inflate(R.layout.list_view_item, childViewGroup, false);
 //        return new GroupCinemaViewHolder(view);
-        View view = inflater.inflate(R.layout.group_cinema_item, childViewGroup, false);
+        View view = inflater.inflate(R.layout.cinema_item, childViewGroup, false);
         return new GroupCinemaViewHolder(view);
     }
 
@@ -95,6 +97,7 @@ public class ScheduleExpandableAdapter  extends ExpandableRecyclerAdapter<Schedu
             super(itemView);
             cinemaLocationNameText = (TextView) itemView.findViewById(R.id.cinema_location_name);
             cinemaGroupView = (RecyclerView) itemView.findViewById(R.id.group_cinema_view);
+            cinemaGroupView.addItemDecoration(new SimpleDividerItemDecoration(context));
         }
 
         private void bind(Schedule schedule){
@@ -112,6 +115,33 @@ public class ScheduleExpandableAdapter  extends ExpandableRecyclerAdapter<Schedu
 
     public interface OnItemClick {
         void onItemClick(View view, Object data, int position);
+    }
+
+    private class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
+        private Drawable mDivider;
+
+        private SimpleDividerItemDecoration(Context context) {
+            mDivider = context.getResources().getDrawable(R.drawable.session_divider);
+        }
+
+        @Override
+        public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+            int left = parent.getPaddingLeft() + 200;
+            int right = parent.getWidth() - parent.getPaddingRight() - 100;
+
+            int childCount = parent.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View child = parent.getChildAt(i);
+
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+
+                int top = child.getBottom() + params.bottomMargin - 10;
+                int bottom = top + mDivider.getIntrinsicHeight();
+
+                mDivider.setBounds(left, top, right, bottom);
+                mDivider.draw(c);
+            }
+        }
     }
 }
 

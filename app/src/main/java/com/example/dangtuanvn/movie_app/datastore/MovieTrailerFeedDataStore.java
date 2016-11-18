@@ -29,19 +29,23 @@ public class MovieTrailerFeedDataStore extends DataStore {
 
     @Override
     protected List<MovieTrailer> handleData(String response) {
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = (JsonObject) jsonParser.parse(response);
-        MovieTrailer movieTrailer;
-        Type type = new TypeToken<MovieTrailer>() {}.getType();
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(MovieTrailer.class, new MovieTrailerDeserializer());
-        Gson gson = gsonBuilder.create();
-        movieTrailer = gson.fromJson(jsonObject.get("result").getAsJsonObject(), type);
+        try {
+            JsonParser jsonParser = new JsonParser();
+            JsonObject jsonObject = (JsonObject) jsonParser.parse(response);
+            MovieTrailer movieTrailer;
+            Type type = new TypeToken<MovieTrailer>() {
+            }.getType();
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(MovieTrailer.class, new MovieTrailerDeserializer());
+            Gson gson = gsonBuilder.create();
+            movieTrailer = gson.fromJson(jsonObject.get("result").getAsJsonObject(), type);
 
-        return Collections.singletonList(movieTrailer);
-//        List<MovieTrailer> list = new ArrayList<>();
-//        list.add(movieTrailer);
-//        return Arrays.asList(movieTrailer);
+            return Collections.singletonList(movieTrailer);
+        }
+        catch (Exception e){
+            // TODO: HANDLE NULL
+            return null;
+        }
     }
 
     @Override
