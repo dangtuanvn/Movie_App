@@ -28,7 +28,7 @@ public class MovieDetailDeserializer extends EasyDeserializer<MovieDetail> {
             movieDetail.setFilmName(getStringValue(jsonObject.get("film_name"), null));
             movieDetail.setFilmNameEn(getStringValue(jsonObject.get("film_name_en"), null));
             movieDetail.setFilmNameVn(getStringValue(jsonObject.get("film_name_vn"), null));
-            movieDetail.setDuration(getIntValue(jsonObject.get("duration"), 0));
+            movieDetail.setDuration(getIntValue(jsonObject.get("film_duration"), 0));
             movieDetail.setDescriptionMobile(getStringValue(jsonObject.get("film_description_mobile"), null));
             movieDetail.setFilmUrl(getStringValue(jsonObject.get("film_url"), null));
             movieDetail.setFilmVersion(getStringValue(jsonObject.get("film_version"), null));

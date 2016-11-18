@@ -5,15 +5,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
+    android:background="@color/background"
     android:layout_height="match_parent">
 <FrameLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/videolayout">
+    android:id="@+id/video_layout">
     <VideoView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/videoView"
+        android:id="@+id/video_view"
         />
 
     <Button
@@ -28,7 +29,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/videolayout"
+        android:layout_below="@id/video_layout"
         android:id="@+id/movie_title"
         android:paddingLeft="8dp"
         android:textSize="20dp"
@@ -37,11 +38,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="5dp"
         android:paddingLeft="8dp"
         android:weightSum="8"
+        android:id="@+id/movie_detail_container"
         android:layout_below="@id/movie_title"
 
         >
@@ -54,9 +56,9 @@
             android:background="#616161"
             android:textColor="#E0E0E0"
             android:gravity="center"
-           android:layout_weight="1"
+            android:layout_weight="1"
             android:id="@+id/PG"
-            android:text="PG"/>
+            />
         <TextView
             android:layout_width="0dp"
             android:id="@+id/IMDB"
@@ -65,7 +67,7 @@
             android:textSize="12dp"
             android:layout_weight="2"
             android:layout_height="wrap_content"
-            android:text="IMDB"/>
+            />
         <TextView
             android:layout_width="0dp"
             android:id="@+id/movie_duration"
@@ -74,7 +76,7 @@
             android:layout_weight="2"
             android:textSize="12dp"
             android:layout_height="wrap_content"
-            android:text="length"/>
+            />
         <TextView
             android:layout_width="0dp"
             android:id="@+id/date"
@@ -83,8 +85,87 @@
             android:textSize="12dp"
             android:layout_weight="3"
             android:layout_height="wrap_content"
-            android:text="date"/>
+           />
 
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:layout_below="@id/movie_detail_container"
+        android:id="@+id/movie_description"
+        android:maxLines="3"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/more"
+        android:drawableEnd="@drawable/arrow_down"
+        android:layout_alignParentEnd="true"
+        android:paddingEnd="8dp"
+        android:textAllCaps="false"
+        android:background="@color/background"
+        android:layout_below="@+id/movie_description"
+        android:text="@string/more_btn"
+       />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/director"
+        android:paddingLeft="8dp"
+        android:layout_below="@id/more"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/director"
+            android:textColor="@color/colorNormalTab"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/director_name"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/writer"
+        android:paddingLeft="8dp"
+        android:layout_below="@id/director"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/writer"
+            android:textColor="@color/colorNormalTab"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/writer_name"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/star"
+        android:paddingLeft="8dp"
+        android:layout_below="@id/writer"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/star"
+            android:textColor="@color/colorNormalTab"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/star_name"
+            />
     </LinearLayout>
 
 
