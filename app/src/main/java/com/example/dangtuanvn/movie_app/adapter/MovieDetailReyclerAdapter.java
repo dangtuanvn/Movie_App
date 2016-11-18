@@ -4,8 +4,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,19 +25,25 @@ import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieTrailerFeedDataStore;
+import com.example.dangtuanvn.movie_app.datastore.ScheduleFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.MovieDetail;
 import com.example.dangtuanvn.movie_app.model.MovieTrailer;
+import com.example.dangtuanvn.movie_app.model.Schedule;
+import com.example.dangtuanvn.movie_app.model.ScheduleCinemaGroupList;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by sinhhx on 11/18/16.
  */
-public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailReyclerAdapter.ViewHolder>  {
+public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailReyclerAdapter.ViewHolder> implements ScheduleExpandableAdapter.OnItemClick{
 
     Context context;
     int movieId;
@@ -65,6 +73,7 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
         final TextView directorName ;
         final TextView writerName;
         final TextView starName ;
+        final RecyclerView allSchedule;
         final Button more;
         final GridView movieSchedule;
         public ViewHolder(View itemView) {
@@ -77,6 +86,7 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
             IMDB = (TextView)itemView.findViewById(R.id.IMDB);
             length = (TextView)itemView.findViewById(R.id.movie_duration);
             date = (TextView)itemView.findViewById(R.id.date);
+            allSchedule=(RecyclerView) itemView.findViewById(R.id.all_schedule_view);
             movieDescription = (TextView)itemView.findViewById(R.id.movie_description);
             directorName = (TextView)itemView.findViewById(R.id.director_name);
             writerName = (TextView)itemView.findViewById(R.id.writer_name);
@@ -103,100 +113,119 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-    if(position==0){
-        final MediaController videoMediaController = new MediaController(context,false);
-        videoMediaController.setAnchorView(holder.videolayout);
-       videoMediaController.setMediaPlayer(holder.video);
-      holder.video.setMediaController(videoMediaController);
-       final FeedDataStore movieTrailerFDS = new MovieTrailerFeedDataStore(context,movieId);
-       movieTrailerFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
-            @Override
-            public void onDataRetrievedListener(List<?> list, Exception ex) {
-           List<MovieTrailer> movieTrailer = (List<MovieTrailer>) list;
-               Uri uri= Uri.parse(movieTrailer.get(0).getV720p());
-                holder.video.setVideoURI(uri);
+        if (position == 0) {
+            final MediaController videoMediaController = new MediaController(context, false);
+            videoMediaController.setAnchorView(holder.videolayout);
+            videoMediaController.setMediaPlayer(holder.video);
+            holder.video.setMediaController(videoMediaController);
+            final FeedDataStore movieTrailerFDS = new MovieTrailerFeedDataStore(context, movieId);
+            movieTrailerFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+                @Override
+                public void onDataRetrievedListener(List<?> list, Exception ex) {
+                    List<MovieTrailer> movieTrailer = (List<MovieTrailer>) list;
+                    if(movieTrailer.get(0).getV720p()!=null) {
+                        Uri uri = Uri.parse(movieTrailer.get(0).getV720p());
+                        holder.video.setVideoURI(uri);
+                    }
+                }
+            });
+            holder.playbtn.setBackgroundResource(R.drawable.bt_play);
+            holder.playbtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    holder.video.start();
+                    videoMediaController.setVisibility(View.VISIBLE);
+                    holder.playbtn.setVisibility(View.GONE);
+                }
+            });
 
-            }
-       });
-        holder.playbtn.setBackgroundResource(R.drawable.bt_play);
-        holder.playbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                holder.video.start();
-                videoMediaController.setVisibility(View.VISIBLE);
-                holder.playbtn.setVisibility(View.GONE);
-            }
-        });
-
-    }
-
-
-        if(position==1){
-            holder.IMDB.setCompoundDrawablesWithIntrinsicBounds(R.drawable.star_60, 0, 0, 0);
-            holder.length.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_clock, 0, 0, 0);
-            holder. date.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_calendar_white, 0, 0, 0);
-
-        FeedDataStore movieDetailFDS = new MovieDetailFeedDataStore(context, movieId);
-        movieDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
-            @Override
-            public void onDataRetrievedListener(List<?> list, Exception ex) {
-            List<MovieDetail> detailList = (List<MovieDetail>) list;
-                holder.movieTitle.setText(detailList.get(0).getFilmName());
-                holder.PG.setText(detailList.get(0).getPgRating());
-                holder.IMDB.setText(detailList.get(0).getImdbPoint()+" IMDB");
-                holder.length.setText(detailList.get(0).getDuration()+"");
-                holder.date.setText(detailList.get(0).getPublishDate());
-            }
-        });
         }
 
-        if(position==2){
+
+        if (position == 1) {
+            holder.IMDB.setCompoundDrawablesWithIntrinsicBounds(R.drawable.star_60, 0, 0, 0);
+            holder.length.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_clock, 0, 0, 0);
+            holder.date.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_calendar_white, 0, 0, 0);
+
             FeedDataStore movieDetailFDS = new MovieDetailFeedDataStore(context, movieId);
             movieDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
                 @Override
                 public void onDataRetrievedListener(List<?> list, Exception ex) {
                     List<MovieDetail> detailList = (List<MovieDetail>) list;
-                    holder.movieDescription.setText(" "+detailList.get(0).getDescriptionMobile());
-                    holder.directorName.setText(" "+detailList.get(0).getDirectorName());
-                    String actor="";
-                    for(int i=0;i<(detailList.get(0).getListActors().size());i++){
-                    actor = actor+ detailList.get(0).getListActors().get(i)+" ";
+                    holder.movieTitle.setText(detailList.get(0).getFilmName());
+                    holder.PG.setText(detailList.get(0).getPgRating());
+                    holder.IMDB.setText(detailList.get(0).getImdbPoint() + " IMDB");
+                    holder.length.setText(detailList.get(0).getDuration() + "");
+                    holder.date.setText(detailList.get(0).getPublishDate());
+                }
+            });
+        }
+
+        if (position == 2) {
+            FeedDataStore movieDetailFDS = new MovieDetailFeedDataStore(context, movieId);
+            movieDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+                @Override
+                public void onDataRetrievedListener(List<?> list, Exception ex) {
+                    List<MovieDetail> detailList = (List<MovieDetail>) list;
+                    holder.movieDescription.setText(" " + detailList.get(0).getDescriptionMobile());
+                    holder.directorName.setText(" " + detailList.get(0).getDirectorName());
+                    String actor = "";
+                    for (int i = 0; i < (detailList.get(0).getListActors().size()); i++) {
+                        actor = actor + detailList.get(0).getListActors().get(i) + " ";
                     }
-                    holder.starName.setText(" "+actor);
+                    holder.starName.setText(" " + actor);
                 }
             });
 
             holder.more.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               if( holder.movieDescription.getMaxLines()==3){
-                   holder.movieDescription.setMaxLines(Integer.MAX_VALUE);
-                   holder.more.setText("Less");
-               }
-                else{
-                   holder.movieDescription.setMaxLines(3);
-                   holder.more.setText("More");
-               }
-            }
-        });
+                @Override
+                public void onClick(View view) {
+                    if (holder.movieDescription.getMaxLines() == 3) {
+                        holder.movieDescription.setMaxLines(Integer.MAX_VALUE);
+                        holder.more.setText("Less");
+                    } else {
+                        holder.movieDescription.setMaxLines(3);
+                        holder.more.setText("More");
+                    }
+                }
+            });
         }
-        if(position==3){
-            Calendar c = Calendar.getInstance();
+        if (position == 3) {
+            final Calendar c = Calendar.getInstance();
+            final Calendar dateTime =Calendar.getInstance();
+            MovieScheduleAdapter movieScheduleAdapter = new MovieScheduleAdapter(context, c);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            final ArrayList<String> dateList = new ArrayList<String>();
+           for(int i=0;i<7;i++){
 
-            MovieScheduleAdapter movieScheduleAdapter= new MovieScheduleAdapter(context,c);
-        holder.movieSchedule.setAdapter(movieScheduleAdapter);
-        holder.movieSchedule.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-            adapterView.setSelection(position);
-            }
+               if(i>0) {
+                   dateTime.add(dateTime.DATE, 1);
+               }
+               dateList.add(i,df.format(dateTime.getTime()));
+           }
 
-        });
+
+            holder.movieSchedule.setAdapter(movieScheduleAdapter);
+            holder.movieSchedule.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+
+
+                    FeedDataStore scheduleFDS = new ScheduleFeedDataStore(context, movieId, dateList.get(position));
+                    scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+                        @Override
+                        public void onDataRetrievedListener(List<?> list, Exception ex) {
+                            displayRecyclerExpandableList((List<Schedule>) list,holder);
+                        }
+                    });
+                }
+
+
+            });
+
         }
+
     }
-
-
-
 
     @Override
     public int getItemCount() {
@@ -204,6 +233,46 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
     }
 
 
+    protected void displayRecyclerExpandableList(final List<Schedule> scheduleList, ViewHolder holder) {
+
+        List<Integer> cinemaGroupList = new ArrayList<>();
+        for (int i = 0; i < scheduleList.size(); i++) {
+            cinemaGroupList.add(scheduleList.get(i).getpCinemaId());
+        }
+
+        Set<Integer> filterSet = new LinkedHashSet<>(cinemaGroupList);
+        cinemaGroupList = new ArrayList<>(filterSet);
+
+        for (int i = 0; i < cinemaGroupList.size(); i++) {
+            Log.i("CINEMA GROUP NAME", "" + cinemaGroupList.get(i));
+        }
+
+        List<ScheduleCinemaGroupList> groupList = new ArrayList<>();
+        for (int i = 0; i < cinemaGroupList.size(); i++) {
+            groupList.add(new ScheduleCinemaGroupList(cinemaGroupList.get(i)));
+        }
+
+
+        for (Schedule schedule : scheduleList) {
+            for (int i = 0; i < groupList.size(); i++) {
+                if (schedule.getpCinemaId() == groupList.get(i).getId()) {
+                    groupList.get(i).addChildObjectList(schedule);
+                    break;
+                }
+            }
+        }
+
+        ScheduleExpandableAdapter recyclerExpandableView = new ScheduleExpandableAdapter(context, groupList);
+        recyclerExpandableView.setOnItemClick(this);
+       holder.allSchedule.setAdapter(recyclerExpandableView);
+        holder.allSchedule.setLayoutManager(new LinearLayoutManager(context));
+    }
+
+    @Override
+    public void onItemClick(View view, Object data, int position) {
+        Log.i("ITEM CLICK", "" + position);
+    }
+}
 
 
 
@@ -243,4 +312,4 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
 
 
 
-}
+

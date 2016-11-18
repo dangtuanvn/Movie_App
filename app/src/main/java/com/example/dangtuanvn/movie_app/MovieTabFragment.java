@@ -41,10 +41,8 @@ import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
-import com.example.dangtuanvn.movie_app.datastore.ScheduleFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
-import com.example.dangtuanvn.movie_app.model.MovieDetail;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -56,7 +54,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.example.dangtuanvn.movie_app.model.Schedule;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -439,7 +436,7 @@ public class MovieTabFragment extends Fragment {
             public boolean onMarkerClick(Marker marker) {
                 if(marker.getPosition() == currentPosition.getPosition()){
                     marker.hideInfoWindow();
-                    return true;
+                    return false;
                 } else{
                     String url = getDirectionsUrl(currentPosition.getPosition(), marker.getPosition());
 
@@ -480,25 +477,6 @@ public class MovieTabFragment extends Fragment {
     }
 
     public void displayNewsDetail(RecyclerView rv, View childView, List<News> newsList) {
-//        FeedDataStore movieDetailFDS = new MovieDetailFeedDataStore(getContext(), 1165);
-//        movieDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
-//            @Override
-//            public void onDataRetrievedListener(List<?> list, Exception ex) {
-//                Log.i("ACTOR NAME", "" + ((MovieDetail) list.get(0)).getListActors().get(0));
-//                Log.i("DIRECTOR NAME", "" + ((MovieDetail) list.get(0)).getDirectorName());
-//            }
-//        });
-
-        FeedDataStore scheduleFDS = new ScheduleFeedDataStore(getContext(), "840", "2016-11-17");
-        scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
-            @Override
-            public void onDataRetrievedListener(List<?> list, Exception ex) {
-                Log.i("CINEMA NAME", "" + ((Schedule) list.get(0)).getCinemaName());
-                Log.i("SESSION INFO", "" + ((Schedule) list.get(0)).getListSessions().get(0).getVersion());
-                Log.i("SESSION TIME", "" + ((Schedule) list.get(0)).getListSessions().get(0).getListTime().get(0).getSessionTime());
-            }
-        });
-
         FeedDataStore newsDetailFDS = new NewsDetailFeedDataStore(getContext(), newsList.get(rv.getChildAdapterPosition(childView)).getNewsId());
         newsDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
             @Override
@@ -808,7 +786,7 @@ public class MovieTabFragment extends Fragment {
             myContentsView.setBackgroundColor(Color.BLACK);
             LinearLayout distanceLinear = (LinearLayout) myContentsView.findViewById(R.id.lineardistance);
             distanceLinear.setVisibility(View.GONE);
-            ImageView cinemaIcon = (ImageView) myContentsView.findViewById(R.id.locationicon);
+            ImageView cinemaIcon = (ImageView) myContentsView.findViewById(R.id.location_icon);
             cinemaIcon.getPaddingLeft();
             cinemaIcon.setImageResource(R.drawable.cinema_holder);
             TextView tvTitle = ((TextView) myContentsView.findViewById(R.id.cinema_name));

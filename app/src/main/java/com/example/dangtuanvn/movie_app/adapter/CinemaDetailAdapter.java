@@ -29,13 +29,13 @@ public class CinemaDetailAdapter extends DetailAdapter {
         private ImageView cinemaIcon;
         private TextView cinemaName;
         private TextView cinemaAddress;
-        private TextView distance;
+        private TextView distanceText;
         private ViewHolder(View itemView) {
             super(itemView);
-            cinemaIcon = (ImageView) itemView.findViewById(R.id.locationicon);
+            cinemaIcon = (ImageView) itemView.findViewById(R.id.location_icon);
             cinemaName = (TextView) itemView.findViewById(R.id.cinema_name);
             cinemaAddress = (TextView) itemView.findViewById(R.id.address);
-            distance = (TextView) itemView.findViewById(R.id.distance);
+            distanceText = (TextView) itemView.findViewById(R.id.distance);
         }
     }
 
@@ -51,6 +51,12 @@ public class CinemaDetailAdapter extends DetailAdapter {
         cinemaHolder.cinemaIcon.setImageResource(R.drawable.cinema_holder);
         cinemaHolder.cinemaName.setText(cinemaList.get(position).getCinemaName());
         cinemaHolder.cinemaAddress.setText(cinemaList.get(position).getCinemaAddress());
-        cinemaHolder.distance.setText(String.format("%.2f", cinemaList.get(position).getDistance()));
+        double distance = cinemaList.get(position).getDistance();
+        if(distance < 100) {
+            cinemaHolder.distanceText.setText(String.format("%.2f", distance));
+        }
+        else{
+            cinemaHolder.distanceText.setText(">100");
+        }
     }
 }

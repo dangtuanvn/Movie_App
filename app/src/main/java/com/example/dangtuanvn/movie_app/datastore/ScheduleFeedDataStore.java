@@ -19,10 +19,10 @@ import java.util.List;
 
 public class ScheduleFeedDataStore extends DataStore {
     private String url = BASEURL + "session/cinema";
-    private String movieId;
+    private int movieId;
     private String date;
 
-    public ScheduleFeedDataStore(Context context, String movieId, String date) {
+    public ScheduleFeedDataStore(Context context, int movieId, String date) {
         super(context);
         this.movieId = movieId;
         this.date = date;
