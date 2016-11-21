@@ -2,8 +2,6 @@ package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.style.BackgroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -109,7 +107,6 @@ public class SessionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemViewType (int position) {
         if(isOvertime (position)) {
-            Log.i("OVERTIME", "overtime");
             return TYPE_OVERTIME;
         }
         return TYPE_ITEM;

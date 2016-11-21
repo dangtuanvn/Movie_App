@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -222,7 +223,7 @@ public class MovieTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         List<News> newsList = (List<News>) list;
-                        mAdapter = new NewsDetailAdapter(getContext(), newsList, mPage);
+                        mAdapter = new NewsDetailAdapter(getContext(), newsList);
                         mRecyclerView.setAdapter((mAdapter));
                         if (addTouch) {
                             addOnTouchNewsItem(mRecyclerView, newsList);
@@ -248,8 +249,7 @@ public class MovieTabFragment extends Fragment {
                 final View childView = rv.findChildViewUnder(e.getX(), e.getY());
                 if (childView != null && mGestureDetector.onTouchEvent(e)) {
                     // Cancel getting data tasks
-                    handlerFDS.removeCallbacksAndMessages(null);
-                    swipeLayout.setRefreshing(false);
+                    stopGetData();
                     displayNewsDetail(rv, childView, newsList);
                 }
                 return false;
@@ -273,17 +273,37 @@ public class MovieTabFragment extends Fragment {
                 return true;
             }
         });
+
         mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
             public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
                 final View childView = rv.findChildViewUnder(e.getX(), e.getY());
                 if (childView != null && mGestureDetector.onTouchEvent(e)) {
                     // Cancel getting data tasks
+                    stopGetData();
 
-                    Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
-                    intent.putExtra("movieId",movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
-                    intent.putExtra("posterUrl",movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
-                    startActivity(intent);
+                    MovieDetailFragment movieDetailFragment = new MovieDetailFragment();
+                    Bundle args = new Bundle();
+                    args.putInt("movieId", movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
+                    args.putString("posterUrl", movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
+
+
+                    movieDetailFragment.setArguments(args);
+
+                    // Create new fragment and transaction
+                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+// Replace whatever is in the fragment_container view with this fragment,
+// and add the transaction to the back stack if needed
+                    transaction.replace(R.id.main_fragment, movieDetailFragment, "detail_fragment");
+                    transaction.addToBackStack(null);
+
+// Commit the transaction
+                    transaction.commit();
+//                    Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
+//                    intent.putExtra("movieId",movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
+//                    intent.putExtra("posterUrl",movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
+//                    startActivity(intent);
                 }
                 return false;
             }
@@ -475,7 +495,7 @@ public class MovieTabFragment extends Fragment {
 
     public View inflateMapView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.google_map, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view2);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.map_fragment);
@@ -712,7 +732,6 @@ public class MovieTabFragment extends Fragment {
         }
         return data;
     }
-
 
     private void displayLocationSettingsRequest(final Context context, final FeedDataStore cinemaFDS, final LayoutInflater inflater) {
 

@@ -84,7 +84,7 @@ public class ScheduleExpandableAdapter  extends ExpandableRecyclerAdapter<Schedu
         }
 
         private void bind(ScheduleCinemaGroupList group){
-            groupTitleText.setText(group.getTitle() + " (" + group.getChildItemList().size() + ")");
+            groupTitleText.setText(group.getCinemaName() + " (" + group.getChildItemList().size() + ")");
             groupTitleText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.cinema_holder,0,0,0);
         }
     }

@@ -11,12 +11,13 @@ import java.util.List;
 
 public class ScheduleCinemaGroupList implements ParentListItem {
     private List<Schedule> mChildrenList;
+    private String cinemaName;
+    private int cinemaId;
 
-    private int id;
-
-    public ScheduleCinemaGroupList(int id) {
-        this.id = id;
-        mChildrenList = new ArrayList<Schedule>();
+    public ScheduleCinemaGroupList(int cinemaId, String cinemaName) {
+        this.cinemaId = cinemaId;
+        this.cinemaName = cinemaName;
+        mChildrenList = new ArrayList<>();
     }
     @Override
     public List<Schedule> getChildItemList() {
@@ -28,37 +29,39 @@ public class ScheduleCinemaGroupList implements ParentListItem {
         return false;
     }
 
-    public String getTitle() {
-        switch (id) {
-            case 1:
-                return "Lotte Cinema";
-
-            case 2:
-                return "Galaxy Cinema";
-
-            case 3:
-                return "CGV Cinemas";
-
-            case 4:
-                return "BHD Star Cineplex";
-
-            case 13:
-                return "Cụm rạp khác";
-
-            case 16:
-                return "CineStar";
-
-            case 17:
-                return "Mega GS";
-
-            default:
-                return null;
-        }
-    }
+//    public String getTitle() {
+//        switch (cinemaId) {
+//            case 1:
+//                return "Lotte Cinema";
+//
+//            case 2:
+//                return "Galaxy Cinema";
+//
+//            case 3:
+//                return "CGV Cinemas";
+//
+//            case 4:
+//                return "BHD Star Cineplex";
+//
+//            case 13:
+//                return "Cụm rạp khác";
+//
+//            case 16:
+//                return "CineStar";
+//
+//            case 17:
+//                return "Mega GS";
+//
+//            default:
+//                return null;
+//        }
+//    }
 
     public void addChildObjectList(Schedule post) {
         mChildrenList.add(post);
     }
 
-    public int getId() { return id; }
+    public int getCinemaId() { return cinemaId; }
+
+    public String getCinemaName() { return cinemaName; }
 }

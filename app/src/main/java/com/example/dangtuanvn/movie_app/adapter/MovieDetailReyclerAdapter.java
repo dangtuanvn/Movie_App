@@ -169,7 +169,7 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
                         Uri uri = Uri.parse(movieTrailer.get(0).getV720p());
                         holder.video.setVideoURI(uri);}
                     catch (NullPointerException e){
-                    //TODO fix url null
+                    // TODO fix url null
                     }
                 }
             });
@@ -288,29 +288,33 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
     }
 
 
-    protected void displayRecyclerExpandableList(final List<Schedule> scheduleList, ViewHolder holder) {
-
-        List<Integer> cinemaGroupList = new ArrayList<>();
+    private void displayRecyclerExpandableList(final List<Schedule> scheduleList, ViewHolder holder) {
+        // TODO: Simplify this process
+        List<Integer> cinemaGroupListID = new ArrayList<>();
+        List<String> cinemaGroupListName = new ArrayList<>();
         for (int i = 0; i < scheduleList.size(); i++) {
-            cinemaGroupList.add(scheduleList.get(i).getpCinemaId());
+            cinemaGroupListID.add(scheduleList.get(i).getpCinemaId());
+            cinemaGroupListName.add(scheduleList.get(i).getpCinemaName());
         }
 
-        Set<Integer> filterSet = new LinkedHashSet<>(cinemaGroupList);
-        cinemaGroupList = new ArrayList<>(filterSet);
+        Set<Integer> filterSetId = new LinkedHashSet<>(cinemaGroupListID);
+        cinemaGroupListID = new ArrayList<>(filterSetId);
 
-        for (int i = 0; i < cinemaGroupList.size(); i++) {
-            Log.i("CINEMA GROUP NAME", "" + cinemaGroupList.get(i));
-        }
+        Set<String> filterSetName = new LinkedHashSet<>(cinemaGroupListName);
+        cinemaGroupListName = new ArrayList<>(filterSetName);
+
+//        for (int i = 0; i < cinemaGroupList.size(); i++) {
+//            Log.i("CINEMA GROUP NAME", "" + cinemaGroupList.get(i));
+//        }
 
         List<ScheduleCinemaGroupList> groupList = new ArrayList<>();
-        for (int i = 0; i < cinemaGroupList.size(); i++) {
-            groupList.add(new ScheduleCinemaGroupList(cinemaGroupList.get(i)));
+        for (int i = 0; i < cinemaGroupListID.size(); i++) {
+            groupList.add(new ScheduleCinemaGroupList(cinemaGroupListID.get(i), cinemaGroupListName.get(i)));
         }
-
 
         for (Schedule schedule : scheduleList) {
             for (int i = 0; i < groupList.size(); i++) {
-                if (schedule.getpCinemaId() == groupList.get(i).getId()) {
+                if (schedule.getpCinemaId() == groupList.get(i).getCinemaId()) {
                     groupList.get(i).addChildObjectList(schedule);
                     break;
                 }
