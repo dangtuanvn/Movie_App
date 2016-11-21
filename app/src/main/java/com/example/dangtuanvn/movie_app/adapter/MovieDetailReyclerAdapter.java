@@ -3,6 +3,8 @@ package com.example.dangtuanvn.movie_app.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,6 +33,7 @@ import com.example.dangtuanvn.movie_app.model.MovieTrailer;
 import com.example.dangtuanvn.movie_app.model.Schedule;
 import com.example.dangtuanvn.movie_app.model.ScheduleCinemaGroupList;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.squareup.picasso.Transformation;
 
 import java.text.SimpleDateFormat;
@@ -48,10 +51,12 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
     Context context;
     int movieId;
      Calendar dateTime =Calendar.getInstance();
+    String posterUrl;
     ArrayList<String> dateList = new ArrayList<String>();
     ArrayList<String> displayDate = new ArrayList<String>();
     ArrayList<String> timeList = new ArrayList<String>();
-    public MovieDetailReyclerAdapter(Context context, int movieId){
+    public MovieDetailReyclerAdapter(Context context, int movieId, String posterUrl){
+        this.posterUrl =posterUrl;
         this.movieId = movieId;
         this.context =context;
 
@@ -115,6 +120,7 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
         return vh;
     }
 
+
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         if (position == 0) {
@@ -122,13 +128,44 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
             videoMediaController.setAnchorView(holder.videolayout);
             videoMediaController.setMediaPlayer(holder.video);
             holder.video.setMediaController(videoMediaController);
+
             final FeedDataStore movieTrailerFDS = new MovieTrailerFeedDataStore(context, movieId);
+            Target mTarget;
+
+            mTarget = new Target() {
+                    @Override
+                    public void onBitmapLoaded (final Bitmap bitmap, Picasso.LoadedFrom from){
+                        DisplayMetrics metrics = new DisplayMetrics();
+                        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+                        wm.getDefaultDisplay().getMetrics(metrics);
+                        int targetWidth = metrics.widthPixels ;
+                        double aspectRatio = (double) bitmap.getHeight() / (double) bitmap.getWidth();
+                        int targetHeight = (int) (targetWidth * aspectRatio);
+                        Bitmap result = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, false);
+                        BitmapDrawable ob = new BitmapDrawable(context.getResources(), result);
+                        holder.video.setBackground(ob);
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                };
+
+                Picasso.with(context)
+                        .load(posterUrl)
+                        .into(mTarget);
+
             movieTrailerFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
                 @Override
                 public void onDataRetrievedListener(List<?> list, Exception ex) {
                     List<MovieTrailer> movieTrailer = (List<MovieTrailer>) list;
                     try{
-
                         Uri uri = Uri.parse(movieTrailer.get(0).getV720p());
                         holder.video.setVideoURI(uri);}
                     catch (NullPointerException e){
@@ -136,10 +173,13 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
                     }
                 }
             });
-            holder.playbtn.setBackgroundResource(R.drawable.bt_play);
+
+
+            holder.playbtn.setBackgroundResource(R.drawable.bt_play3);
             holder.playbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    holder.video.setBackgroundResource(0);
                     holder.video.start();
                     videoMediaController.setVisibility(View.VISIBLE);
                     holder.playbtn.setVisibility(View.GONE);
@@ -287,6 +327,8 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
     public void onItemClick(View view, Object data, int position) {
         Log.i("ITEM CLICK", "" + position);
     }
+
+
 }
 
 

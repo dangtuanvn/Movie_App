@@ -143,10 +143,10 @@ public class MovieTabFragment extends Fragment {
                     swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                         @Override
                         public void onRefresh() {
-                            displayMovieList(movieShowingFDS);
+                            displayMovieList(movieShowingFDS,false);
                         }
                     });
-                    displayMovieList(movieShowingFDS);
+                    displayMovieList(movieShowingFDS,true);
                     break;
 
                 case Upcoming:
@@ -154,10 +154,10 @@ public class MovieTabFragment extends Fragment {
                     final MovieFeedDataStore movieUpcomingFDS = new MovieFeedDataStore(getContext(), MovieFeedDataStore.DataType.UPCOMING);
                     swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                         public void onRefresh() {
-                            displayMovieList(movieUpcomingFDS);
+                            displayMovieList(movieUpcomingFDS,false);
                         }
                     });
-                    displayMovieList(movieUpcomingFDS);
+                    displayMovieList(movieUpcomingFDS,true);
                     break;
 
                 case Cinema:
@@ -189,7 +189,7 @@ public class MovieTabFragment extends Fragment {
         return view;
     }
 
-    public void displayMovieList(final MovieFeedDataStore movieFDS) {
+    public void displayMovieList(final MovieFeedDataStore movieFDS,final boolean addTouch) {
 //        Code to get handler of current Activity
 //        Handler handler = getActivity().getWindow().getDecorView().getHandler();
 //        (new Handler()).post(new Runnable() {
@@ -203,36 +203,9 @@ public class MovieTabFragment extends Fragment {
                         final List<Movie> movieList = (List<Movie>) list;
                         mAdapter = new MovieDetailAdapter(getContext(), movieList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
-                        final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
-                            @Override
-                            public boolean onSingleTapUp(MotionEvent e) {
-                                return true;
-                            }
-                        });
-                        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-                            @Override
-                            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                                final View childView = rv.findChildViewUnder(e.getX(), e.getY());
-                                if (childView != null && mGestureDetector.onTouchEvent(e)) {
-                                    // Cancel getting data tasks
-
-                                    Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
-                                    intent.putExtra("movieId",movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
-                                    startActivity(intent);
-                                }
-                                return false;
-                            }
-
-                            @Override
-                            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-                            }
-
-                            @Override
-                            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-                            }
-                        });
+                        if (addTouch) {
+                            addOnMovieTouch(movieList);
+                        }
                         swipeLayout.setRefreshing(false);
                     }
                 });
@@ -291,6 +264,40 @@ public class MovieTabFragment extends Fragment {
             }
         });
         swipeLayout.setRefreshing(false);
+    }
+
+    public void addOnMovieTouch(final List<Movie> movieList){
+        final GestureDetector mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return true;
+            }
+        });
+        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                final View childView = rv.findChildViewUnder(e.getX(), e.getY());
+                if (childView != null && mGestureDetector.onTouchEvent(e)) {
+                    // Cancel getting data tasks
+
+                    Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
+                    intent.putExtra("movieId",movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
+                    intent.putExtra("posterUrl",movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
+                    startActivity(intent);
+                }
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+            }
+        });
     }
 
     public void displayCinemaList(FeedDataStore cinemaFDS, final LayoutInflater inflater) {

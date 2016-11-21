@@ -52,8 +52,9 @@ public class MovieDetailActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_detail_recycler);
         int movieId = getIntent().getIntExtra("movieId",0);
+        String posterUrl = getIntent().getStringExtra("posterUrl");
         RecyclerView movieDetail = (RecyclerView) findViewById(R.id.movie_detail_recycler);
-        MovieDetailReyclerAdapter adapter = new MovieDetailReyclerAdapter(this,movieId);
+        MovieDetailReyclerAdapter adapter = new MovieDetailReyclerAdapter(this,movieId,posterUrl);
         movieDetail.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         movieDetail.setLayoutManager(layoutManager);
