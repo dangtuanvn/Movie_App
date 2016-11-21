@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/movie_schedule"
         android:columnWidth="100dp"
-
+        android:listSelector="@drawable/back_schedule"
         android:numColumns="7"
         android:horizontalSpacing="0dp"
         android:scrollbars="horizontal"

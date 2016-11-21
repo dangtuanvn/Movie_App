@@ -76,4 +76,5 @@ public class MovieScheduleAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
+
 }
