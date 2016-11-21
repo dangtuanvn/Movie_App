@@ -2,6 +2,8 @@ package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.style.BackgroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,8 @@ import java.util.List;
  */
 
 public class SessionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int TYPE_ITEM = 1;
+    private static final int TYPE_OVERTIME = 2;
     private List<SessionTime> listSessionTime;
     private Context context;
 
@@ -37,11 +41,16 @@ public class SessionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
 
-        LayoutInflater inflater = LayoutInflater.from(context);
-
-        View listView = inflater.inflate(R.layout.grid_session_time, parent, false);
-        return new ViewHolder(listView);
-
+        if(viewType == TYPE_OVERTIME){
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View listView = inflater.inflate(R.layout.grid_session_time_overtime, parent, false);
+            return new ViewHolder(listView);
+        }
+        else {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View listView = inflater.inflate(R.layout.grid_session_time, parent, false);
+            return new ViewHolder(listView);
+        }
     }
 
     @Override
@@ -60,7 +69,6 @@ public class SessionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         SessionTime sessionTime = listSessionTime.get(position);
         SessionAdapter.ViewHolder itemViewHolder = (SessionAdapter.ViewHolder) viewHolder;
 
-
         try {
             String sessionTimeString = sessionTime.getSessionTime();
             DateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -71,7 +79,6 @@ public class SessionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
 
 //          viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
 //                @Override
@@ -97,6 +104,19 @@ public class SessionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             super(itemView);
             sessionTimeText = (TextView) itemView.findViewById(R.id.session_time);
         }
+    }
+
+    @Override
+    public int getItemViewType (int position) {
+        if(isOvertime (position)) {
+            Log.i("OVERTIME", "overtime");
+            return TYPE_OVERTIME;
+        }
+        return TYPE_ITEM;
+    }
+
+    private boolean isOvertime(int position) {
+        return listSessionTime.get(position).getStatusId() == SessionTime.StatusId.OVERTIME;
     }
 }
 

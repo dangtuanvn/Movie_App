@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.example.dangtuanvn.movie_app.R;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -20,12 +21,13 @@ import java.util.List;
  */
 public class MovieScheduleAdapter extends BaseAdapter {
     private final Context context;
-    private Calendar date;
+    ArrayList<String> timeList;
+    ArrayList<String> dateList;
 
-    public MovieScheduleAdapter(Context context, Calendar date) {
-
-        this.date= date;
+    public MovieScheduleAdapter(Context context, ArrayList<String> dateList, ArrayList<String> timeList) {
+        this.dateList =dateList;
         this.context = context;
+        this.timeList = timeList;
     }
     static class ViewHolder {
         TextView date;
@@ -49,22 +51,13 @@ public class MovieScheduleAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
 
         }
-        if(position>0) {
-            date.add(Calendar.DATE, 1);
-        }
-            SimpleDateFormat sdf = new SimpleDateFormat("EE");
+       if(position==0){
+           holder.date.setText("Today");
+       }else{
+           holder.date.setText(timeList.get(position));
+       }
 
-
-            String dayOfTheWeek = sdf.format(date.getTime());
-//            if(position==0){
-//            holder.date.setText("Today");}
-//            else {
-                holder.date.setText(dayOfTheWeek);
-
-           // }
-        SimpleDateFormat df = new SimpleDateFormat("dd-MM");
-        String formattedDate = df.format(date.getTime());
-        holder.time.setText(formattedDate);
+        holder.time.setText(dateList.get(position));
 
         return convertView;
     }

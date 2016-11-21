@@ -47,6 +47,10 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
 
     Context context;
     int movieId;
+     Calendar dateTime =Calendar.getInstance();
+    ArrayList<String> dateList = new ArrayList<String>();
+    ArrayList<String> displayDate = new ArrayList<String>();
+    ArrayList<String> timeList = new ArrayList<String>();
     public MovieDetailReyclerAdapter(Context context, int movieId){
         this.movieId = movieId;
         this.context =context;
@@ -123,9 +127,12 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
                 @Override
                 public void onDataRetrievedListener(List<?> list, Exception ex) {
                     List<MovieTrailer> movieTrailer = (List<MovieTrailer>) list;
-                    if(movieTrailer.get(0).getV720p()!=null) {
+                    try{
+
                         Uri uri = Uri.parse(movieTrailer.get(0).getV720p());
-                        holder.video.setVideoURI(uri);
+                        holder.video.setVideoURI(uri);}
+                    catch (NullPointerException e){
+                    //TODO fix url null
                     }
                 }
             });
@@ -168,7 +175,10 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
                 public void onDataRetrievedListener(List<?> list, Exception ex) {
                     List<MovieDetail> detailList = (List<MovieDetail>) list;
                     holder.movieDescription.setText(" " + detailList.get(0).getDescriptionMobile());
-                    holder.directorName.setText(" " + detailList.get(0).getDirectorName());
+                    if(detailList.get(0).getDirectorName()==null){
+                        holder.directorName.setText("");
+                    }else{
+                    holder.directorName.setText(" " + detailList.get(0).getDirectorName());}
                     String actor = "";
                     for (int i = 0; i < (detailList.get(0).getListActors().size()); i++) {
                         actor = actor + detailList.get(0).getListActors().get(i) + " ";
@@ -192,17 +202,22 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
         }
         if (position == 3) {
             final Calendar c = Calendar.getInstance();
-            final Calendar dateTime =Calendar.getInstance();
-            MovieScheduleAdapter movieScheduleAdapter = new MovieScheduleAdapter(context, c);
+
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            final ArrayList<String> dateList = new ArrayList<String>();
+            SimpleDateFormat sdf = new SimpleDateFormat("EE");
+            SimpleDateFormat f = new SimpleDateFormat("dd-MM");
+            if(dateList.size()<7){
            for(int i=0;i<7;i++){
 
                if(i>0) {
                    dateTime.add(dateTime.DATE, 1);
                }
                dateList.add(i,df.format(dateTime.getTime()));
-           }
+               timeList.add(i,sdf.format(dateTime.getTime()));
+              displayDate.add(i,f.format(dateTime.getTime()));
+
+           }}
+            MovieScheduleAdapter movieScheduleAdapter = new MovieScheduleAdapter(context,displayDate, timeList);
 
 
             holder.movieSchedule.setAdapter(movieScheduleAdapter);
