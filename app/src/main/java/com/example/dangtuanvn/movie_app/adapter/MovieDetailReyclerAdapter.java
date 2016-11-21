@@ -141,6 +141,10 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
                         int targetWidth = metrics.widthPixels ;
                         double aspectRatio = (double) bitmap.getHeight() / (double) bitmap.getWidth();
                         int targetHeight = (int) (targetWidth * aspectRatio);
+                        ViewGroup.LayoutParams params = holder.videolayout.getLayoutParams();
+                        params.height=targetHeight;
+                        params.width =metrics.widthPixels;
+                        holder.videolayout.setLayoutParams(params);
                         Bitmap result = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, false);
                         BitmapDrawable ob = new BitmapDrawable(context.getResources(), result);
                         holder.video.setBackground(ob);
@@ -221,7 +225,7 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
                     holder.directorName.setText(" " + detailList.get(0).getDirectorName());}
                     String actor = "";
                     for (int i = 0; i < (detailList.get(0).getListActors().size()); i++) {
-                        actor = actor + detailList.get(0).getListActors().get(i) + " ";
+                        actor = actor + detailList.get(0).getListActors().get(i) + ", ";
                     }
                     holder.starName.setText(" " + actor);
                 }
@@ -264,8 +268,7 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
             holder.movieSchedule.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-
-
+                    view.setSelected(true);
                     FeedDataStore scheduleFDS = new ScheduleFeedDataStore(context, movieId, dateList.get(position));
                     scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
                         @Override

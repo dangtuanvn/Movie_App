@@ -441,10 +441,11 @@ public class MovieTabFragment extends Fragment {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(marker.getPosition() == currentPosition.getPosition()){
+                if(marker.getPosition().longitude == currentPosition.getPosition().longitude && marker.getPosition().latitude == currentPosition.getPosition().latitude){
                     marker.hideInfoWindow();
-                    return false;
-                } else{
+                    return true;
+                }
+                else{
                     String url = getDirectionsUrl(currentPosition.getPosition(), marker.getPosition());
 
                     DownloadTask downloadTask = new DownloadTask();
@@ -454,7 +455,8 @@ public class MovieTabFragment extends Fragment {
                     setMap(marker.getPosition(), currentPosition.getPosition());
                     return false;
             }}
-        });
+        })
+        ;
     }
 
     public View inflateListView(LayoutInflater inflater, ViewGroup container) {
@@ -766,7 +768,7 @@ public class MovieTabFragment extends Fragment {
 
         builder.include(position);
         builder.include(currentLocation);
-
+        if(position.latitude!=currentLocation.latitude&&position.longitude!=currentLocation.longitude){
         LatLngBounds bounds = builder.build();
         int padding = 150
                 ; // offset from edges of the map in pixels
@@ -774,6 +776,7 @@ public class MovieTabFragment extends Fragment {
 
         map.moveCamera(cu);
         map.animateCamera(cu);
+        }
     }
 
     private class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
