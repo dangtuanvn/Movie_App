@@ -2,7 +2,6 @@ package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -21,12 +20,12 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.example.dangtuanvn.movie_app.R;
+import com.example.dangtuanvn.movie_app.adapter.schedule.MovieScheduleAdapter;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieTrailerFeedDataStore;
@@ -37,7 +36,6 @@ import com.example.dangtuanvn.movie_app.model.Schedule;
 import com.example.dangtuanvn.movie_app.model.ScheduleCinemaGroupList;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-import com.squareup.picasso.Transformation;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,7 +47,7 @@ import java.util.Set;
 /**
  * Created by sinhhx on 11/18/16.
  */
-public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailReyclerAdapter.ViewHolder> implements ScheduleExpandableAdapter.OnItemClick{
+public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetailRecyclerAdapter.ViewHolder> implements ScheduleExpandableAdapter.OnItemClick{
 
     Context context;
     int movieId;
@@ -58,7 +56,7 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
     ArrayList<String> dateList = new ArrayList<String>();
     ArrayList<String> displayDate = new ArrayList<String>();
     ArrayList<String> timeList = new ArrayList<String>();
-    public MovieDetailReyclerAdapter(Context context, int movieId, String posterUrl){
+    public MovieDetailRecyclerAdapter(Context context, int movieId, String posterUrl){
         this.posterUrl =posterUrl;
         this.movieId = movieId;
         this.context =context;
@@ -107,7 +105,7 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
             movieSchedule = (GridView) itemView.findViewById(R.id.movie_schedule);
         }
     }
-    public MovieDetailReyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public MovieDetailRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = null;
         if(viewType ==0){
         v = LayoutInflater.from(parent.getContext()).inflate(R.layout.trailer_player_layout, parent, false);}

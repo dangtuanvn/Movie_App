@@ -15,6 +15,7 @@ import com.bignerdranch.expandablerecyclerview.Model.ParentListItem;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ChildViewHolder;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ParentViewHolder;
 import com.example.dangtuanvn.movie_app.R;
+import com.example.dangtuanvn.movie_app.adapter.schedule.GroupCinemaAdapter;
 import com.example.dangtuanvn.movie_app.model.Schedule;
 import com.example.dangtuanvn.movie_app.model.ScheduleCinemaGroupList;
 

@@ -1,10 +1,12 @@
-package com.example.dangtuanvn.movie_app;
+package com.example.dangtuanvn.movie_app.adapter;
 
-import android.content.Context;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
+
+import com.example.dangtuanvn.movie_app.AllTabFragment;
+import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
+import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
+import com.example.dangtuanvn.movie_app.fragment.NewsTabFragment;
 
 /**
  * Created by sinhhx on 11/7/16.
@@ -27,7 +29,16 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public android.support.v4.app.Fragment getItem(int position) {
-        return MovieTabFragment.newInstance(position);
+        if (position == 0 || position == 1){
+            return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.values()[position]);
+        }
+        else if(position == 2){
+            return CinemaTabFragment.newInstance();
+        }
+        else if(position == 3){
+            return NewsTabFragment.newInstance();
+        }
+        return null;
     }
 
     @Override

@@ -1,12 +1,7 @@
-package com.example.dangtuanvn.movie_app.adapter;
+package com.example.dangtuanvn.movie_app.adapter.schedule;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +11,6 @@ import android.widget.TextView;
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.model.Schedule;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
