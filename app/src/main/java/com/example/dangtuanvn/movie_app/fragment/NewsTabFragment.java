@@ -1,9 +1,7 @@
 package com.example.dangtuanvn.movie_app.fragment;
 
-import android.content.Context;
+
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -21,14 +19,12 @@ import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.WebViewDisplay;
 import com.example.dangtuanvn.movie_app.adapter.NewsDetailAdapter;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
-import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
-import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
 
-import java.io.Serializable;
+
 import java.util.List;
 
 /**
@@ -40,7 +36,6 @@ public class NewsTabFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout swipeLayout;
     private Handler handlerFDS = new Handler();
-    private static List<Cinema> cinemaList;
 
     public static NewsTabFragment newInstance() {
         NewsTabFragment fragment = new NewsTabFragment();

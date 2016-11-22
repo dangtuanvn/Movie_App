@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.example.dangtuanvn.movie_app.AllTabFragment;
+import com.example.dangtuanvn.movie_app.NoInternetFragment;
 import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.NewsTabFragment;
@@ -45,8 +46,7 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
             }
         }
         else{
-            // TODO: NO NETWORK
-            // RETURN NO NETWORK CONNECTION FRAGMENT
+        return NoInternetFragment.newInstance();
         }
         return null;
     }

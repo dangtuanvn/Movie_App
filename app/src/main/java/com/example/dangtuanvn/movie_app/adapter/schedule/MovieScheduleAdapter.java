@@ -1,7 +1,6 @@
 package com.example.dangtuanvn.movie_app.adapter.schedule;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +9,8 @@ import android.widget.TextView;
 
 import com.example.dangtuanvn.movie_app.R;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
+import java.util.ArrayList;
 /**
  * Created by sinhhx on 11/18/16.
  */
