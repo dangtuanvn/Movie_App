@@ -6,11 +6,14 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -161,6 +164,8 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
                     }
                 };
 
+
+
                 Picasso.with(context)
                         .load(posterUrl)
                         .into(mTarget);
@@ -188,6 +193,20 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
                     videoMediaController.setVisibility(View.VISIBLE);
                     holder.playbtn.setVisibility(View.GONE);
                 }
+            });
+            holder.video.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if(holder.video.isPlaying()==false){
+                    holder.video.setBackgroundResource(0);
+                    holder.video.start();
+                    videoMediaController.setVisibility(View.VISIBLE);
+                    holder.playbtn.setVisibility(View.GONE);
+                    return true;
+                }
+                    return false;
+                }
+
             });
 
         }
@@ -334,45 +353,14 @@ public class MovieDetailReyclerAdapter extends RecyclerView.Adapter<MovieDetailR
     public void onItemClick(View view, Object data, int position) {
         Log.i("ITEM CLICK", "" + position);
     }
-
-
 }
 
 
 
-//    protected void displayImagePicasso(ImageView imageView, String url) {
-//        Picasso.with(context)
-//                .load(url)
-//                .placeholder(R.drawable.white_placeholder)
-//                .transform(getCropPosterTransformation())
-//                .into(imageView);
-//    }
-//
-//    protected Transformation getCropPosterTransformation(){
-//        Transformation cropPosterTransformation = new Transformation() {
-//            @Override
-//            public Bitmap transform(Bitmap source) {
-//                DisplayMetrics metrics = new DisplayMetrics();
-//                WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-//                wm.getDefaultDisplay().getMetrics(metrics);
-//                int targetWidth = metrics.widthPixels - (metrics.widthPixels / 20);
-//                double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
-//                int targetHeight = (int) (targetWidth * aspectRatio);
-//                Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
-//                if (result != source) {
-//                    // Same bitmap is returned if sizes are the same
-//                    source.recycle();
-//                }
-//                return result;
-//            }
-//
-//            @Override
-//            public String key() {
-//                return "cropPosterTransformation";
-//            }
-//        };
-//        return cropPosterTransformation;
-//    }
+
+
+
+
 
 
 
