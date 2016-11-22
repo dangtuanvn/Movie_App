@@ -1,5 +1,8 @@
 package com.example.dangtuanvn.movie_app.adapter;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
@@ -15,11 +18,11 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
 
     public final static int PAGE_COUNT = 4;
     private String tabTitles[] = new String[] { "Showing", "Upcoming", "Cinema around", "News" };
-    private FragmentManager fm;
+    Context context;
 
-    public TabViewPagerAdapter(FragmentManager fm) {
+    public TabViewPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
-        this.fm = fm;
+        this.context = context;
     }
 
     @Override
@@ -29,14 +32,21 @@ public class TabViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public android.support.v4.app.Fragment getItem(int position) {
-        if (position == 0 || position == 1){
-            return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.values()[position]);
+        // Check for network connection
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            if (position == 0 || position == 1) {
+                return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.values()[position]);
+            } else if (position == 2) {
+                return CinemaTabFragment.newInstance();
+            } else if (position == 3) {
+                return NewsTabFragment.newInstance();
+            }
         }
-        else if(position == 2){
-            return CinemaTabFragment.newInstance();
-        }
-        else if(position == 3){
-            return NewsTabFragment.newInstance();
+        else{
+            // TODO: NO NETWORK
+            // RETURN NO NETWORK CONNECTION FRAGMENT
         }
         return null;
     }

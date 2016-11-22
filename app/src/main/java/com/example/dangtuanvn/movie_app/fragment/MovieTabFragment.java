@@ -66,10 +66,6 @@ public class MovieTabFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = null;
 
-        // Check for network connection
-        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
             view = inflateListView(inflater, container);
             switch (tab) {
                 case Showing:
@@ -94,9 +90,7 @@ public class MovieTabFragment extends Fragment {
                     displayMovieList(movieUpcomingFDS, true);
                     break;
             }
-        } else {
-            // NO NETWORK CONNECTION
-        }
+
         return view;
     }
 

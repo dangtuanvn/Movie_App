@@ -56,10 +56,6 @@ public class NewsTabFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = null;
 
-        // Check for network connection
-        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
             view = inflateListView(inflater, container);
             final NewsFeedDataStore newsFDS = new NewsFeedDataStore(getContext());
             swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -70,9 +66,6 @@ public class NewsTabFragment extends Fragment {
             });
             displayNewsList(newsFDS, true);
 
-        } else {
-            // NO NETWORK CONNECTION
-        }
         return view;
     }
 

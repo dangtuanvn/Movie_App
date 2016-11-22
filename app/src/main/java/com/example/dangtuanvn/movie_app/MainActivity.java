@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(new TabViewPagerAdapter(getSupportFragmentManager()));
+        viewPager.setAdapter(new TabViewPagerAdapter(getSupportFragmentManager(), this));
         viewPager.setOffscreenPageLimit(0);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
