@@ -42,6 +42,7 @@ import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
+import com.example.dangtuanvn.movie_app.fragment.MovieDetailFragment;
 import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
@@ -84,7 +85,7 @@ import java.util.List;
 /**
  * Created by sinhhx on 11/7/16.
  */
-public class MovieTabFragment extends Fragment {
+public class AllTabFragment extends Fragment {
     private enum Tab {
         Showing,
         Upcoming,
@@ -93,7 +94,7 @@ public class MovieTabFragment extends Fragment {
     }
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private static final int REQUEST_CHECK_SETTINGS =2;
+    private static final int REQUEST_CHECK_SETTINGS = 2;
 
     private int mPage;
     private Tab mTab;
@@ -106,14 +107,14 @@ public class MovieTabFragment extends Fragment {
     private SwipeRefreshLayout swipeLayout;
     private Handler handlerFDS = new Handler();
     private static int frameId = View.generateViewId();
-    static List<Cinema> cinemaList;
+    private static List<Cinema> cinemaList;
 
-    public static MovieTabFragment newInstance(int page) {
+    public static AllTabFragment newInstance(int page) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
         args.putInt("frame_id", frameId);
         args.putSerializable("cinema_list", (Serializable) cinemaList);
-        MovieTabFragment fragment = new MovieTabFragment();
+        AllTabFragment fragment = new AllTabFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -824,5 +825,15 @@ public class MovieTabFragment extends Fragment {
             tvSnippet.setText(marker.getSnippet());
             return myContentsView;
         }
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+//        if tab = 1 2 4
+//        if(swipeLayout.isRefreshing()){
+//
+//        }
+//        stopGetData();
     }
 }

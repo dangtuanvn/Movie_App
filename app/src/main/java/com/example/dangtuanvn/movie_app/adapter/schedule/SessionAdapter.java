@@ -1,4 +1,4 @@
-package com.example.dangtuanvn.movie_app.adapter;
+package com.example.dangtuanvn.movie_app.adapter.schedule;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import com.example.dangtuanvn.movie_app.adapter.TabViewPagerAdapter;
+
 public class MainActivity extends AppCompatActivity {
     // int array contain icon for tabs
     private TabLayout tabLayout;
@@ -33,10 +35,12 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment);
                 if(fragment != null){
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    transaction.remove(fragment);
-                    transaction.commit();
+                    onBackPressed();
+//                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//                    transaction.remove(fragment);
+//                    transaction.commit();
                 }
+
             }
 
             @Override
