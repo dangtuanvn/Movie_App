@@ -25,7 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".WebViewDisplay">
+        <activity android:name=".NewsDetailActivity">
 
         </activity>
         <activity android:name=".MovieDetailActivity" android:screenOrientation="portrait">

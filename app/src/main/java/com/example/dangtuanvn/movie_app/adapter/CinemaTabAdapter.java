@@ -16,10 +16,10 @@ import java.util.List;
 /**
  * Created by sinhhx on 11/11/16.
  */
-public class CinemaDetailAdapter extends DetailAdapter {
+public class CinemaTabAdapter extends TabAdapter {
     private List<Cinema> cinemaList;
 
-    public CinemaDetailAdapter(Context context, List<Cinema> cinemaList) {
+    public CinemaTabAdapter(Context context, List<Cinema> cinemaList) {
         super(context, cinemaList);
         this.cinemaList = cinemaList;
     }
@@ -39,7 +39,7 @@ public class CinemaDetailAdapter extends DetailAdapter {
         }
     }
 
-    public CinemaDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CinemaTabAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.location_detail, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
@@ -47,7 +47,7 @@ public class CinemaDetailAdapter extends DetailAdapter {
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-        CinemaDetailAdapter.ViewHolder cinemaHolder = (CinemaDetailAdapter.ViewHolder) holder;
+        CinemaTabAdapter.ViewHolder cinemaHolder = (CinemaTabAdapter.ViewHolder) holder;
         cinemaHolder.cinemaIcon.setImageResource(R.drawable.cinema_holder);
         cinemaHolder.cinemaName.setText(cinemaList.get(position).getCinemaName());
         cinemaHolder.cinemaAddress.setText(cinemaList.get(position).getCinemaAddress());

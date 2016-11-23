@@ -28,7 +28,7 @@ import android.widget.Toast;
 
 import com.example.dangtuanvn.movie_app.model.DirectionParser;
 import com.example.dangtuanvn.movie_app.R;
-import com.example.dangtuanvn.movie_app.adapter.CinemaDetailAdapter;
+import com.example.dangtuanvn.movie_app.adapter.CinemaTabAdapter;
 import com.example.dangtuanvn.movie_app.datastore.CinemaFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Cinema;
@@ -85,20 +85,20 @@ public class CinemaTabFragment extends Fragment {
     private static List<Cinema> cinemaList;
 
     public static CinemaTabFragment newInstance() {
-        Bundle args = new Bundle();
-        args.putInt("frame_id", frameId);
-        args.putSerializable("cinema_list", (Serializable) cinemaList);
+//        Bundle args = new Bundle();
+//        args.putInt("frame_id", frameId);
+//        args.putSerializable("cinema_list", (Serializable) cinemaList);
 
         CinemaTabFragment fragment = new CinemaTabFragment();
-        fragment.setArguments(args);
+//        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cinemaList = (List<Cinema>) getArguments().getSerializable("cinema_list");
-        frameId = getArguments().getInt("frame_id");
+//        cinemaList = (List<Cinema>) getArguments().getSerializable("cinema_list");
+//        frameId = getArguments().getInt("frame_id");
     }
 
     @Override
@@ -119,34 +119,39 @@ public class CinemaTabFragment extends Fragment {
         return view;
     }
 
-    public void displayCinemaList(FeedDataStore cinemaFDS, final LayoutInflater inflater) {
-        cinemaFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+    public void displayCinemaList(final FeedDataStore cinemaFDS, final LayoutInflater inflater) {
+        handlerFDS.post(new Runnable() {
             @Override
-            public void onDataRetrievedListener(List<?> list, Exception ex) {
-                FragmentManager fm = getChildFragmentManager();
-                mapFragment = (SupportMapFragment) fm.findFragmentByTag("map_fragment");
-                if (mapFragment == null) {
-                    cinemaList = (List<Cinema>) list;
-                    mapFragment = new SupportMapFragment();
-                    fm.beginTransaction().add(frameId, mapFragment, "map_fragment").commit();
-                    loadMapData(inflater, cinemaList);
+            public void run() {
+                cinemaFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+                    @Override
+                    public void onDataRetrievedListener(List<?> list, Exception ex) {
+                        FragmentManager fm = getChildFragmentManager();
+                        mapFragment = (SupportMapFragment) fm.findFragmentByTag("map_fragment");
+//                if (mapFragment == null) {
+                        cinemaList = (List<Cinema>) list;
+                        mapFragment = new SupportMapFragment();
+                        fm.beginTransaction().add(frameId, mapFragment, "map_fragment").commit();
+                        loadMapData(inflater, cinemaList);
 
-                } else {
-                    fm.beginTransaction().add(frameId, mapFragment, null).commit();
-                    cinemaList = selectionSort(cinemaList);
-                    MarkerOptions currentPosition = getCurrentPosition();
-
-                    mAdapter = new CinemaDetailAdapter(getContext(), cinemaList);
-                    mRecyclerView.setAdapter(mAdapter);
-                    addOnTouchMapItem(mRecyclerView, cinemaList, currentPosition);
-                }
+//                } else {
+//                    fm.beginTransaction().add(frameId, mapFragment, null).commit();
+//                    cinemaList = selectionSort(cinemaList);
+//                    MarkerOptions currentPosition = getCurrentPosition();
+//
+//                    mAdapter = new CinemaTabAdapter(getContext(), cinemaList);
+//                    mRecyclerView.setAdapter(mAdapter);
+//                    addOnTouchMapItem(mRecyclerView, cinemaList, currentPosition);
+//                }
+                    }
+                });
             }
         });
     }
 
     public MarkerOptions getCurrentPosition() {
         Location location;
-        LocationManager locationManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
@@ -213,7 +218,7 @@ public class CinemaTabFragment extends Fragment {
 //                    Log.i("LIST DISTANCE", "" + sortedCinemaList.get(i).getDistance());
 //                }
 
-                    mAdapter = new CinemaDetailAdapter(getContext(), sortedCinemaList);
+                    mAdapter = new CinemaTabAdapter(getContext(), sortedCinemaList);
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     mRecyclerView.setAdapter(mAdapter);
                     addOnTouchMapItem(mRecyclerView, sortedCinemaList, currentPosition);
@@ -318,8 +323,8 @@ public class CinemaTabFragment extends Fragment {
             // Reading data from url
             iStream = urlConnection.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-            StringBuffer sb = new StringBuffer();
-            String line = "";
+            StringBuilder sb = new StringBuilder();
+            String line;
             while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
@@ -517,8 +522,7 @@ public class CinemaTabFragment extends Fragment {
         builder.include(currentLocation);
         if(position.latitude!=currentLocation.latitude&&position.longitude!=currentLocation.longitude){
             LatLngBounds bounds = builder.build();
-            int padding = 150
-                    ; // offset from edges of the map in pixels
+            int padding = 150; // offset from edges of the map in pixels
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
             map.moveCamera(cu);

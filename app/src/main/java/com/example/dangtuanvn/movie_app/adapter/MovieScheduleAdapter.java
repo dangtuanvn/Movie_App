@@ -1,4 +1,4 @@
-package com.example.dangtuanvn.movie_app.adapter.schedule;
+package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,7 @@ import com.example.dangtuanvn.movie_app.R;
 
 
 import java.util.ArrayList;
+
 /**
  * Created by sinhhx on 11/18/16.
  */
@@ -20,11 +21,12 @@ public class MovieScheduleAdapter extends BaseAdapter {
     private ArrayList<String> dateList;
 
     public MovieScheduleAdapter(Context context, ArrayList<String> dateList, ArrayList<String> timeList) {
-        this.dateList =dateList;
+        this.dateList = dateList;
         this.context = context;
         this.timeList = timeList;
     }
-    static class ViewHolder {
+
+    private static class ViewHolder {
         TextView date;
         TextView time;
     }
@@ -33,23 +35,20 @@ public class MovieScheduleAdapter extends BaseAdapter {
         ViewHolder holder;
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        if (convertView == null) {holder = new ViewHolder();
+        if (convertView == null) {
+            holder = new ViewHolder();
             convertView = inflater.inflate(R.layout.movie_date, parent, false);
             holder.date = (TextView) convertView.findViewById(R.id.date);
             holder.time = (TextView) convertView.findViewById(R.id.time);
-
             convertView.setTag(holder);
-        }
-        else {
-
+        } else {
             holder = (ViewHolder) convertView.getTag();
-
         }
-       if(position==0){
-           holder.date.setText("Today");
-       }else{
-           holder.date.setText(timeList.get(position));
-       }
+        if (position == 0) {
+            holder.date.setText("Today");
+        } else {
+            holder.date.setText(timeList.get(position));
+        }
 
         holder.time.setText(dateList.get(position));
 

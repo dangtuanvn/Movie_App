@@ -11,7 +11,7 @@ import android.webkit.WebViewClient;
 /**
  * Created by sinhhx on 11/9/16.
  */
-public class WebViewDisplay extends AppCompatActivity {
+public class NewsDetailActivity extends AppCompatActivity {
     Bundle extras;
 
     @Override

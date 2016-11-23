@@ -1,4 +1,4 @@
-package com.example.dangtuanvn.movie_app.adapter.schedule;
+package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
@@ -29,33 +29,17 @@ public class GroupCinemaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-
         LayoutInflater inflater = LayoutInflater.from(context);
-
         View listView = inflater.inflate(R.layout.session_view_item, parent, false);
-
         return new ViewHolder(listView);
-
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
-//        if(viewHolder instanceof RecyclerListAdapter.FooterViewHolder) {
-//            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent intent = new Intent(mContext, PostViewActivity.class);
-//                    intent.putExtra("url", "https://www.reddit.com/r/androiddev/");
-//                    mContext.startActivity(intent);
-//                }
-//            });
-//        }
-
         Schedule.Session session = listSessions.get(position);
 
         GroupCinemaAdapter.ViewHolder itemViewHolder = (GroupCinemaAdapter.ViewHolder) viewHolder;
         itemViewHolder.version.setText(session.getVersion().split("\\s+")[0]);
-
 
         SessionAdapter sessionAdapter = new SessionAdapter(session.getListTime());
 
@@ -82,14 +66,10 @@ public class GroupCinemaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         private RecyclerView sessionGroupView;
 
         private ViewHolder(View itemView) {
-            // Stores the itemView in a public final member variable that can be used
-            // to access the context from any ViewHolder instance.
             super(itemView);
             version = (TextView) itemView.findViewById(R.id.version_text);
             sessionGroupView = (RecyclerView) itemView.findViewById(R.id.session_view);
         }
     }
-
-
 }
 

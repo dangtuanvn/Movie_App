@@ -36,21 +36,19 @@ public abstract class DataStore implements FeedDataStore {
     public void getList(final FeedDataStore.OnDataRetrievedListener onDataRetrievedListener) {
 //        final RequestQueue queue = Volley.newRequestQueue(context);
         String url = setUrl();
-
-        Log.i("GET URL", url);
-
+//        Log.i("GET URL", url);
         final StringRequest stringRequest = new StringRequest
                 (Request.Method.GET, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.i("RESPONSE", "Response is: "+ response);
-
+//                        Log.i("RESPONSE", "Response is: "+ response);
                         onDataRetrievedListener.onDataRetrievedListener(handleData(response), null);
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.i("VOLLEY RESPONSE FAIL", "Volley gets fail");
+                        // TODO: VOLLEY RESPONSE
 //                        Intent retryIntent = new Intent(context, RetryConnectionActivity.class);
 //                        retryIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 //                        context.startActivity(retryIntent);
@@ -102,13 +100,6 @@ public abstract class DataStore implements FeedDataStore {
         }
         return "";
     }
-
-//    public void updateList(List<Movie> newList){
-//        if(list == null){
-//            list = new ArrayList<>();
-//        }
-//        list.addAll(newList);
-//    }
 
     protected List<?> handleData(String response){
         return null;

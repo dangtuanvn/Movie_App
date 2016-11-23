@@ -1,6 +1,5 @@
 package com.example.dangtuanvn.movie_app.fragment;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,14 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.dangtuanvn.movie_app.R;
-import com.example.dangtuanvn.movie_app.WebViewDisplay;
-import com.example.dangtuanvn.movie_app.adapter.NewsDetailAdapter;
+import com.example.dangtuanvn.movie_app.NewsDetailActivity;
+import com.example.dangtuanvn.movie_app.adapter.NewsTabAdapter;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
-
 
 import java.util.List;
 
@@ -87,7 +85,7 @@ public class NewsTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         List<News> newsList = (List<News>) list;
-                        mAdapter = new NewsDetailAdapter(getContext(), newsList);
+                        mAdapter = new NewsTabAdapter(getContext(), newsList);
                         mRecyclerView.setAdapter((mAdapter));
                         if (addTouch) {
                             addOnTouchNewsItem(mRecyclerView, newsList);
@@ -112,7 +110,6 @@ public class NewsTabFragment extends Fragment {
             public boolean onInterceptTouchEvent(final RecyclerView rv, MotionEvent e) {
                 final View childView = rv.findChildViewUnder(e.getX(), e.getY());
                 if (childView != null && mGestureDetector.onTouchEvent(e)) {
-                    // Cancel getting data tasks
                     displayNewsDetail(rv, childView, newsList);
                 }
                 return false;
@@ -135,7 +132,7 @@ public class NewsTabFragment extends Fragment {
             @Override
             public void onDataRetrievedListener(List<?> list, Exception ex) {
                 // Start web view
-                Intent intent = new Intent(getContext(), WebViewDisplay.class);
+                Intent intent = new Intent(getContext(), NewsDetailActivity.class);
                 intent.putExtra("data", ((NewsDetail) list.get(0)).getContent());
 //                Log.i("RELATED NEWS", "" + ((NewsDetail) list.get(0)).getRelatedNewsList().get(0).toString());
                 handlerFDS.removeCallbacksAndMessages(null);

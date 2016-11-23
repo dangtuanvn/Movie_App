@@ -18,12 +18,12 @@ import java.util.List;
  * Created by dangtuanvn on 11/10/16.
  */
 
-public abstract class DetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public abstract class TabAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<?> list;
     private Context context;
     private Transformation cropPosterTransformation;
 
-    public DetailAdapter(Context context, List<?> list) {
+    public TabAdapter(Context context, List<?> list) {
         this.list = list;
         this.context = context;
         this.cropPosterTransformation = getCropPosterTransformation();

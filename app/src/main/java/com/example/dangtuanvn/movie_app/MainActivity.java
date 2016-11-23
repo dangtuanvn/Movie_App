@@ -14,19 +14,14 @@ import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
 
 public class MainActivity extends AppCompatActivity {
     // int array contain icon for tabs
-
     private int[] imageResId = {R.drawable.tabshowing, R.drawable.tabupcomingicon, R.drawable.tabaroundicon, R.drawable.tabnewsicon};
-
-    TabViewPagerAdapter adapter;
-    ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        adapter = new TabViewPagerAdapter(getSupportFragmentManager(), this);
-        viewPager.setAdapter(adapter);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setAdapter(new TabViewPagerAdapter(getSupportFragmentManager(), this));
         viewPager.setOffscreenPageLimit(4);
 
         // Give the TabLayout the ViewPager
