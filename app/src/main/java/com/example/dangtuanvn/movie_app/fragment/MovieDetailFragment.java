@@ -21,7 +21,7 @@ import com.example.dangtuanvn.movie_app.model.MovieDetail;
 public class MovieDetailFragment extends Fragment {
     private int movieId;
     private String posterUrl;
-    private static MovieTabFragmentListener listener;
+    private MovieTabFragmentListener listener;
 
     public MovieDetailFragment(){
 
@@ -50,6 +50,7 @@ public class MovieDetailFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext() , LinearLayoutManager.VERTICAL, false);
         movieDetail.setLayoutManager(layoutManager);
 
+        Log.i("CHILD FRAGMENT", "child: " + getChildFragmentManager().getFragments().size());
         return view;
     }
 }

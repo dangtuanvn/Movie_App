@@ -81,7 +81,6 @@ public class CinemaTabFragment extends Fragment {
 
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
-    private SwipeRefreshLayout swipeLayout;
     private Handler handlerFDS = new Handler();
     private GoogleMap map;
     private Polyline polyline;
@@ -108,14 +107,9 @@ public class CinemaTabFragment extends Fragment {
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = null;
-
-
-            view = inflateMapView(inflater, container);
+        View view = inflateMapView(inflater, container);
             final CinemaFeedDataStore cinemaFDS = new CinemaFeedDataStore(getContext());
             displayLocationSettingsRequest(getContext(), cinemaFDS, inflater);
-
-
         return view;
     }
 
@@ -286,11 +280,6 @@ public class CinemaTabFragment extends Fragment {
                 }}
         })
         ;
-    }
-
-    public void stopGetData() {
-        handlerFDS.removeCallbacksAndMessages(null);
-        swipeLayout.setRefreshing(false);
     }
 
     // Google Map functions

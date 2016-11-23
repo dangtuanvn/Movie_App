@@ -54,9 +54,7 @@ public class NewsTabFragment extends Fragment {
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = null;
-
-            view = inflateListView(inflater, container);
+        View view = inflateListView(inflater, container);
             final NewsFeedDataStore newsFDS = new NewsFeedDataStore(getContext());
             swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override

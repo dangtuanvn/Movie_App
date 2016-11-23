@@ -81,9 +81,7 @@ public class MovieTabFragment extends Fragment implements MovieTabFragmentListen
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = null;
-
-            view = inflateListView(inflater, container);
+        View view = inflateListView(inflater, container);
             switch (tab) {
                 case Showing:
                     final MovieFeedDataStore movieShowingFDS = new MovieFeedDataStore(getContext(),

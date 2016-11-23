@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        else if(viewPager.getCurrentItem() == 1) {
+        if(viewPager.getCurrentItem() == 1) {
             if (adapter.getItem(1) instanceof MovieDetailFragment) {
                 ((MovieDetailFragment) adapter.getItem(1)).backPressed();
             }
@@ -49,35 +49,14 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(0);
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-//                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment);
-//                if(fragment != null){
-//                    onBackPressed();
-//                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//                    transaction.remove(fragment);
-//                    transaction.commit();
-//                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
 
         // Give the TabLayout the ViewPager
         tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
-        for (int i = 0; i < 4; i++) {
-            tabLayout.getTabAt(i).setIcon(imageResId[i]);
-        }
+//        for (int i = 0; i < 4; i++) {
+//            tabLayout.getTabAt(i).setIcon(imageResId[i]);
+//        }
+        
     }
 }

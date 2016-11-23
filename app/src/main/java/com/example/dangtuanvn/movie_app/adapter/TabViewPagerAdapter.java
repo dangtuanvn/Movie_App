@@ -4,15 +4,18 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
+import android.util.Log;
 
-import com.example.dangtuanvn.movie_app.AllTabFragment;
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.MovieDetailFragment;
@@ -54,7 +57,7 @@ public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
     private String tabTitles[] = new String[] { "Showing", "Upcoming", "Cinema around", "News" };
     private Context context;
     private FragmentManager fragmentManager;
-    private Fragment mFragmentAtPos0, mFragmentAtPos1;
+    private static Fragment mFragmentAtPos0, mFragmentAtPos1;
 
     public TabViewPagerAdapter(FragmentManager fragmentManager, Context context) {
         super(fragmentManager);
@@ -89,29 +92,40 @@ public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
                 return mFragmentAtPos1;
 
             } else if (position == 2) {
-                return NewsTabFragment.newInstance();
+                return CinemaTabFragment.newInstance();
             } else if (position == 3) {
                 return NewsTabFragment.newInstance();
             }
         }
+
         else{
             // TODO: NO NETWORK
             // RETURN NO NETWORK CONNECTION FRAGMENT
         }
         return null;
     }
-
+    Drawable myDrawable;
+    String title;
     private int[] imageResId = {R.drawable.tabshowing, R.drawable.tabupcomingicon, R.drawable.tabaroundicon, R.drawable.tabnewsicon};
     @Override
     public CharSequence getPageTitle(int position) {
         // Generate title based on item position
-        return tabTitles[position];
-//        Drawable image = context.getResources().getDrawable(imageResId[position]);
-//        image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
-//        SpannableString sb = new SpannableString(tabTitles[position]);
-//        ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BASELINE);
-//        sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        return sb;
+//        return tabTitles[position];
+
+            myDrawable = context.getResources().getDrawable(imageResId[position]);
+
+        title = tabTitles[position];
+
+
+        SpannableStringBuilder sb = new SpannableStringBuilder(" \n" + title); // space added before text for convenience
+        try {
+            myDrawable.setBounds(0, 0, myDrawable.getIntrinsicWidth(), myDrawable.getIntrinsicHeight());
+            ImageSpan span = new ImageSpan(myDrawable, DynamicDrawableSpan.ALIGN_BASELINE);
+            sb.setSpan(span, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        } catch (Exception e) {
+
+        }
+        return sb;
     }
 
     @Override

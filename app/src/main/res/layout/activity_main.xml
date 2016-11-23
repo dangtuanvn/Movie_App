@@ -15,13 +15,14 @@
         android:background="#000000"/>
 
     <android.support.design.widget.TabLayout
+        style="@style/MyCustomTabLayout"
         android:id="@+id/sliding_tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#424242"
         app:tabTextColor="@color/colorNormalTab"
         app:tabSelectedTextColor="@color/colorHighlightTab"
-        app:tabTextAppearance="@style/MineCustomTabText"
+        app:tabTextAppearance="@style/MyCustomTextAppearance"
         />
 
     <!--app:tabSelectedTextColor="@color/colorHighlightTab"-->
