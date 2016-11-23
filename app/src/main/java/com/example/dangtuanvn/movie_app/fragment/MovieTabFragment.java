@@ -1,5 +1,9 @@
 package com.example.dangtuanvn.movie_app.fragment;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -28,12 +32,28 @@ import java.util.List;
  * Created by dangtuanvn on 11/22/16.
  */
 
-public class MovieTabFragment extends Fragment {
+public class MovieTabFragment extends Fragment implements MovieTabFragmentListener {
+    @Override
+    public void onSwitchToNextFragment(int movieId, String posterURL) {
+        listener.onSwitchToNextFragment(movieId, posterURL);
+    }
+
     public enum CinemaTab {
         Showing,
         Upcoming
     }
 
+    public MovieTabFragment(){
+
+    }
+
+    @SuppressLint("ValidFragment")
+    public MovieTabFragment(MovieTabFragmentListener listener, CinemaTab tab){
+        this.tab = tab;
+        this.listener = listener;
+    }
+
+    MovieTabFragmentListener listener;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout swipeLayout;
@@ -53,7 +73,7 @@ public class MovieTabFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tab = (CinemaTab) getArguments().getSerializable("cinema_tab");
+//        tab = (CinemaTab) getArguments().getSerializable("cinema_tab");
     }
 
     @Override
@@ -141,26 +161,28 @@ public class MovieTabFragment extends Fragment {
             public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
                 final View childView = rv.findChildViewUnder(e.getX(), e.getY());
                 if (childView != null && mGestureDetector.onTouchEvent(e)) {
-                    // Cancel getting data tasks
-                    MovieDetailFragment movieDetailFragment = new MovieDetailFragment();
-                    Bundle args = new Bundle();
-                    args.putInt("movieId", movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
-                    args.putString("posterUrl", movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
 
+//                    MovieDetailFragment movieDetailFragment = new MovieDetailFragment();
+//                    Bundle args = new Bundle();
+//                    args.putInt("movieId", movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
+//                    args.putString("posterUrl", movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
+//
+//
+//                    movieDetailFragment.setArguments(args);
+//
+//
+//                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//
+//                    transaction.replace(R.id.viewpager, movieDetailFragment, "detail_fragment");
+//                    transaction.addToBackStack(null);
+//
+//                    transaction.commit();
 
-                    movieDetailFragment.setArguments(args);
-
-
-                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-                    transaction.replace(R.id.main_fragment, movieDetailFragment, "detail_fragment");
-                    transaction.addToBackStack(null);
-
-                    transaction.commit();
 //                    Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
 //                    intent.putExtra("movieId",movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
 //                    intent.putExtra("posterUrl",movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
 //                    startActivity(intent);
+                    listener.onSwitchToNextFragment(movieList.get(rv.getChildAdapterPosition(childView)).getFilmId(), movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
                 }
                 return false;
             }

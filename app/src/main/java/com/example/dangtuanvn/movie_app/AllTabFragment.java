@@ -296,7 +296,7 @@ public class AllTabFragment extends Fragment {
 
 // Replace whatever is in the fragment_container view with this fragment,
 // and add the transaction to the back stack if needed
-                    transaction.replace(R.id.main_fragment, movieDetailFragment, "detail_fragment");
+                    transaction.replace(R.id.viewpager, movieDetailFragment, "detail_fragment");
                     transaction.addToBackStack(null);
 
 // Commit the transaction
