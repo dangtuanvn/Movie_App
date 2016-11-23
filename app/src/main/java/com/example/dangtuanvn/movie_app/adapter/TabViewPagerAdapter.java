@@ -16,6 +16,8 @@ import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 import android.util.Log;
 
+import com.example.dangtuanvn.movie_app.AllTabFragment;
+import com.example.dangtuanvn.movie_app.NoInternetFragment;
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.MovieDetailFragment;
@@ -99,8 +101,7 @@ public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
         }
 
         else{
-            // TODO: NO NETWORK
-            // RETURN NO NETWORK CONNECTION FRAGMENT
+        return NoInternetFragment.newInstance();
         }
         return null;
     }

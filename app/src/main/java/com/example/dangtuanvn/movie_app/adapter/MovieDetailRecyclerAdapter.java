@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -223,7 +221,8 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
                     holder.movieTitle.setText(detailList.get(0).getFilmName());
                     holder.PG.setText(detailList.get(0).getPgRating());
                     holder.IMDB.setText(detailList.get(0).getImdbPoint() + " IMDB");
-                    holder.length.setText(detailList.get(0).getDuration() + "");
+                    String duration =detailList.get(0).getDuration()/60 +"h "+ detailList.get(0).getDuration()%60+"min" ;
+                    holder.length.setText( duration);
                     holder.date.setText(detailList.get(0).getPublishDate());
                 }
             });
@@ -235,7 +234,7 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
                 @Override
                 public void onDataRetrievedListener(List<?> list, Exception ex) {
                     List<MovieDetail> detailList = (List<MovieDetail>) list;
-                    holder.movieDescription.setText(" " + detailList.get(0).getDescriptionMobile());
+                    holder.movieDescription.setText("" + detailList.get(0).getDescriptionMobile());
                     if(detailList.get(0).getDirectorName()==null){
                         holder.directorName.setText("");
                     }else{
@@ -280,8 +279,8 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
            }}
             MovieScheduleAdapter movieScheduleAdapter = new MovieScheduleAdapter(context,displayDate, timeList);
 
-
             holder.movieSchedule.setAdapter(movieScheduleAdapter);
+            holder.movieSchedule.getAdapter().getView(0,null,holder.movieSchedule).setSelected(true);
             holder.movieSchedule.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -291,6 +290,7 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
                         @Override
                         public void onDataRetrievedListener(List<?> list, Exception ex) {
                             displayRecyclerExpandableList((List<Schedule>) list,holder);
+
                         }
                     });
                 }

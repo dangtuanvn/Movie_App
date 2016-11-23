@@ -18,17 +18,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.dangtuanvn.movie_app.AllTabFragment;
+
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
-import com.example.dangtuanvn.movie_app.datastore.CinemaFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
-import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
-import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
 
-import java.io.Serializable;
+
 import java.util.List;
 
 /**
