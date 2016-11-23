@@ -21,7 +21,7 @@ import com.example.dangtuanvn.movie_app.model.MovieDetail;
 public class MovieDetailFragment extends Fragment {
     private int movieId;
     private String posterUrl;
-    private static MovieTabFragmentListener listener;
+    private MovieTabFragmentListener listener;
 
     public MovieDetailFragment(){
 

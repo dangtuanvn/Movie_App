@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.ViewGroup;
 
 import com.example.dangtuanvn.movie_app.adapter.TabViewPagerAdapter;
 import com.example.dangtuanvn.movie_app.fragment.MovieDetailFragment;
@@ -37,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
             else if (adapter.getItem(1) instanceof MovieTabFragment) {
                 finish();
             }
+        }
+        else{
+            finish();
         }
     }
 

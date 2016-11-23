@@ -8,11 +8,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 
 import com.example.dangtuanvn.movie_app.AllTabFragment;
+import com.example.dangtuanvn.movie_app.MainActivity;
 import com.example.dangtuanvn.movie_app.NoInternetFragment;
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
@@ -27,7 +29,8 @@ import com.example.dangtuanvn.movie_app.fragment.NewsTabFragment;
 public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
     private final class FirstPageListener implements MovieTabFragmentListener {
         public void onSwitchToNextFragment(int movieId, String posterUrl) {
-            fragmentManager.beginTransaction().remove(mFragmentAtPos0).commit();
+
+                      fragmentManager.beginTransaction().remove(mFragmentAtPos0).commit();
             if (mFragmentAtPos0 instanceof MovieTabFragment){
                 mFragmentAtPos0 = new MovieDetailFragment(firstListener, movieId, posterUrl);
             }else{ // Instance of NextFragment
@@ -90,7 +93,7 @@ public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
                 return mFragmentAtPos1;
 
             } else if (position == 2) {
-                return NewsTabFragment.newInstance();
+                return CinemaTabFragment.newInstance();
             } else if (position == 3) {
                 return NewsTabFragment.newInstance();
             }
@@ -105,13 +108,14 @@ public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         // Generate title based on item position
-        return tabTitles[position];
-//        Drawable image = context.getResources().getDrawable(imageResId[position]);
-//        image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
-//        SpannableString sb = new SpannableString(tabTitles[position]);
-//        ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BASELINE);
-//        sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        return sb;
+      //  return tabTitles[position];
+
+        Drawable image =ContextCompat.getDrawable(context,imageResId[position]);
+        SpannableString sb = new SpannableString(tabTitles[position]);
+        image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
+        ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BASELINE);
+        sb.setSpan(imageSpan, 0, 3, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        return sb;
     }
 
     @Override

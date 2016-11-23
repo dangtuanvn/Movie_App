@@ -21,8 +21,9 @@
         android:background="#424242"
         app:tabTextColor="@color/colorNormalTab"
         app:tabSelectedTextColor="@color/colorHighlightTab"
+        android:alwaysDrawnWithCache="true"
         app:tabTextAppearance="@style/MineCustomTabText"
-        />
+        ></android.support.design.widget.TabLayout>
 
     <!--app:tabSelectedTextColor="@color/colorHighlightTab"-->
     <!--app:tabTextColor="@color/colorNormalTab"-->
