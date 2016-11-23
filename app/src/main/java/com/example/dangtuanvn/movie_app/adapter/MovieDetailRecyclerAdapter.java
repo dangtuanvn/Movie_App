@@ -45,80 +45,84 @@ import java.util.Set;
 /**
  * Created by sinhhx on 11/18/16.
  */
-public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetailRecyclerAdapter.ViewHolder> implements ScheduleExpandableAdapter.OnItemClick{
+public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetailRecyclerAdapter.ViewHolder> implements ScheduleExpandableAdapter.OnItemClick {
 
-    Context context;
-    int movieId;
-     Calendar dateTime =Calendar.getInstance();
-    String posterUrl;
-    ArrayList<String> dateList = new ArrayList<String>();
-    ArrayList<String> displayDate = new ArrayList<String>();
-    ArrayList<String> timeList = new ArrayList<String>();
-    public MovieDetailRecyclerAdapter(Context context, int movieId, String posterUrl){
-        this.posterUrl =posterUrl;
+    private Context context;
+    private int movieId;
+    private Calendar dateTime = Calendar.getInstance();
+    private String posterUrl;
+    private ArrayList<String> dateList = new ArrayList<>();
+    private ArrayList<String> displayDate = new ArrayList<>();
+    private ArrayList<String> timeList = new ArrayList<>();
+
+    public MovieDetailRecyclerAdapter(Context context, int movieId, String posterUrl) {
+        this.posterUrl = posterUrl;
         this.movieId = movieId;
-        this.context =context;
+        this.context = context;
 
     }
+
     @Override
     public int getItemViewType(int position) {
 
         return position;
     }
 
+    protected static class ViewHolder extends RecyclerView.ViewHolder {
+        private final VideoView video;
+        private FrameLayout videolayout;
+        private final Button playbtn;
+        private final TextView movieTitle;
+        private final TextView PG;
+        private final TextView IMDB;
+        private final TextView length;
+        private final TextView date;
+        private final TextView movieDescription;
+        private final TextView directorName;
+        private final TextView writerName;
+        private final TextView starName;
+        private final RecyclerView allSchedule;
+        private final Button more;
+        private final GridView movieSchedule;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
-
-        final VideoView video;
-        FrameLayout videolayout;
-        final Button playbtn ;
-        final TextView movieTitle;
-        final TextView PG ;
-        final TextView IMDB ;
-        final TextView length ;
-        final TextView date ;
-        final TextView movieDescription ;
-        final TextView directorName ;
-        final TextView writerName;
-        final TextView starName ;
-        final RecyclerView allSchedule;
-        final Button more;
-        final GridView movieSchedule;
-        public ViewHolder(View itemView) {
+        private ViewHolder(View itemView) {
             super(itemView);
-            video=(VideoView) itemView.findViewById(R.id.video_view);
-            videolayout =(FrameLayout) itemView.findViewById(R.id.video_layout);
+            video = (VideoView) itemView.findViewById(R.id.video_view);
+            videolayout = (FrameLayout) itemView.findViewById(R.id.video_layout);
             playbtn = (Button) itemView.findViewById(R.id.play_button);
-            movieTitle = (TextView)itemView.findViewById(R.id.movie_title);
-            PG = (TextView)itemView.findViewById(R.id.PG);
-            IMDB = (TextView)itemView.findViewById(R.id.IMDB);
-            length = (TextView)itemView.findViewById(R.id.movie_duration);
-            date = (TextView)itemView.findViewById(R.id.date);
-            allSchedule=(RecyclerView) itemView.findViewById(R.id.all_schedule_view);
-            movieDescription = (TextView)itemView.findViewById(R.id.movie_description);
-            directorName = (TextView)itemView.findViewById(R.id.director_name);
-            writerName = (TextView)itemView.findViewById(R.id.writer_name);
-            starName = (TextView)itemView.findViewById(R.id.star_name);
+            movieTitle = (TextView) itemView.findViewById(R.id.movie_title);
+            PG = (TextView) itemView.findViewById(R.id.PG);
+            IMDB = (TextView) itemView.findViewById(R.id.IMDB);
+            length = (TextView) itemView.findViewById(R.id.movie_duration);
+            date = (TextView) itemView.findViewById(R.id.date);
+            allSchedule = (RecyclerView) itemView.findViewById(R.id.all_schedule_view);
+            movieDescription = (TextView) itemView.findViewById(R.id.movie_description);
+            directorName = (TextView) itemView.findViewById(R.id.director_name);
+            writerName = (TextView) itemView.findViewById(R.id.writer_name);
+            starName = (TextView) itemView.findViewById(R.id.star_name);
             more = (Button) itemView.findViewById(R.id.more);
             movieSchedule = (GridView) itemView.findViewById(R.id.movie_schedule);
         }
     }
+
     public MovieDetailRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = null;
-        if(viewType ==0){
-        v = LayoutInflater.from(parent.getContext()).inflate(R.layout.trailer_player_layout, parent, false);}
-        if(viewType ==1){
-            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_info, parent, false);}
-        if(viewType ==2){
-            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cast_info, parent, false);}
-        if(viewType==3){
+        if (viewType == 0) {
+            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.trailer_player_layout, parent, false);
+        }
+        if (viewType == 1) {
+            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_info, parent, false);
+        }
+        if (viewType == 2) {
+            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cast_info, parent, false);
+        }
+        if (viewType == 3) {
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.schedule_layout, parent, false);
         }
 
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
-
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
@@ -132,53 +136,50 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
             Target mTarget;
 
             mTarget = new Target() {
-                    @Override
-                    public void onBitmapLoaded (final Bitmap bitmap, Picasso.LoadedFrom from){
-                        DisplayMetrics metrics = new DisplayMetrics();
-                        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-                        wm.getDefaultDisplay().getMetrics(metrics);
-                        int targetWidth = metrics.widthPixels ;
-                        double aspectRatio = (double) bitmap.getHeight() / (double) bitmap.getWidth();
-                        int targetHeight = (int) (targetWidth * aspectRatio);
-                        ViewGroup.LayoutParams params = holder.videolayout.getLayoutParams();
-                        params.height=targetHeight;
-                        params.width =metrics.widthPixels;
-                        holder.videolayout.setLayoutParams(params);
-                        Bitmap result = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, false);
-                        BitmapDrawable ob = new BitmapDrawable(context.getResources(), result);
-                        holder.video.setBackground(ob);
-                    }
+                @Override
+                public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                    DisplayMetrics metrics = new DisplayMetrics();
+                    WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+                    wm.getDefaultDisplay().getMetrics(metrics);
+                    int targetWidth = metrics.widthPixels;
+                    double aspectRatio = (double) bitmap.getHeight() / (double) bitmap.getWidth();
+                    int targetHeight = (int) (targetWidth * aspectRatio);
+                    ViewGroup.LayoutParams params = holder.videolayout.getLayoutParams();
+                    params.height = targetHeight;
+                    params.width = metrics.widthPixels;
+                    holder.videolayout.setLayoutParams(params);
+                    Bitmap result = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, false);
+                    BitmapDrawable ob = new BitmapDrawable(context.getResources(), result);
+                    holder.video.setBackground(ob);
+                }
 
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
 
-                    }
+                }
 
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
 
-                    }
-                };
+                }
+            };
 
-
-
-                Picasso.with(context)
-                        .load(posterUrl)
-                        .into(mTarget);
+            Picasso.with(context)
+                    .load(posterUrl)
+                    .into(mTarget);
 
             movieTrailerFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
                 @Override
                 public void onDataRetrievedListener(List<?> list, Exception ex) {
                     List<MovieTrailer> movieTrailer = (List<MovieTrailer>) list;
-                    try{
+                    try {
                         Uri uri = Uri.parse(movieTrailer.get(0).getV720p());
-                        holder.video.setVideoURI(uri);}
-                    catch (NullPointerException e){
-                    // TODO fix url null
+                        holder.video.setVideoURI(uri);
+                    } catch (NullPointerException e) {
+                        // TODO fix url null
                     }
                 }
             });
-
 
             holder.playbtn.setBackgroundResource(R.drawable.bt_play3);
             holder.playbtn.setOnClickListener(new View.OnClickListener() {
@@ -193,20 +194,18 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
             holder.video.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    if(holder.video.isPlaying()==false){
-                    holder.video.setBackgroundResource(0);
-                    holder.video.start();
-                    videoMediaController.setVisibility(View.VISIBLE);
-                    holder.playbtn.setVisibility(View.GONE);
-                    return true;
-                }
+                    if (holder.video.isPlaying() == false) {
+                        holder.video.setBackgroundResource(0);
+                        holder.video.start();
+                        videoMediaController.setVisibility(View.VISIBLE);
+                        holder.playbtn.setVisibility(View.GONE);
+                        return true;
+                    }
                     return false;
                 }
 
             });
-
         }
-
 
         if (position == 1) {
             holder.IMDB.setCompoundDrawablesWithIntrinsicBounds(R.drawable.star_60, 0, 0, 0);
@@ -221,8 +220,8 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
                     holder.movieTitle.setText(detailList.get(0).getFilmName());
                     holder.PG.setText(detailList.get(0).getPgRating());
                     holder.IMDB.setText(detailList.get(0).getImdbPoint() + " IMDB");
-                    String duration =detailList.get(0).getDuration()/60 +"h "+ detailList.get(0).getDuration()%60+"min" ;
-                    holder.length.setText( duration);
+                    String duration = detailList.get(0).getDuration() / 60 + "h " + detailList.get(0).getDuration() % 60 + "min";
+                    holder.length.setText(duration);
                     holder.date.setText(detailList.get(0).getPublishDate());
                 }
             });
@@ -235,13 +234,17 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
                 public void onDataRetrievedListener(List<?> list, Exception ex) {
                     List<MovieDetail> detailList = (List<MovieDetail>) list;
                     holder.movieDescription.setText("" + detailList.get(0).getDescriptionMobile());
-                    if(detailList.get(0).getDirectorName()==null){
+                    if (detailList.get(0).getDirectorName() == null) {
                         holder.directorName.setText("");
-                    }else{
-                    holder.directorName.setText(" " + detailList.get(0).getDirectorName());}
+                    } else {
+                        holder.directorName.setText(" " + detailList.get(0).getDirectorName());
+                    }
                     String actor = "";
-                    for (int i = 0; i < (detailList.get(0).getListActors().size()); i++) {
-                        actor = actor + detailList.get(0).getListActors().get(i) + ", ";
+                    for (int i = 0; i < detailList.get(0).getListActors().size(); i++) {
+                        actor = actor + detailList.get(0).getListActors().get(i);
+                        if (i != detailList.get(0).getListActors().size() - 1) {
+                            actor += ", ";
+                        }
                     }
                     holder.starName.setText(" " + actor);
                 }
@@ -266,21 +269,22 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat sdf = new SimpleDateFormat("EE");
             SimpleDateFormat f = new SimpleDateFormat("dd-MM");
-            if(dateList.size()<7){
-           for(int i=0;i<7;i++){
+            if (dateList.size() < 7) {
+                for (int i = 0; i < 7; i++) {
 
-               if(i>0) {
-                   dateTime.add(dateTime.DATE, 1);
-               }
-               dateList.add(i,df.format(dateTime.getTime()));
-               timeList.add(i,sdf.format(dateTime.getTime()));
-              displayDate.add(i,f.format(dateTime.getTime()));
+                    if (i > 0) {
+                        dateTime.add(dateTime.DATE, 1);
+                    }
+                    dateList.add(i, df.format(dateTime.getTime()));
+                    timeList.add(i, sdf.format(dateTime.getTime()));
+                    displayDate.add(i, f.format(dateTime.getTime()));
 
-           }}
-            MovieScheduleAdapter movieScheduleAdapter = new MovieScheduleAdapter(context,displayDate, timeList);
+                }
+            }
+            MovieScheduleAdapter movieScheduleAdapter = new MovieScheduleAdapter(context, displayDate, timeList);
 
             holder.movieSchedule.setAdapter(movieScheduleAdapter);
-            holder.movieSchedule.getAdapter().getView(0,null,holder.movieSchedule).setSelected(true);
+            holder.movieSchedule.getAdapter().getView(0, null, holder.movieSchedule).setSelected(true);
             holder.movieSchedule.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -289,7 +293,7 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
                     scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
                         @Override
                         public void onDataRetrievedListener(List<?> list, Exception ex) {
-                            displayRecyclerExpandableList((List<Schedule>) list,holder);
+                            displayRecyclerExpandableList((List<Schedule>) list, holder);
 
                         }
                     });
@@ -342,8 +346,8 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
         }
 
         ScheduleExpandableAdapter recyclerExpandableView = new ScheduleExpandableAdapter(context, groupList);
-        recyclerExpandableView.setOnItemClick(this);
-       holder.allSchedule.setAdapter(recyclerExpandableView);
+//        recyclerExpandableView.setOnItemClick(this);
+        holder.allSchedule.setAdapter(recyclerExpandableView);
         holder.allSchedule.setLayoutManager(new LinearLayoutManager(context));
     }
 

@@ -1,24 +1,20 @@
 package com.example.dangtuanvn.movie_app.fragment;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
+
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 
 import com.example.dangtuanvn.movie_app.MovieDetailActivity;
 import com.example.dangtuanvn.movie_app.R;
@@ -160,12 +156,12 @@ public class MovieTabFragment extends Fragment {
 //                    transaction.addToBackStack(null);
 //
 //                    transaction.commit();
+//                    Log.i("CHILD FRAGMENT", "child: " + getChildFragmentManager().getFragments().size());
 
                     Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
                     intent.putExtra("movieId",movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
                     intent.putExtra("posterUrl",movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
                     startActivity(intent);
-
                 }
                 return false;
             }

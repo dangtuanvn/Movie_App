@@ -26,10 +26,6 @@ public class GroupCinemaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.context = context;
     }
 
-    private Context getContext() {
-        return context;
-    }
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
@@ -61,7 +57,7 @@ public class GroupCinemaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         itemViewHolder.version.setText(session.getVersion().split("\\s+")[0]);
 
 
-        SessionAdapter sessionAdapter = new SessionAdapter(context, session.getListTime());
+        SessionAdapter sessionAdapter = new SessionAdapter(session.getListTime());
 
         itemViewHolder.sessionGroupView.setAdapter(sessionAdapter);
         itemViewHolder.sessionGroupView.setLayoutManager(new GridLayoutManager(context, 4));

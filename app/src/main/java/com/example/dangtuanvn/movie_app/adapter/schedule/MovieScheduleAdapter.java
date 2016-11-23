@@ -16,8 +16,8 @@ import java.util.ArrayList;
  */
 public class MovieScheduleAdapter extends BaseAdapter {
     private final Context context;
-    ArrayList<String> timeList;
-    ArrayList<String> dateList;
+    private ArrayList<String> timeList;
+    private ArrayList<String> dateList;
 
     public MovieScheduleAdapter(Context context, ArrayList<String> dateList, ArrayList<String> timeList) {
         this.dateList =dateList;
@@ -27,9 +27,8 @@ public class MovieScheduleAdapter extends BaseAdapter {
     static class ViewHolder {
         TextView date;
         TextView time;
-
-
     }
+
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         LayoutInflater inflater = (LayoutInflater) context

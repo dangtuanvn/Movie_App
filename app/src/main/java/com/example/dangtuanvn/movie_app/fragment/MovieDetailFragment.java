@@ -30,8 +30,6 @@ public class MovieDetailFragment extends Fragment {
         movieDetail.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext() , LinearLayoutManager.VERTICAL, false);
         movieDetail.setLayoutManager(layoutManager);
-
-        Log.i("CHILD FRAGMENT", "child: " + getChildFragmentManager().getFragments().size());
         return view;
     }
 }

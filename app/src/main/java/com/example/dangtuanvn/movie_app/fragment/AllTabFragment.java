@@ -169,7 +169,6 @@ public class AllTabFragment extends Fragment {
 
                     final CinemaFeedDataStore cinemaFDS = new CinemaFeedDataStore(getContext());
                     displayLocationSettingsRequest(getContext(), cinemaFDS, inflater);
-                  //  displayCinemaList(cinemaFDS, inflater);
                     break;
 
                 case News:

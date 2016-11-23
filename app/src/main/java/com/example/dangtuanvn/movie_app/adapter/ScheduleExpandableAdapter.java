@@ -27,20 +27,20 @@ import java.util.List;
 
 public class ScheduleExpandableAdapter  extends ExpandableRecyclerAdapter<ScheduleExpandableAdapter.GroupViewHolder, ChildViewHolder> {
     private LayoutInflater inflater;
-    private List<ScheduleCinemaGroupList> groupList;
-    private OnItemClick onItemClick;
+    //    private List<ScheduleCinemaGroupList> groupList;
+//    private OnItemClick onItemClick;
     private Context context;
 
     public ScheduleExpandableAdapter(Context context, List<ScheduleCinemaGroupList> groupList) {
         super(groupList);
         this.context = context;
         inflater = LayoutInflater.from(context);
-        this.groupList = groupList;
+//        this.groupList = groupList;
     }
 
-    public void setOnItemClick(OnItemClick onItemClick) {
-        this.onItemClick = onItemClick;
-    }
+//    public void setOnItemClick(OnItemClick onItemClick) {
+//        this.onItemClick = onItemClick;
+//    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -86,7 +86,7 @@ public class ScheduleExpandableAdapter  extends ExpandableRecyclerAdapter<Schedu
 
         private void bind(ScheduleCinemaGroupList group){
             groupTitleText.setText(group.getCinemaName() + " (" + group.getChildItemList().size() + ")");
-            groupTitleText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.cinema_holder,0,0,0);
+            groupTitleText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.cinema_holder, 0, 0, 0);
         }
     }
 
@@ -103,7 +103,6 @@ public class ScheduleExpandableAdapter  extends ExpandableRecyclerAdapter<Schedu
         }
 
         private void bind(Schedule schedule){
-
             cinemaLocationNameText.setText(schedule.getCinemaName());
             GroupCinemaAdapter groupCinemaAdapter = new GroupCinemaAdapter(context, schedule.getListSessions());
             cinemaGroupView.setAdapter(groupCinemaAdapter);
