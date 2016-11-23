@@ -1,7 +1,9 @@
 package com.example.dangtuanvn.movie_app.fragment;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -16,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -103,6 +106,7 @@ public class CinemaTabFragment extends Fragment {
         frameId = getArguments().getInt("frame_id");
     }
 
+
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = null;
@@ -110,11 +114,13 @@ public class CinemaTabFragment extends Fragment {
 
             view = inflateMapView(inflater, container);
             final CinemaFeedDataStore cinemaFDS = new CinemaFeedDataStore(getContext());
-            displayLocationSettingsRequest(getContext(), cinemaFDS, inflater);
+        displayLocationSettingsRequest(getContext(),cinemaFDS,inflater);
+        displayCinemaList(cinemaFDS, inflater);
 
 
         return view;
     }
+
 
     public View inflateMapView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.google_map, container, false);
@@ -171,17 +177,19 @@ public class CinemaTabFragment extends Fragment {
     }
 
     public void loadMapData(final LayoutInflater inflater, final List<Cinema> cinemaList) {
+        MarkerOptions tempPosition=null;
         if(getCurrentPosition()==null){
-            Toast.makeText(getActivity(), "Please enable location setting",
-                    Toast.LENGTH_LONG).show();
+          tempPosition = new MarkerOptions().position(new LatLng(10.7798,106.6990));
         }else {
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
+            tempPosition=getCurrentPosition();}
+        final MarkerOptions finalTempPosition = tempPosition;
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     map = googleMap;
                     map.setInfoWindowAdapter(new MyInfoWindowAdapter(inflater));
 
-                    MarkerOptions currentPosition = getCurrentPosition();
+                    MarkerOptions currentPosition = finalTempPosition;
 
                     double latitude = currentPosition.getPosition().latitude;
                     double longitude = currentPosition.getPosition().longitude;
@@ -216,9 +224,7 @@ public class CinemaTabFragment extends Fragment {
                     map.animateCamera(zoom);
 
                     List<Cinema> sortedCinemaList = selectionSort(cinemaList);
-//                for (int i = 0; i < sortedCinemaList.size(); i++) {
-//                    Log.i("LIST DISTANCE", "" + sortedCinemaList.get(i).getDistance());
-//                }
+
 
                     mAdapter = new CinemaDetailAdapter(getContext(), sortedCinemaList);
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -226,7 +232,8 @@ public class CinemaTabFragment extends Fragment {
                     addOnTouchMapItem(mRecyclerView, sortedCinemaList, currentPosition);
                 }
             });
-        }}
+
+    }
 
     public void addOnTouchMapItem(final RecyclerView mRecyclerView, final List<Cinema> cinemaList, final MarkerOptions currentPosition) {
         final GestureDetector mGesture = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
@@ -497,11 +504,10 @@ public class CinemaTabFragment extends Fragment {
                 final Status status = result.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
-                        displayCinemaList(cinemaFDS, inflater);
 //                        Log.i("satisfy", "All location settings are satisfied.");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-//                        Log.i("update", "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
+//
 
                         try {
                             // Show the dialog by calling startResolutionForResult(), and check the result
@@ -518,6 +524,7 @@ public class CinemaTabFragment extends Fragment {
                 }
             }
         });
+
     }
 
 
