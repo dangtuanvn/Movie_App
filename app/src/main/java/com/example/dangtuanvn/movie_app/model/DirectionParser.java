@@ -1,4 +1,4 @@
-package com.example.dangtuanvn.movie_app;
+package com.example.dangtuanvn.movie_app.model;
 
 import com.google.android.gms.maps.model.LatLng;
 

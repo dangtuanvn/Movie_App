@@ -1,4 +1,4 @@
-package com.example.dangtuanvn.movie_app;
+package com.example.dangtuanvn.movie_app.fragment;
 
 import android.Manifest;
 import android.content.Context;
@@ -34,6 +34,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.dangtuanvn.movie_app.model.DirectionParser;
+import com.example.dangtuanvn.movie_app.R;
+import com.example.dangtuanvn.movie_app.WebViewDisplay;
 import com.example.dangtuanvn.movie_app.adapter.CinemaDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
 import com.example.dangtuanvn.movie_app.adapter.NewsDetailAdapter;
@@ -42,7 +45,6 @@ import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
-import com.example.dangtuanvn.movie_app.fragment.MovieDetailFragment;
 import com.example.dangtuanvn.movie_app.model.Cinema;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.News;
