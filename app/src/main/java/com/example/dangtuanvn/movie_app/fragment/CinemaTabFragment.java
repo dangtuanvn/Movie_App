@@ -75,14 +75,13 @@ public class CinemaTabFragment extends Fragment {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final int REQUEST_CHECK_SETTINGS = 2;
 
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView mRecyclerView;
+    private RecyclerView recyclerView;
     private Handler handlerFDS = new Handler();
     private GoogleMap map;
     private Polyline polyline;
     private SupportMapFragment mapFragment;
-    private static int frameId = View.generateViewId();
-    private static List<Cinema> cinemaList;
+    //    private static int frameId = View.generateViewId();
+//    private static List<Cinema> cinemaList;
 
     public static CinemaTabFragment newInstance() {
 //        Bundle args = new Bundle();
@@ -104,18 +103,18 @@ public class CinemaTabFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflateMapView(inflater, container);
-            final CinemaFeedDataStore cinemaFDS = new CinemaFeedDataStore(getContext());
-            displayLocationSettingsRequest(getContext(), cinemaFDS, inflater);
+        final CinemaFeedDataStore cinemaFDS = new CinemaFeedDataStore(getContext());
+        displayLocationSettingsRequest(getContext(), cinemaFDS, inflater);
         return view;
     }
 
     public View inflateMapView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.google_map, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.map_fragment);
-        frameLayout.setId(frameId);
+        recyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+//        FrameLayout frameLayout = (FrameLayout) view.findViewById(R.id.map_fragment);
+//        frameLayout.setId(frameId);
         return view;
     }
 
@@ -129,9 +128,11 @@ public class CinemaTabFragment extends Fragment {
                         FragmentManager fm = getChildFragmentManager();
                         mapFragment = (SupportMapFragment) fm.findFragmentByTag("map_fragment");
 //                if (mapFragment == null) {
-                        cinemaList = (List<Cinema>) list;
+                        List<Cinema> cinemaList = (List<Cinema>) list;
+//                        cinemaList = (List<Cinema>) list;
                         mapFragment = new SupportMapFragment();
-                        fm.beginTransaction().add(frameId, mapFragment, "map_fragment").commit();
+//                        fm.beginTransaction().add(frameId, mapFragment, "map_fragment").commit();
+                        fm.beginTransaction().add(R.id.map_fragment, mapFragment, "map_fragment").commit();
                         loadMapData(inflater, cinemaList);
 
 //                } else {
@@ -159,20 +160,20 @@ public class CinemaTabFragment extends Fragment {
             // TODO: check return of request
         } else {
 
-            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);}
-        if(location==null){
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+        if (location == null) {
             return null;
-        }else {
+        } else {
             return new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude()));
         }
-
     }
 
     public void loadMapData(final LayoutInflater inflater, final List<Cinema> cinemaList) {
-        if(getCurrentPosition()==null){
+        if (getCurrentPosition() == null) {
             Toast.makeText(getActivity(), "Please enable location setting",
                     Toast.LENGTH_LONG).show();
-        }else {
+        } else {
             mapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
@@ -218,13 +219,14 @@ public class CinemaTabFragment extends Fragment {
 //                    Log.i("LIST DISTANCE", "" + sortedCinemaList.get(i).getDistance());
 //                }
 
-                    mAdapter = new CinemaTabAdapter(getContext(), sortedCinemaList);
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    mRecyclerView.setAdapter(mAdapter);
-                    addOnTouchMapItem(mRecyclerView, sortedCinemaList, currentPosition);
+                    RecyclerView.Adapter adapter = new CinemaTabAdapter(getContext(), sortedCinemaList);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    recyclerView.setAdapter(adapter);
+                    addOnTouchMapItem(recyclerView, sortedCinemaList, currentPosition);
                 }
             });
-        }}
+        }
+    }
 
     public void addOnTouchMapItem(final RecyclerView mRecyclerView, final List<Cinema> cinemaList, final MarkerOptions currentPosition) {
         final GestureDetector mGesture = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
@@ -265,11 +267,10 @@ public class CinemaTabFragment extends Fragment {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(marker.getPosition().longitude == currentPosition.getPosition().longitude && marker.getPosition().latitude == currentPosition.getPosition().latitude){
+                if (marker.getPosition().longitude == currentPosition.getPosition().longitude && marker.getPosition().latitude == currentPosition.getPosition().latitude) {
                     marker.hideInfoWindow();
                     return true;
-                }
-                else{
+                } else {
                     String url = getDirectionsUrl(currentPosition.getPosition(), marker.getPosition());
 
                     DownloadTask downloadTask = new DownloadTask();
@@ -278,7 +279,8 @@ public class CinemaTabFragment extends Fragment {
                     downloadTask.execute(url);
                     setMap(marker.getPosition(), currentPosition.getPosition());
                     return false;
-                }}
+                }
+            }
         })
         ;
     }
@@ -330,6 +332,7 @@ public class CinemaTabFragment extends Fragment {
             }
             data = sb.toString();
             br.close();
+
         } catch (Exception e) {
         } finally {
             iStream.close();
@@ -520,7 +523,7 @@ public class CinemaTabFragment extends Fragment {
 
         builder.include(position);
         builder.include(currentLocation);
-        if(position.latitude!=currentLocation.latitude&&position.longitude!=currentLocation.longitude){
+        if (position.latitude != currentLocation.latitude && position.longitude != currentLocation.longitude) {
             LatLngBounds bounds = builder.build();
             int padding = 150; // offset from edges of the map in pixels
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
@@ -561,12 +564,12 @@ public class CinemaTabFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-            FragmentManager fm = getChildFragmentManager();
-            Fragment fragment = fm.findFragmentByTag("map_fragment");
-            fm.beginTransaction()
-                    .remove(fragment)
-                    .addToBackStack(null)
-                    .commitAllowingStateLoss();
-        }
+        FragmentManager fm = getChildFragmentManager();
+        Fragment fragment = fm.findFragmentByTag("map_fragment");
+        fm.beginTransaction()
+                .remove(fragment)
+                .addToBackStack(null)
+                .commitAllowingStateLoss();
     }
+}
 

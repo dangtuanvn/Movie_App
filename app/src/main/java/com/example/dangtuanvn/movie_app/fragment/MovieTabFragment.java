@@ -34,7 +34,6 @@ public class MovieTabFragment extends Fragment {
         Upcoming
     }
 
-    private RecyclerView.Adapter adapter;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeLayout;
     private CinemaTab tab;
@@ -112,7 +111,7 @@ public class MovieTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         final List<Movie> movieList = (List<Movie>) list;
-                        adapter = new MovieTabAdapter(getContext(), movieList, tab.ordinal());
+                        RecyclerView.Adapter adapter = new MovieTabAdapter(getContext(), movieList, tab.ordinal());
                         recyclerView.setAdapter((adapter));
                         if (addTouch) {
                             addOnMovieTouch(movieList);
@@ -153,6 +152,8 @@ public class MovieTabFragment extends Fragment {
                     Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
                     intent.putExtra("movieId",movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
                     intent.putExtra("posterUrl",movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
+//                    handlerFDS.removeCallbacksAndMessages(null);
+//                    swipeLayout.setRefreshing(false);
                     startActivity(intent);
                 }
                 return false;
@@ -160,18 +161,11 @@ public class MovieTabFragment extends Fragment {
 
             @Override
             public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
             }
 
             @Override
             public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
             }
         });
-    }
-
-    public void stopGetData() {
-        handlerFDS.removeCallbacksAndMessages(null);
-        swipeLayout.setRefreshing(false);
     }
 }

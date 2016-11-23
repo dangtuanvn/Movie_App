@@ -123,7 +123,6 @@ public class NewsTabFragment extends Fragment {
             public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
             }
         });
-        swipeLayout.setRefreshing(false);
     }
 
     public void displayNewsDetail(RecyclerView rv, View childView, List<News> newsList) {
@@ -135,8 +134,8 @@ public class NewsTabFragment extends Fragment {
                 Intent intent = new Intent(getContext(), NewsDetailActivity.class);
                 intent.putExtra("data", ((NewsDetail) list.get(0)).getContent());
 //                Log.i("RELATED NEWS", "" + ((NewsDetail) list.get(0)).getRelatedNewsList().get(0).toString());
-                handlerFDS.removeCallbacksAndMessages(null);
-                swipeLayout.setRefreshing(false);
+//                handlerFDS.removeCallbacksAndMessages(null);
+//                swipeLayout.setRefreshing(false);
                 startActivity(intent);
             }
         });
