@@ -30,12 +30,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.dangtuanvn.movie_app.DirectionParser;
+
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.adapter.CinemaDetailAdapter;
 import com.example.dangtuanvn.movie_app.datastore.CinemaFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Cinema;
+import com.example.dangtuanvn.movie_app.model.DirectionParser;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -114,7 +115,6 @@ public class CinemaTabFragment extends Fragment {
 
             view = inflateMapView(inflater, container);
             final CinemaFeedDataStore cinemaFDS = new CinemaFeedDataStore(getContext());
-        displayLocationSettingsRequest(getContext(),cinemaFDS,inflater);
         displayCinemaList(cinemaFDS, inflater);
 
 
@@ -504,10 +504,11 @@ public class CinemaTabFragment extends Fragment {
                 final Status status = result.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
+                        displayCinemaList(cinemaFDS, inflater);
 //                        Log.i("satisfy", "All location settings are satisfied.");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-//
+//                        Log.i("update", "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
 
                         try {
                             // Show the dialog by calling startResolutionForResult(), and check the result

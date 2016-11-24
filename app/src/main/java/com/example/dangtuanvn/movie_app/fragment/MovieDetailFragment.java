@@ -19,30 +19,11 @@ import com.example.dangtuanvn.movie_app.model.MovieDetail;
  */
 
 public class MovieDetailFragment extends Fragment {
-    private int movieId;
-    private String posterUrl;
-    private MovieTabFragmentListener listener;
-
-    public MovieDetailFragment(){
-
-    }
-
-    @SuppressLint("ValidFragment")
-    public MovieDetailFragment(MovieTabFragmentListener listener, int movieId, String posterUrl){
-        this.listener = listener;
-        this.movieId = movieId;
-        this.posterUrl = posterUrl;
-    }
-
-    public void backPressed() {
-        listener.onSwitchToNextFragment(movieId, posterUrl);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.movie_detail_recycler, container, false);
-//        movieId = getArguments().getInt("movieId");
-//        posterUrl = getArguments().getString("posterUrl");
+        int movieId = getArguments().getInt("movieId");
+        String posterUrl = getArguments().getString("posterUrl");
         Log.i("FRAGMENT CREATED", "CREATED");
         RecyclerView movieDetail = (RecyclerView) view.findViewById(R.id.movie_detail_recycler);
         MovieDetailRecyclerAdapter adapter = new MovieDetailRecyclerAdapter(getContext(), movieId, posterUrl);
@@ -50,6 +31,7 @@ public class MovieDetailFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext() , LinearLayoutManager.VERTICAL, false);
         movieDetail.setLayoutManager(layoutManager);
 
+        Log.i("CHILD FRAGMENT", "child: " + getChildFragmentManager().getFragments().size());
         return view;
     }
 }

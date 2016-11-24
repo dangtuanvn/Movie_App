@@ -48,6 +48,7 @@ public class MovieScheduleAdapter extends BaseAdapter {
         }
        if(position==0){
            holder.date.setText("Today");
+
        }else{
            holder.date.setText(timeList.get(position));
        }

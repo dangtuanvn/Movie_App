@@ -6,6 +6,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:id="@+id/internet_warning"
         android:text="Please Check Your Internet Connection"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/internet_warning"
+        android:text="Tap To Retry"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/retry_button"/>
 
 </RelativeLayout>

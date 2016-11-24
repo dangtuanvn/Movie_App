@@ -7,42 +7,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.ViewGroup;
 
 import com.example.dangtuanvn.movie_app.adapter.TabViewPagerAdapter;
-import com.example.dangtuanvn.movie_app.fragment.MovieDetailFragment;
-import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
+
 
 public class MainActivity extends AppCompatActivity {
     // int array contain icon for tabs
-    private TabLayout tabLayout;
+
     private int[] imageResId = {R.drawable.tabshowing, R.drawable.tabupcomingicon, R.drawable.tabaroundicon, R.drawable.tabnewsicon};
 
     TabViewPagerAdapter adapter;
     ViewPager viewPager;
-
-    public void onBackPressed() {
-        if(viewPager.getCurrentItem() == 0) {
-            if (adapter.getItem(0) instanceof MovieDetailFragment) {
-                ((MovieDetailFragment) adapter.getItem(0)).backPressed();
-            }
-            else if (adapter.getItem(0) instanceof MovieTabFragment) {
-                finish();
-            }
-        }
-
-        else if(viewPager.getCurrentItem() == 1) {
-            if (adapter.getItem(1) instanceof MovieDetailFragment) {
-                ((MovieDetailFragment) adapter.getItem(1)).backPressed();
-            }
-            else if (adapter.getItem(1) instanceof MovieTabFragment) {
-                finish();
-            }
-        }
-        else{
-            finish();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,32 +28,8 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(4);
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-//                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_fragment);
-//                if(fragment != null){
-//                    onBackPressed();
-//                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//                    transaction.remove(fragment);
-//                    transaction.commit();
-//                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
         // Give the TabLayout the ViewPager
-        tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
         tabLayout.setupWithViewPager(viewPager);
         for (int i = 0; i < 4; i++) {
             tabLayout.getTabAt(i).setIcon(imageResId[i]);

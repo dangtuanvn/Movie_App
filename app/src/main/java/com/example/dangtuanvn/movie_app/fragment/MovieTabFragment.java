@@ -2,6 +2,7 @@ package com.example.dangtuanvn.movie_app.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.example.dangtuanvn.movie_app.MovieDetailActivity;
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
@@ -32,28 +34,12 @@ import java.util.List;
  * Created by dangtuanvn on 11/22/16.
  */
 
-public class MovieTabFragment extends Fragment implements MovieTabFragmentListener {
-    @Override
-    public void onSwitchToNextFragment(int movieId, String posterURL) {
-        listener.onSwitchToNextFragment(movieId, posterURL);
-    }
-
+public class MovieTabFragment extends Fragment {
     public enum CinemaTab {
         Showing,
         Upcoming
     }
 
-    public MovieTabFragment(){
-
-    }
-
-    @SuppressLint("ValidFragment")
-    public MovieTabFragment(MovieTabFragmentListener listener, CinemaTab tab){
-        this.tab = tab;
-        this.listener = listener;
-    }
-
-    MovieTabFragmentListener listener;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout swipeLayout;
@@ -64,7 +50,6 @@ public class MovieTabFragment extends Fragment implements MovieTabFragmentListen
     public static MovieTabFragment newInstance(CinemaTab tab) {
         Bundle args = new Bundle();
         args.putSerializable("cinema_tab", tab);
-
         MovieTabFragment fragment = new MovieTabFragment();
         fragment.setArguments(args);
         return fragment;
@@ -73,14 +58,12 @@ public class MovieTabFragment extends Fragment implements MovieTabFragmentListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        tab = (CinemaTab) getArguments().getSerializable("cinema_tab");
+        tab = (CinemaTab) getArguments().getSerializable("cinema_tab");
     }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = null;
-
-            view = inflateListView(inflater, container);
+        View view = inflateListView(inflater, container);
             switch (tab) {
                 case Showing:
                     final MovieFeedDataStore movieShowingFDS = new MovieFeedDataStore(getContext(),
@@ -178,11 +161,11 @@ public class MovieTabFragment extends Fragment implements MovieTabFragmentListen
 //
 //                    transaction.commit();
 
-//                    Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
-//                    intent.putExtra("movieId",movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
-//                    intent.putExtra("posterUrl",movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
-//                    startActivity(intent);
-                    listener.onSwitchToNextFragment(movieList.get(rv.getChildAdapterPosition(childView)).getFilmId(), movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
+                    Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
+                    intent.putExtra("movieId",movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
+                    intent.putExtra("posterUrl",movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
+                    startActivity(intent);
+
                 }
                 return false;
             }
