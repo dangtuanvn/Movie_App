@@ -9,8 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.dangtuanvn.movie_app.adapter.TabViewPagerAdapter;
-import com.example.dangtuanvn.movie_app.fragment.MovieDetailFragment;
-import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
+
 
 public class MainActivity extends AppCompatActivity {
     // int array contain icon for tabs

@@ -1,7 +1,9 @@
 package com.example.dangtuanvn.movie_app.fragment;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -13,8 +15,10 @@ import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -26,12 +30,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.dangtuanvn.movie_app.model.DirectionParser;
+
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.adapter.CinemaTabAdapter;
 import com.example.dangtuanvn.movie_app.datastore.CinemaFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Cinema;
+import com.example.dangtuanvn.movie_app.model.DirectionParser;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -100,6 +105,7 @@ public class CinemaTabFragment extends Fragment {
 //        frameId = getArguments().getInt("frame_id");
     }
 
+
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflateMapView(inflater, container);
@@ -107,6 +113,7 @@ public class CinemaTabFragment extends Fragment {
         displayLocationSettingsRequest(getContext(), cinemaFDS, inflater);
         return view;
     }
+
 
     public View inflateMapView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.google_map, container, false);
@@ -180,7 +187,7 @@ public class CinemaTabFragment extends Fragment {
                     map = googleMap;
                     map.setInfoWindowAdapter(new MyInfoWindowAdapter(inflater));
 
-                    MarkerOptions currentPosition = getCurrentPosition();
+                    MarkerOptions currentPosition = finalTempPosition;
 
                     double latitude = currentPosition.getPosition().latitude;
                     double longitude = currentPosition.getPosition().longitude;
@@ -215,9 +222,7 @@ public class CinemaTabFragment extends Fragment {
                     map.animateCamera(zoom);
 
                     List<Cinema> sortedCinemaList = selectionSort(cinemaList);
-//                for (int i = 0; i < sortedCinemaList.size(); i++) {
-//                    Log.i("LIST DISTANCE", "" + sortedCinemaList.get(i).getDistance());
-//                }
+
 
                     RecyclerView.Adapter adapter = new CinemaTabAdapter(getContext(), sortedCinemaList);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -283,6 +288,11 @@ public class CinemaTabFragment extends Fragment {
             }
         })
         ;
+    }
+
+    public void stopGetData() {
+        handlerFDS.removeCallbacksAndMessages(null);
+        swipeLayout.setRefreshing(false);
     }
 
     // Google Map functions
@@ -514,6 +524,7 @@ public class CinemaTabFragment extends Fragment {
                 }
             }
         });
+
     }
 
 
