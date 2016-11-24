@@ -283,6 +283,8 @@ public class CinemaTabFragment extends Fragment {
             }
         })
         ;
+
+        //asdasdasd
     }
 
     // Google Map functions
