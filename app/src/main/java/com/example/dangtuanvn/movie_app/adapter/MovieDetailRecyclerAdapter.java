@@ -312,15 +312,15 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
 
     private void displayRecyclerExpandableList(final List<Schedule> scheduleList, ViewHolder holder) {
         // TODO: Simplify this process
-        List<Integer> cinemaGroupListID = new ArrayList<>();
+//        List<Integer> cinemaGroupListID = new ArrayList<>();
         List<String> cinemaGroupListName = new ArrayList<>();
         for (int i = 0; i < scheduleList.size(); i++) {
-            cinemaGroupListID.add(scheduleList.get(i).getpCinemaId());
+//            cinemaGroupListID.add(scheduleList.get(i).getpCinemaId());
             cinemaGroupListName.add(scheduleList.get(i).getpCinemaName());
         }
 
-        Set<Integer> filterSetId = new LinkedHashSet<>(cinemaGroupListID);
-        cinemaGroupListID = new ArrayList<>(filterSetId);
+//        Set<Integer> filterSetId = new LinkedHashSet<>(cinemaGroupListID);
+//        cinemaGroupListID = new ArrayList<>(filterSetId);
 
         Set<String> filterSetName = new LinkedHashSet<>(cinemaGroupListName);
         cinemaGroupListName = new ArrayList<>(filterSetName);
@@ -330,13 +330,15 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
 //        }
 
         List<ScheduleCinemaGroupList> groupList = new ArrayList<>();
-        for (int i = 0; i < cinemaGroupListID.size(); i++) {
-            groupList.add(new ScheduleCinemaGroupList(cinemaGroupListID.get(i), cinemaGroupListName.get(i)));
+        for (int i = 0; i < cinemaGroupListName.size(); i++) {
+//            groupList.add(new ScheduleCinemaGroupList(cinemaGroupListID.get(i), cinemaGroupListID.get(i)));
+            groupList.add(new ScheduleCinemaGroupList(cinemaGroupListName.get(i)));
         }
 
         for (Schedule schedule : scheduleList) {
             for (int i = 0; i < groupList.size(); i++) {
-                if (schedule.getpCinemaId() == groupList.get(i).getCinemaId()) {
+//                if (schedule.getpCinemaId() == groupList.get(i).getCinemaId) {
+                if (schedule.getpCinemaName() == groupList.get(i).getCinemaName()) {
                     groupList.get(i).addChildObjectList(schedule);
                     break;
                 }
@@ -344,7 +346,7 @@ public class MovieDetailRecyclerAdapter extends RecyclerView.Adapter<MovieDetail
         }
 
         ScheduleExpandableAdapter recyclerExpandableView = new ScheduleExpandableAdapter(context, groupList);
-        recyclerExpandableView.setOnItemClick(this);
+//        recyclerExpandableView.setOnItemClick(this);
        holder.allSchedule.setAdapter(recyclerExpandableView);
         holder.allSchedule.setLayoutManager(new LinearLayoutManager(context));
     }
