@@ -36,10 +36,10 @@ import android.widget.Toast;
 
 import com.example.dangtuanvn.movie_app.model.DirectionParser;
 import com.example.dangtuanvn.movie_app.R;
-import com.example.dangtuanvn.movie_app.WebViewDisplay;
-import com.example.dangtuanvn.movie_app.adapter.CinemaDetailAdapter;
-import com.example.dangtuanvn.movie_app.adapter.MovieDetailAdapter;
-import com.example.dangtuanvn.movie_app.adapter.NewsDetailAdapter;
+import com.example.dangtuanvn.movie_app.NewsDetailActivity;
+import com.example.dangtuanvn.movie_app.adapter.CinemaTabAdapter;
+import com.example.dangtuanvn.movie_app.adapter.MovieTabAdapter;
+import com.example.dangtuanvn.movie_app.adapter.NewsTabAdapter;
 import com.example.dangtuanvn.movie_app.datastore.CinemaFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
@@ -169,7 +169,6 @@ public class AllTabFragment extends Fragment {
 
                     final CinemaFeedDataStore cinemaFDS = new CinemaFeedDataStore(getContext());
                     displayLocationSettingsRequest(getContext(), cinemaFDS, inflater);
-                  //  displayCinemaList(cinemaFDS, inflater);
                     break;
 
                 case News:
@@ -205,7 +204,7 @@ public class AllTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         final List<Movie> movieList = (List<Movie>) list;
-                        mAdapter = new MovieDetailAdapter(getContext(), movieList, mPage);
+                        mAdapter = new MovieTabAdapter(getContext(), movieList, mPage);
                         mRecyclerView.setAdapter((mAdapter));
                         if (addTouch) {
                             addOnMovieTouch(movieList);
@@ -226,7 +225,7 @@ public class AllTabFragment extends Fragment {
                     @Override
                     public void onDataRetrievedListener(List list, Exception ex) {
                         List<News> newsList = (List<News>) list;
-                        mAdapter = new NewsDetailAdapter(getContext(), newsList);
+                        mAdapter = new NewsTabAdapter(getContext(), newsList);
                         mRecyclerView.setAdapter((mAdapter));
                         if (addTouch) {
                             addOnTouchNewsItem(mRecyclerView, newsList);
@@ -340,7 +339,7 @@ public class AllTabFragment extends Fragment {
                     cinemaList = selectionSort(cinemaList);
                     MarkerOptions currentPosition = getCurrentPosition();
 
-                    mAdapter = new CinemaDetailAdapter(getContext(), cinemaList);
+                    mAdapter = new CinemaTabAdapter(getContext(), cinemaList);
                     mRecyclerView.setAdapter(mAdapter);
                     addOnTouchMapItem(mRecyclerView, cinemaList, currentPosition);
                 }
@@ -355,7 +354,6 @@ public class AllTabFragment extends Fragment {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return null;
-            // TODO: check return of request
         } else {
 
              location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);}
@@ -417,7 +415,7 @@ public class AllTabFragment extends Fragment {
 //                    Log.i("LIST DISTANCE", "" + sortedCinemaList.get(i).getDistance());
 //                }
 
-                mAdapter = new CinemaDetailAdapter(getContext(), sortedCinemaList);
+                mAdapter = new CinemaTabAdapter(getContext(), sortedCinemaList);
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                 mRecyclerView.setAdapter(mAdapter);
                 addOnTouchMapItem(mRecyclerView, sortedCinemaList, currentPosition);
@@ -514,7 +512,7 @@ public class AllTabFragment extends Fragment {
             @Override
             public void onDataRetrievedListener(List<?> list, Exception ex) {
                 // Start web view
-                Intent intent = new Intent(getContext(), WebViewDisplay.class);
+                Intent intent = new Intent(getContext(), NewsDetailActivity.class);
                 intent.putExtra("data", ((NewsDetail) list.get(0)).getContent());
 //                Log.i("RELATED NEWS", "" + ((NewsDetail) list.get(0)).getRelatedNewsList().get(0).toString());
                 handlerFDS.removeCallbacksAndMessages(null);

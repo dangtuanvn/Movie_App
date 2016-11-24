@@ -16,10 +16,10 @@ import java.util.List;
 /**
  * Created by sinhhx on 11/9/16.
  */
-public class NewsDetailAdapter extends DetailAdapter {
+public class NewsTabAdapter extends TabAdapter {
     private List<News> newsList;
 
-    public NewsDetailAdapter(Context context, List<News> newsList) {
+    public NewsTabAdapter(Context context, List<News> newsList) {
         super(context, newsList);
         this.newsList = newsList;
     }
@@ -36,7 +36,7 @@ public class NewsDetailAdapter extends DetailAdapter {
         }
     }
 
-    public NewsDetailAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public NewsTabAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_detail, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
@@ -44,7 +44,7 @@ public class NewsDetailAdapter extends DetailAdapter {
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
-        NewsDetailAdapter.ViewHolder newsHolder = (NewsDetailAdapter.ViewHolder) holder;
+        NewsTabAdapter.ViewHolder newsHolder = (NewsTabAdapter.ViewHolder) holder;
         newsHolder.time.setText(newsList.get(position).getTimeDifference());
         newsHolder.title.setText(newsList.get(position).getNewsTitle());
         displayImagePicasso(newsHolder.newsPic, newsList.get(position).getImageFull());

@@ -1,7 +1,6 @@
 package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
@@ -9,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.example.dangtuanvn.movie_app.fragment.NoInternetFragment;
-import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.NewsTabFragment;
@@ -39,9 +37,9 @@ public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             if (position == 0) {
-                return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.values()[position]);
+                return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.values()[0]);
             } else if (position == 1) {
-                return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.values()[position]);
+                return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.values()[1]);
             } else if (position == 2) {
                 return CinemaTabFragment.newInstance();
             } else if (position == 3) {
@@ -53,25 +51,9 @@ public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
         return null;
     }
 
-    Drawable myDrawable;
-    String title;
-    private int[] imageResId = {R.drawable.tabshowing, R.drawable.tabupcomingicon, R.drawable.tabaroundicon, R.drawable.tabnewsicon};
-
     @Override
     public CharSequence getPageTitle(int position) {
         // Generate title based on item position
         return tabTitles[position];
-
-//        myDrawable = context.getResources().getDrawable(imageResId[position]);
-//        title = tabTitles[position];
-//        SpannableStringBuilder sb = new SpannableStringBuilder(" \n" + title); // space added before text for convenience
-//        try {
-//            myDrawable.setBounds(0, 0, myDrawable.getIntrinsicWidth(), myDrawable.getIntrinsicHeight());
-//            ImageSpan span = new ImageSpan(myDrawable, DynamicDrawableSpan.ALIGN_BASELINE);
-//            sb.setSpan(span, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        } catch (Exception e) {
-//
-//        }
-//        return sb;
     }
 }

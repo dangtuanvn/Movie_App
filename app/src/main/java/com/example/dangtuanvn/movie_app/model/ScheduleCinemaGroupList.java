@@ -12,10 +12,10 @@ import java.util.List;
 public class ScheduleCinemaGroupList implements ParentListItem {
     private List<Schedule> mChildrenList;
     private String cinemaName;
-    private int cinemaId;
+//    private int cinemaId;
 
-    public ScheduleCinemaGroupList(int cinemaId, String cinemaName) {
-        this.cinemaId = cinemaId;
+    public ScheduleCinemaGroupList(String cinemaName) {
+//        this.cinemaId = cinemaId;
         this.cinemaName = cinemaName;
         mChildrenList = new ArrayList<>();
     }
@@ -61,7 +61,7 @@ public class ScheduleCinemaGroupList implements ParentListItem {
         mChildrenList.add(post);
     }
 
-    public int getCinemaId() { return cinemaId; }
+//    public int getCinemaId() { return cinemaId; }
 
     public String getCinemaName() { return cinemaName; }
 }

@@ -1,4 +1,4 @@
-package com.example.dangtuanvn.movie_app.adapter.schedule;
+package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -24,15 +24,9 @@ public class SessionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_ITEM = 1;
     private static final int TYPE_OVERTIME = 2;
     private List<SessionTime> listSessionTime;
-    private Context context;
 
-    public SessionAdapter(Context context, List<SessionTime> listSessionTime) {
+    public SessionAdapter(List<SessionTime> listSessionTime) {
         this.listSessionTime = listSessionTime;
-        this.context = context;
-    }
-
-    private Context getContext() {
-        return context;
     }
 
     @Override
@@ -53,23 +47,12 @@ public class SessionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
-//        if(viewHolder instanceof RecyclerListAdapter.FooterViewHolder) {
-//            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent intent = new Intent(mContext, PostViewActivity.class);
-//                    intent.putExtra("url", "https://www.reddit.com/r/androiddev/");
-//                    mContext.startActivity(intent);
-//                }
-//            });
-//        }
-
         SessionTime sessionTime = listSessionTime.get(position);
         SessionAdapter.ViewHolder itemViewHolder = (SessionAdapter.ViewHolder) viewHolder;
 
         try {
             String sessionTimeString = sessionTime.getSessionTime();
-            DateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            DateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             DateFormat targetFormat = new SimpleDateFormat("HH:mm");
             Date date = originalFormat.parse(sessionTimeString);
             String formattedDate = targetFormat.format(date);  // 20120821
@@ -97,8 +80,6 @@ public class SessionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private TextView sessionTimeText;
 
         private ViewHolder(View itemView) {
-            // Stores the itemView in a public final member variable that can be used
-            // to access the context from any ViewHolder instance.
             super(itemView);
             sessionTimeText = (TextView) itemView.findViewById(R.id.session_time);
         }
