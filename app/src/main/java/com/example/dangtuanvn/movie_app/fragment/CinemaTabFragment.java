@@ -177,10 +177,13 @@ public class CinemaTabFragment extends Fragment {
     }
 
     public void loadMapData(final LayoutInflater inflater, final List<Cinema> cinemaList) {
+        MarkerOptions tempPosition = null;
         if (getCurrentPosition() == null) {
-            Toast.makeText(getActivity(), "Please enable location setting",
-                    Toast.LENGTH_LONG).show();
+        tempPosition = new MarkerOptions().position(new LatLng(10.7798,106.6990));
         } else {
+        tempPosition = getCurrentPosition();
+        }
+            final MarkerOptions finalTempPosition = tempPosition;
             mapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
@@ -230,7 +233,7 @@ public class CinemaTabFragment extends Fragment {
                     addOnTouchMapItem(recyclerView, sortedCinemaList, currentPosition);
                 }
             });
-        }
+
     }
 
     public void addOnTouchMapItem(final RecyclerView mRecyclerView, final List<Cinema> cinemaList, final MarkerOptions currentPosition) {
@@ -290,10 +293,6 @@ public class CinemaTabFragment extends Fragment {
         ;
     }
 
-    public void stopGetData() {
-        handlerFDS.removeCallbacksAndMessages(null);
-        swipeLayout.setRefreshing(false);
-    }
 
     // Google Map functions
 
