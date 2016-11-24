@@ -23,7 +23,6 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.example.dangtuanvn.movie_app.R;
-import com.example.dangtuanvn.movie_app.adapter.schedule.MovieScheduleAdapter;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.MovieTrailerFeedDataStore;
