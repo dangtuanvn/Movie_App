@@ -290,11 +290,6 @@ public class CinemaTabFragment extends Fragment {
         ;
     }
 
-    public void stopGetData() {
-        handlerFDS.removeCallbacksAndMessages(null);
-        swipeLayout.setRefreshing(false);
-    }
-
     // Google Map functions
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
