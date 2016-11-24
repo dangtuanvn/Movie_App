@@ -398,7 +398,7 @@ public class CinemaTabFragment extends Fragment {
 
             // Traversing through all the routes
             for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList<LatLng>();
+                points = new ArrayList<>();
                 lineOptions = new PolylineOptions();
 
                 // Fetching i-th route
@@ -561,15 +561,15 @@ public class CinemaTabFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        FragmentManager fm = getChildFragmentManager();
-        Fragment fragment = fm.findFragmentByTag("map_fragment");
-        fm.beginTransaction()
-                .remove(fragment)
-                .addToBackStack(null)
-                .commitAllowingStateLoss();
-    }
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//        FragmentManager fm = getChildFragmentManager();
+//        Fragment fragment = fm.findFragmentByTag("map_fragment");
+//        fm.beginTransaction()
+//                .remove(fragment)
+//                .addToBackStack(null)
+//                .commitAllowingStateLoss();
+//    }
 }
 
