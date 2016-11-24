@@ -102,15 +102,14 @@ public class CinemaTabFragment extends Fragment {
 //        frameId = getArguments().getInt("frame_id");
     }
 
-
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflateMapView(inflater, container);
         final CinemaFeedDataStore cinemaFDS = new CinemaFeedDataStore(getContext());
         displayLocationSettingsRequest(getContext(), cinemaFDS, inflater);
+        displayCinemaList(cinemaFDS, inflater);
         return view;
     }
-
 
     public View inflateMapView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.google_map, container, false);
@@ -163,7 +162,6 @@ public class CinemaTabFragment extends Fragment {
             return null;
             // TODO: check return of request
         } else {
-
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         }
         if (location == null) {
@@ -174,60 +172,60 @@ public class CinemaTabFragment extends Fragment {
     }
 
     public void loadMapData(final LayoutInflater inflater, final List<Cinema> cinemaList) {
-        MarkerOptions tempPosition = null;
+        MarkerOptions tempPosition;
         if (getCurrentPosition() == null) {
-        tempPosition = new MarkerOptions().position(new LatLng(10.7798,106.6990));
+            tempPosition = new MarkerOptions().position(new LatLng(10.7798, 106.6990));
         } else {
-        tempPosition = getCurrentPosition();
+            tempPosition = getCurrentPosition();
         }
-            final MarkerOptions finalTempPosition = tempPosition;
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(GoogleMap googleMap) {
-                    map = googleMap;
-                    map.setInfoWindowAdapter(new MyInfoWindowAdapter(inflater));
+        final MarkerOptions finalTempPosition = tempPosition;
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                map = googleMap;
+                map.setInfoWindowAdapter(new MyInfoWindowAdapter(inflater));
 
-                    MarkerOptions currentPosition = finalTempPosition;
+                MarkerOptions currentPosition = finalTempPosition;
 
-                    double latitude = currentPosition.getPosition().latitude;
-                    double longitude = currentPosition.getPosition().longitude;
+                double latitude = currentPosition.getPosition().latitude;
+                double longitude = currentPosition.getPosition().longitude;
 
-                    for (int i = 0; i < cinemaList.size(); i++) {
-                        map.addMarker(new MarkerOptions()
-                                .position(new LatLng(cinemaList.get(i).getLatitude(), cinemaList.get(i).getLongitude()))
-                                .title(cinemaList.get(i).getCinemaName())
-                                .snippet(cinemaList.get(i).getCinemaAddress())
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.cinema_around)));
+                for (int i = 0; i < cinemaList.size(); i++) {
+                    map.addMarker(new MarkerOptions()
+                            .position(new LatLng(cinemaList.get(i).getLatitude(), cinemaList.get(i).getLongitude()))
+                            .title(cinemaList.get(i).getCinemaName())
+                            .snippet(cinemaList.get(i).getCinemaAddress())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.cinema_around)));
 
-                        Location loc1 = new Location("");
-                        loc1.setLatitude(latitude);
-                        loc1.setLongitude(longitude);
+                    Location loc1 = new Location("");
+                    loc1.setLatitude(latitude);
+                    loc1.setLongitude(longitude);
 
-                        Location loc2 = new Location("");
-                        loc2.setLatitude(cinemaList.get(i).getLatitude());
-                        loc2.setLongitude(cinemaList.get(i).getLongitude());
-                        cinemaList.get(i).setDistance(loc1.distanceTo(loc2) / 1000);
-                    }
-
-                    Marker marker = map.addMarker(new MarkerOptions()
-                            .position(new LatLng(latitude, longitude))
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.current_location)));
-                    CameraUpdate center =
-                            CameraUpdateFactory.newLatLng(marker.getPosition()
-                            );
-                    CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
-
-                    map.moveCamera(center);
-                    map.animateCamera(zoom);
-
-                    List<Cinema> sortedCinemaList = selectionSort(cinemaList);
-
-                    RecyclerView.Adapter adapter = new CinemaTabAdapter(getContext(), sortedCinemaList);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    recyclerView.setAdapter(adapter);
-                    addOnTouchMapItem(recyclerView, sortedCinemaList, currentPosition);
+                    Location loc2 = new Location("");
+                    loc2.setLatitude(cinemaList.get(i).getLatitude());
+                    loc2.setLongitude(cinemaList.get(i).getLongitude());
+                    cinemaList.get(i).setDistance(loc1.distanceTo(loc2) / 1000);
                 }
-            });
+
+                Marker marker = map.addMarker(new MarkerOptions()
+                        .position(new LatLng(latitude, longitude))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.current_location)));
+                CameraUpdate center =
+                        CameraUpdateFactory.newLatLng(marker.getPosition()
+                        );
+                CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+
+                map.moveCamera(center);
+                map.animateCamera(zoom);
+
+                List<Cinema> sortedCinemaList = selectionSort(cinemaList);
+
+                RecyclerView.Adapter adapter = new CinemaTabAdapter(getContext(), sortedCinemaList);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                recyclerView.setAdapter(adapter);
+                addOnTouchMapItem(recyclerView, sortedCinemaList, currentPosition);
+            }
+        });
 
     }
 
@@ -287,9 +285,7 @@ public class CinemaTabFragment extends Fragment {
         });
     }
 
-
     // Google Map functions
-
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
         // Origin of route
         String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
@@ -496,7 +492,7 @@ public class CinemaTabFragment extends Fragment {
                 final Status status = result.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
-                        displayCinemaList(cinemaFDS, inflater);
+
 //                        Log.i("satisfy", "All location settings are satisfied.");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
@@ -517,7 +513,6 @@ public class CinemaTabFragment extends Fragment {
                 }
             }
         });
-
     }
 
 
