@@ -278,7 +278,7 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
             MovieScheduleAdapter movieScheduleAdapter = new MovieScheduleAdapter(context, displayDate, timeList);
 
             holder.movieSchedule.setAdapter(movieScheduleAdapter);
-            holder.movieSchedule.getAdapter().getView(0, null, holder.movieSchedule).setSelected(true);
+
             holder.movieSchedule.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -294,6 +294,8 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
 
 
             });
+            holder.movieSchedule.performItemClick(holder.movieSchedule.getAdapter().getView(0, null, holder.movieSchedule),0,holder.movieSchedule.getItemIdAtPosition(0));
+            holder.movieSchedule.getAdapter().getView(0, null, holder.movieSchedule);
         }
     }
 
