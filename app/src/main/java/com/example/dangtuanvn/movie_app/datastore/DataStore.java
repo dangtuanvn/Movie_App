@@ -49,7 +49,7 @@ public abstract class DataStore implements FeedDataStore {
                     public void onErrorResponse(VolleyError error) {
                         Log.i("VOLLEY RESPONSE FAIL", "Volley gets fail");
 //                        Intent intent = new Intent(context, NoInternetActivity.class);
-//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 //                        context.startActivity(intent);
                     }
                 }){

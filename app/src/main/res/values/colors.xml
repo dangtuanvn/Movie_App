@@ -9,7 +9,7 @@
         <color name="green">#009900</color>
         <color name="blue">#000099</color>
     <color name="background">#000000</color>
-    <color name="text_grey">#636363</color>
+    <color name="text_grey">#656565</color>
     <color name="schedule_grey">#909090</color>
-    <color name="grey">#636363</color>
+    <color name="grey">#656565</color>
 </resources>

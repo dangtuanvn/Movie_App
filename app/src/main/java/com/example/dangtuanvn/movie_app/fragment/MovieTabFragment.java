@@ -166,7 +166,7 @@ public class MovieTabFragment extends Fragment {
                     }
                 } else {
                     Intent intent = new Intent(getActivity(), NoInternetActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     getActivity().startActivity(intent);
                 }
                 return false;
