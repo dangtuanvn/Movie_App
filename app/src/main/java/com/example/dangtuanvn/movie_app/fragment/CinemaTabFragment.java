@@ -241,7 +241,7 @@ public class CinemaTabFragment extends Fragment {
             @Override
             public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
                 View childView = rv.findChildViewUnder(e.getX(), e.getY());
-                if (childView != null && mGesture.onTouchEvent(e)) {
+                if (childView != null && mGesture.onTouchEvent(e) && cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getDistance() <= 100) {
                     LatLng destination = new LatLng(
                             cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLatitude(),
                             cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLongitude());
