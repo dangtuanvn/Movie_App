@@ -295,7 +295,7 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
 
             });
             holder.movieSchedule.performItemClick(holder.movieSchedule.getAdapter().getView(0, null, holder.movieSchedule),0,holder.movieSchedule.getItemIdAtPosition(0));
-            holder.movieSchedule.getAdapter().getView(0, null, holder.movieSchedule);
+
         }
     }
 
