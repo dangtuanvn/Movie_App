@@ -1,6 +1,9 @@
 package com.example.dangtuanvn.movie_app.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -15,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.dangtuanvn.movie_app.MovieDetailActivity;
+import com.example.dangtuanvn.movie_app.NoInternetActivity;
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.adapter.MovieTabAdapter;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
@@ -134,8 +138,12 @@ public class MovieTabFragment extends Fragment {
         recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
             public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                final View childView = rv.findChildViewUnder(e.getX(), e.getY());
-                if (childView != null && mGestureDetector.onTouchEvent(e)) {
+                // Check for network connection
+                ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+                if (networkInfo != null && networkInfo.isConnected()) {
+                    final View childView = rv.findChildViewUnder(e.getX(), e.getY());
+                    if (childView != null && mGestureDetector.onTouchEvent(e)) {
 
 //                    MovieDetailFragment movieDetailFragment = new MovieDetailFragment();
 //                    Bundle args = new Bundle();
@@ -149,12 +157,17 @@ public class MovieTabFragment extends Fragment {
 //                    transaction.commit();
 //                    Log.i("CHILD FRAGMENT", "child: " + getChildFragmentManager().getFragments().size());
 
-                    Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
-                    intent.putExtra("movieId",movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
-                    intent.putExtra("posterUrl",movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
+                        Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
+                        intent.putExtra("movieId", movieList.get(rv.getChildAdapterPosition(childView)).getFilmId());
+                        intent.putExtra("posterUrl", movieList.get(rv.getChildAdapterPosition(childView)).getPosterLandscape());
 //                    handlerFDS.removeCallbacksAndMessages(null);
 //                    swipeLayout.setRefreshing(false);
-                    startActivity(intent);
+                        startActivity(intent);
+                    }
+                } else {
+                    Intent intent = new Intent(getActivity(), NoInternetActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    getActivity().startActivity(intent);
                 }
                 return false;
             }

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Movie_App</string>
-    <string name="more_btn">More</string>
+    <string name="more_btn">More </string>
     <string name="director">Director: </string>
-    <string name="writer">Writer: </string>
-    <string name="star">Star: </string>
+    <string name="writer">Writers: </string>
+    <string name="star">Stars: </string>
 </resources>

@@ -1,41 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:background="@color/background"
-    android:layout_height="wrap_content">
-
-    <HorizontalScrollView
-    android:id="@+id/hsv"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fillViewport="true"
-    android:layout_below="@id/star"
     android:background="@color/background"
-    android:measureAllChildren="false"
-    android:scrollbars="none" >
-    <LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:orientation="horizontal">
-    <GridView
-        android:layout_width="500dp"
+    android:orientation="vertical">
+
+    <HorizontalScrollView
+        android:id="@+id/hsv"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/movie_schedule"
-        android:columnWidth="100dp"
-        android:listSelector="@drawable/back_schedule"
-        android:numColumns="7"
-        android:horizontalSpacing="0dp"
-        android:scrollbars="horizontal"
-        ></GridView>
-    </LinearLayout>
+        android:layout_below="@id/star"
+        android:background="@color/background"
+        android:fillViewport="true"
+        android:measureAllChildren="false"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <GridView
+                android:id="@+id/movie_schedule"
+                android:layout_width="500dp"
+                android:layout_height="wrap_content"
+                android:columnWidth="100dp"
+                android:horizontalSpacing="0dp"
+                android:listSelector="@drawable/back_schedule"
+                android:numColumns="7"
+                android:scrollbars="horizontal"></GridView>
+        </LinearLayout>
     </HorizontalScrollView>
-<android.support.v7.widget.RecyclerView
-android:background="#424242"
-android:id="@+id/all_schedule_view"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:layout_below="@id/hsv"
-android:scrollbars="vertical" />
-    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/all_schedule_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/hsv"
+        android:background="#424242"
+        android:scrollbars="vertical" />
+</RelativeLayout>

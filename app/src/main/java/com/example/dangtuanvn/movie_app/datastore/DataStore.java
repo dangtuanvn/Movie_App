@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class DataStore implements FeedDataStore {
     private static String X123F_TOKEN = "GVlRhvnZt0Z4WF4NrfsQXwZh";
     private static String X123F_VERSION = "3";
-    protected static String BASEURL = "http://mapp.123phim.vn/android/2.97/";
+    protected static String BASE_URL = "http://mapp.123phim.vn/android/2.97/";
 
     private Context context;
 
@@ -48,10 +48,9 @@ public abstract class DataStore implements FeedDataStore {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.i("VOLLEY RESPONSE FAIL", "Volley gets fail");
-                        // TODO: VOLLEY RESPONSE
-//                        Intent retryIntent = new Intent(context, RetryConnectionActivity.class);
-//                        retryIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                        context.startActivity(retryIntent);
+//                        Intent intent = new Intent(context, NoInternetActivity.class);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                        context.startActivity(intent);
                     }
                 }){
 
@@ -71,7 +70,10 @@ public abstract class DataStore implements FeedDataStore {
             }
         };
 
-        // Add the request to the RequestQueue.
+        // Set timeout to 5000 ms, DefaultRetryPolicy.DEFAULT_TIMEOUT_MS = 2500
+//        stringRequest.setRetryPolicy(new DefaultRetryPolicy(5000, DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        // Add the request to the a Singleton request queue
         SingletonQueue.getInstance(context).addRequest(stringRequest);
 //        queue.add(stringRequest);
     }
@@ -106,7 +108,7 @@ public abstract class DataStore implements FeedDataStore {
     }
 
     protected String setUrl(){
-        return BASEURL;
+        return BASE_URL;
     }
 }
 

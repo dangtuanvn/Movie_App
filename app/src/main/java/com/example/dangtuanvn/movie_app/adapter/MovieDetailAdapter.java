@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -129,9 +130,9 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
             holder.video.setMediaController(videoMediaController);
 
             final FeedDataStore movieTrailerFDS = new MovieTrailerFeedDataStore(context, movieId);
-            Target mTarget;
 
-            mTarget = new Target() {
+
+            final Target mTarget = new Target() {
                 @Override
                 public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
                     DisplayMetrics metrics = new DisplayMetrics();
@@ -160,47 +161,55 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
                 }
             };
 
-            Picasso.with(context)
-                    .load(posterUrl)
-                    .into(mTarget);
-
-            movieTrailerFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+            // Create a handler with delay of 500 so these code will run after the image has loaded
+            Handler handlerVideo = new Handler();
+            handlerVideo.postDelayed(new Runnable() {
                 @Override
-                public void onDataRetrievedListener(List<?> list, Exception ex) {
-                    List<MovieTrailer> movieTrailer = (List<MovieTrailer>) list;
-                    try {
-                        Uri uri = Uri.parse(movieTrailer.get(0).getV720p());
-                        holder.video.setVideoURI(uri);
-                    } catch (NullPointerException e) {
-                        // TODO fix url null
-                    }
-                }
-            });
+                public void run() {
+                    Picasso.with(context)
+                            .load(posterUrl)
+                            .into(mTarget);
 
-            holder.playbtn.setBackgroundResource(R.drawable.bt_play3);
-            holder.playbtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    holder.video.setBackgroundResource(0);
-                    holder.video.start();
-                    videoMediaController.setVisibility(View.VISIBLE);
-                    holder.playbtn.setVisibility(View.GONE);
-                }
-            });
-            holder.video.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (holder.video.isPlaying() == false) {
-                        holder.video.setBackgroundResource(0);
-                        holder.video.start();
-                        videoMediaController.setVisibility(View.VISIBLE);
-                        holder.playbtn.setVisibility(View.GONE);
-                        return true;
-                    }
-                    return false;
-                }
+                    movieTrailerFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+                        @Override
+                        public void onDataRetrievedListener(List<?> list, Exception ex) {
+                            List<MovieTrailer> movieTrailer = (List<MovieTrailer>) list;
+                            try {
+                                Uri uri = Uri.parse(movieTrailer.get(0).getV720p());
+                                holder.video.setVideoURI(uri);
+                            } catch (NullPointerException e) {
+                                // TODO fix url null
+                            }
+                        }
+                    });
 
-            });
+                    holder.playbtn.setBackgroundResource(R.drawable.bt_play3);
+                    holder.playbtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            holder.video.setBackgroundResource(0);
+                            holder.video.start();
+                            videoMediaController.setVisibility(View.VISIBLE);
+                            holder.playbtn.setVisibility(View.GONE);
+                        }
+                    });
+                    holder.video.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            if (holder.video.isPlaying() == false) {
+                                holder.video.setBackgroundResource(0);
+                                holder.video.start();
+                                videoMediaController.setVisibility(View.VISIBLE);
+                                holder.playbtn.setVisibility(View.GONE);
+                                return true;
+                            }
+                            return false;
+                        }
+
+                    });
+                }
+            }, 500);
+
         }
 
         if (position == 1) {
@@ -251,10 +260,10 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
                 public void onClick(View view) {
                     if (holder.movieDescription.getMaxLines() == 3) {
                         holder.movieDescription.setMaxLines(Integer.MAX_VALUE);
-                        holder.more.setText("Less");
+                        holder.more.setText("Less ");
                     } else {
                         holder.movieDescription.setMaxLines(3);
-                        holder.more.setText("More");
+                        holder.more.setText("More ");
                     }
                 }
             });

@@ -1,12 +1,15 @@
 package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.example.dangtuanvn.movie_app.MainActivity;
+import com.example.dangtuanvn.movie_app.NoInternetActivity;
 import com.example.dangtuanvn.movie_app.fragment.NoInternetFragment;
 import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
@@ -33,9 +36,9 @@ public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public android.support.v4.app.Fragment getItem(int position) {
         // Check for network connection
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
+//        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+//        if (networkInfo != null && networkInfo.isConnected()) {
             if (position == 0) {
                 return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.values()[0]);
             } else if (position == 1) {
@@ -45,9 +48,12 @@ public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
             } else if (position == 3) {
                 return NewsTabFragment.newInstance();
             }
-        } else {
-            return NoInternetFragment.newInstance();
-        }
+//        } else {
+//            Intent intent = new Intent(context, NoInternetActivity.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//            context.startActivity(intent);
+//            return NoInternetFragment.newInstance();
+//        }
         return null;
     }
 

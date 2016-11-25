@@ -16,6 +16,7 @@
         android:layout_weight="1"
         android:textSize="20dp"
         android:layout_gravity="center_vertical"
+        android:textColor="@color/schedule_grey"
         android:text="2D"/>
 
     <android.support.v7.widget.RecyclerView
