@@ -205,7 +205,7 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
         if (position == 1) {
             holder.IMDB.setCompoundDrawablesWithIntrinsicBounds(R.drawable.star_60, 0, 0, 0);
             holder.length.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_clock, 0, 0, 0);
-            holder.date.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_calendar_white, 0, 0, 0);
+            holder.date.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_calendar_grey, 0, 0, 0);
 
             FeedDataStore movieDetailFDS = new MovieDetailFeedDataStore(context, movieId);
             movieDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
@@ -295,6 +295,8 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
 
             });
             holder.movieSchedule.performItemClick(holder.movieSchedule.getAdapter().getView(0, null, holder.movieSchedule),0,holder.movieSchedule.getItemIdAtPosition(0));
+            holder.movieSchedule.getAdapter().getView(0, null, holder.movieSchedule).setSelected(true
+            );
 
         }
     }
