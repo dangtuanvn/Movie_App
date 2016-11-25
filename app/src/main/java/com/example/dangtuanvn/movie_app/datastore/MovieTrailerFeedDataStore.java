@@ -19,7 +19,7 @@ import java.util.List;
  */
 
 public class MovieTrailerFeedDataStore extends DataStore {
-    private String url = BASEURL + "film/trailer?film_id=";
+    private String url = BASE_URL + "film/trailer?film_id=";
     private int movieId;
 
     public MovieTrailerFeedDataStore(Context context, int movieId) {

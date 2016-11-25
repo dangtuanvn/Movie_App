@@ -19,7 +19,7 @@ import java.util.Collections;
  */
 
 public class NewsDetailFeedDataStore extends DataStore {
-    private String url = BASEURL + "news/detail?news_id=";
+    private String url = BASE_URL + "news/detail?news_id=";
     private int newsId;
 
     public NewsDetailFeedDataStore(Context context, int newsId) {

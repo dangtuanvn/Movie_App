@@ -18,7 +18,7 @@ import java.util.List;
  */
 
 public class ScheduleFeedDataStore extends DataStore {
-    private String url = BASEURL + "session/cinema";
+    private String url = BASE_URL + "session/cinema";
     private int movieId;
     private String date;
 

@@ -19,8 +19,8 @@ import java.util.List;
  */
 
 public class MovieFeedDataStore extends DataStore {
-    private String urlShowing = BASEURL + "film/list?status=1";
-    private String urlUpcoming = BASEURL + "film/list?status=2";
+    private String urlShowing = BASE_URL + "film/list?status=1";
+    private String urlUpcoming = BASE_URL + "film/list?status=2";
 
     public enum DataType{
         SHOWING,

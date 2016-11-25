@@ -18,7 +18,7 @@ import java.util.List;
  */
 
 public class NewsFeedDataStore extends DataStore {
-    private String url = BASEURL + "news/list?type_id=1";
+    private String url = BASE_URL + "news/list?type_id=1";
 
     public NewsFeedDataStore(Context context) {
         super(context);

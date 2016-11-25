@@ -18,7 +18,7 @@ import java.util.List;
  */
 
 public class CinemaFeedDataStore extends DataStore {
-    private String url = BASEURL + "cinema/list";
+    private String url = BASE_URL + "cinema/list";
 
     public CinemaFeedDataStore(Context context) {
         super(context);

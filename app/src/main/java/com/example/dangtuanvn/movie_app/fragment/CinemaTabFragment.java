@@ -2,11 +2,14 @@ package com.example.dangtuanvn.movie_app.fragment;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.dangtuanvn.movie_app.NoInternetActivity;
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.adapter.CinemaTabAdapter;
 import com.example.dangtuanvn.movie_app.datastore.CinemaFeedDataStore;
@@ -240,18 +244,27 @@ public class CinemaTabFragment extends Fragment {
         mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
             public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                View childView = rv.findChildViewUnder(e.getX(), e.getY());
-                if (childView != null && mGesture.onTouchEvent(e) && cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getDistance() <= 100) {
-                    LatLng destination = new LatLng(
-                            cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLatitude(),
-                            cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLongitude());
-                    String url = getDirectionsUrl(currentPosition.getPosition(), destination);
+                // Check for network connection
+                ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+                if (networkInfo != null && networkInfo.isConnected()) {
+                    View childView = rv.findChildViewUnder(e.getX(), e.getY());
+                    if (childView != null && mGesture.onTouchEvent(e) && cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getDistance() <= 100) {
+                        LatLng destination = new LatLng(
+                                cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLatitude(),
+                                cinemaList.get(mRecyclerView.getChildAdapterPosition(childView)).getLongitude());
+                        String url = getDirectionsUrl(currentPosition.getPosition(), destination);
 
-                    DownloadTask downloadTask = new DownloadTask();
+                        DownloadTask downloadTask = new DownloadTask();
 
-                    // Start downloading json data from Google Directions API
-                    downloadTask.execute(url);
-                    setMap(destination, currentPosition.getPosition());
+                        // Start downloading json data from Google Directions API
+                        downloadTask.execute(url);
+                        setMap(destination, currentPosition.getPosition());
+                    }
+                } else {
+                    Intent intent = new Intent(getActivity(), NoInternetActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    getActivity().startActivity(intent);
                 }
                 return false;
             }
@@ -392,8 +405,9 @@ public class CinemaTabFragment extends Fragment {
         // Executes in UI thread, after the parsing process
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList<LatLng> points = null;
+            ArrayList<LatLng> points;
             PolylineOptions lineOptions = null;
+            // TODO: NULL POINTER EXCEPTION (NO INTERNET CONNECTION)
 
             // Traversing through all the routes
             for (int i = 0; i < result.size(); i++) {

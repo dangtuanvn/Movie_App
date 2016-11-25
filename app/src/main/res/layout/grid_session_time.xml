@@ -8,6 +8,7 @@
     <TextView
         android:id="@+id/session_time"
         android:text="09:00"
+        android:textColor="@color/schedule_grey"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
