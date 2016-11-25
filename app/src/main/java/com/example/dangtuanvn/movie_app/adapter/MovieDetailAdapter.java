@@ -1,5 +1,6 @@
 package com.example.dangtuanvn.movie_app.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -283,6 +284,7 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                     view.setSelected(true);
+                    holder.movieSchedule.getPositionForView(view);
                     FeedDataStore scheduleFDS = new ScheduleFeedDataStore(context, movieId, dateList.get(position));
                     scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
                         @Override
@@ -294,9 +296,9 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
 
 
             });
-            holder.movieSchedule.performItemClick(holder.movieSchedule.getAdapter().getView(0, null, holder.movieSchedule),0,holder.movieSchedule.getItemIdAtPosition(0));
-            holder.movieSchedule.getAdapter().getView(0, null, holder.movieSchedule).setSelected(true
-            );
+
+                holder.movieSchedule.performItemClick(holder.movieSchedule.getAdapter().getView(0, null, holder.movieSchedule), 0, holder.movieSchedule.getItemIdAtPosition(0));
+
 
         }
     }
