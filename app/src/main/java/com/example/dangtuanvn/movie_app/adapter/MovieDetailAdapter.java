@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
@@ -50,6 +51,7 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
 
     private Context context;
     private int movieId;
+    private int duration;
     private Calendar dateTime = Calendar.getInstance();
     private String posterUrl;
     private ArrayList<String> dateList = new ArrayList<>();
@@ -62,10 +64,7 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
         this.context = context;
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return position;
-    }
+
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
         private final VideoView video;
@@ -161,6 +160,7 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
                 }
             };
 
+
             // Create a handler with delay of 500 so these code will run after the image has loaded
             Handler handlerVideo = new Handler();
             handlerVideo.postDelayed(new Runnable() {
@@ -176,6 +176,9 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
                             List<MovieTrailer> movieTrailer = (List<MovieTrailer>) list;
                             try {
                                 Uri uri = Uri.parse(movieTrailer.get(0).getV720p());
+                                if(duration!=0){
+                                    holder.video.seekTo(duration);
+                                }
                                 holder.video.setVideoURI(uri);
                             } catch (NullPointerException e) {
                                 // TODO fix url null
@@ -183,6 +186,13 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
                         }
                     });
 
+                 holder.video.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                     @Override
+                     public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                         mediaPlayer.isPlaying();
+                         return false;
+                     }
+                 });
                     holder.playbtn.setBackgroundResource(R.drawable.bt_play3);
                     holder.playbtn.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -316,6 +326,17 @@ public class MovieDetailAdapter extends RecyclerView.Adapter<MovieDetailAdapter.
     public int getItemCount() {
         return 4;
     }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+
 
 
     private void displayScheduleExpandableList(final List<Schedule> scheduleList, ViewHolder holder) {
