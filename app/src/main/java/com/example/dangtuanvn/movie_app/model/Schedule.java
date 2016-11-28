@@ -8,48 +8,12 @@ import java.util.List;
  */
 
 public class Schedule implements Serializable {
-    /* version_id
-        1 - imax
-        2 - 2d
-        3 - 3d
-        5 - gold class
-        6 - L'amour
-
-        is_voice
-        0: digital
-        1: lồng tiếng
-
-        status_id
+    /*  status_id
         1: available
         2: full?
         3: past time
     */
 
-    public enum VersionId {
-        UNKNOWN1,
-        iMax,
-        twoD,
-        threeD,
-        UNKNOWN2,
-        goldClass,
-        lAmour
-
-//        iMax(1),
-//        twoD(2),
-//        threeD(3),
-//        goldClass(5),
-//        lAmour(6);
-//
-//        private int number;
-//
-//        VersionId(int number) {
-//            this.number = number;
-//        }
-//
-//        public int getNumber() {
-//            return number;
-//        }
-    }
 
     private int pCinemaId;
     private String pCinemaName;
@@ -189,35 +153,57 @@ public class Schedule implements Serializable {
 
     public static class Session{
         private List<SessionTime> listTime;
-        private VersionId movieVersion;
+        private int movieVersion;
         private boolean isVoice;
-        public Session(List<SessionTime> listTime, VersionId movieVersion, boolean isVoice){
+        public Session(List<SessionTime> listTime, int movieVersion, boolean isVoice){
             this.isVoice = isVoice;
             this.listTime = listTime;
             this.movieVersion = movieVersion;
         }
 
+        /* version_id
+        1 - Imax
+        2 - 2D
+        3 - 3D
+        5 - Gold Class
+        6 - L'amour
+        7 - Starium
+
+        is_voice
+        0: digital
+        1: lồng tiếng
+        */
+
         public String getVersion(){
             String version = null;
             switch(movieVersion) {
-                case iMax:
+                case 1:
                     version = "IMAX";
                     break;
 
-                case twoD:
+                case 2:
                     version = "2D";
                     break;
 
-                case threeD:
+                case 3:
                     version = "3D";
                     break;
 
-                case goldClass:
+                case 4:
                     version = "GOLD CLASS";
                     break;
 
-                case lAmour:
+                case 6:
                     version = "L'AMOUR";
+                    break;
+
+                case 7:
+                    version = "STARIUM";
+                    break;
+
+                // Any version id that is not yet register will be shown as UNKNOWN
+                default:
+                    version = "UNKNOWN";
                     break;
             }
 
