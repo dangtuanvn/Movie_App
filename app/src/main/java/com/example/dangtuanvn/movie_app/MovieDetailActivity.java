@@ -29,6 +29,8 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.MediaController;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -47,6 +49,7 @@ import com.example.dangtuanvn.movie_app.model.ScheduleCinemaGroupList;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,8 +63,11 @@ import java.util.Set;
 public class MovieDetailActivity extends AppCompatActivity {
     private Toolbar mytoolbar;
     private  VideoView video;
-    private FrameLayout videolayout;
+    private RelativeLayout videolayout;
     private  Button playbtn;
+    private  TextView duration;
+    private  TextView start;
+    private SeekBar progress;
     private  TextView movieTitle;
     private  TextView PG;
     private  TextView IMDB;
@@ -70,6 +76,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private  TextView movieDescription;
     private  TextView directorName;
     private  TextView writerName;
+    private Button backBtn;
     private  TextView starName;
     private  RecyclerView allSchedule;
     private  Button more;
@@ -81,8 +88,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_detail);
+
         video = (VideoView) findViewById(R.id.video_view);
-        videolayout = (FrameLayout) findViewById(R.id.video_layout);
+        videolayout = (RelativeLayout) findViewById(R.id.video_layout);
         playbtn = (Button) findViewById(R.id.play_button);
         movieTitle = (TextView) findViewById(R.id.movie_title);
         PG = (TextView) findViewById(R.id.PG);
@@ -96,6 +104,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         starName = (TextView) findViewById(R.id.star_name);
         more = (Button) findViewById(R.id.more);
         movieSchedule = (GridView) findViewById(R.id.movie_schedule);
+        backBtn= (Button) findViewById(R.id.back);
+        duration = (TextView) findViewById(R.id.duration);
+        progress=(SeekBar) findViewById(R.id.progress);
+        start=(TextView) findViewById(R.id.current_time);
 //        mytoolbar = (Toolbar)findViewById(R.id.my_toolbar);
 //        mytoolbar.setNavigationIcon(R.drawable.back_btn);
 //        mytoolbar.setTitle("");
@@ -126,11 +138,14 @@ public class MovieDetailActivity extends AppCompatActivity {
 //        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 //        movieDetail.setLayoutManager(layoutManager);
 
-        final MediaController videoMediaController = new MediaController(this, false);
-        videoMediaController.setAnchorView(videolayout);
-        videoMediaController.setMediaPlayer(video);
-        video.setMediaController(videoMediaController);
 
+        backBtn.setCompoundDrawablesWithIntrinsicBounds(R.drawable.back_btn,0,0,0);
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         final FeedDataStore movieTrailerFDS = new MovieTrailerFeedDataStore(this, movieId);
         playbtn.setBackgroundResource(R.drawable.bt_play3);
 
@@ -150,6 +165,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                 Bitmap result = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, false);
                 BitmapDrawable ob = new BitmapDrawable(getResources(), result);
                 video.setBackground(ob);
+
             }
 
             @Override
@@ -181,9 +197,37 @@ public class MovieDetailActivity extends AppCompatActivity {
                             Uri uri = Uri.parse(movieTrailer.get(0).getV720p());
 
                             video.setVideoURI(uri);
+
                         } catch (NullPointerException e) {
                             // TODO fix url null
                         }
+                    }
+                });
+                progress.setMax(video.getDuration());
+                final DecimalFormat formatter = new DecimalFormat("00");
+                video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        duration.setText(formatter.format((video.getDuration()/1000)/60)+":"+formatter.format(video.getDuration()/1000%60));
+                    }
+                });
+                progress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                        if(b) {
+                            // this is when actually seekbar has been seeked to a new position
+                            video.seekTo(i);
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
                     }
                 });
 
@@ -192,20 +236,31 @@ public class MovieDetailActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         video.setBackgroundResource(0);
                         video.start();
-                        videoMediaController.setVisibility(View.VISIBLE);
                         playbtn.setVisibility(View.GONE);
+
+                        progress.postDelayed(onEverySecond, 1000);
+
                     }
                 });
+
                 video.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
-                        if (video.isPlaying() == false) {
+
+                        if (video.isPlaying() == false ) {
                             video.setBackgroundResource(0);
                             video.start();
-                            videoMediaController.setVisibility(View.VISIBLE);
                             playbtn.setVisibility(View.GONE);
-                            return true;
+//                            progress.setMax(video.getDuration());
+//                            progress.setProgress(video.getDuration());
+                            progress.postDelayed(onEverySecond, 1000);
+                            return false;
                         }
+                        if(video.isPlaying()== true){
+                            video.pause();
+                        }
+
+
                         return false;
                     }
 
@@ -299,9 +354,9 @@ public class MovieDetailActivity extends AppCompatActivity {
 
 
         });
+        final boolean[] firstTime = {true};
 
         movieSchedule.performItemClick(movieSchedule.getAdapter().getView(0, null, movieSchedule), 0, movieSchedule.getItemIdAtPosition(0));
-
 
     }
     private void displayScheduleExpandableList(final List<Schedule> scheduleList) {
@@ -343,7 +398,22 @@ public class MovieDetailActivity extends AppCompatActivity {
         allSchedule.setAdapter(recyclerExpandableView);
         allSchedule.setLayoutManager(new LinearLayoutManager(this));
     }
+    private Runnable onEverySecond=new Runnable() {
 
+        @Override
+        public void run() {
+            progress.setMax(video.getDuration());
+            if(progress != null) {
+                progress.setProgress(video.getCurrentPosition());
+            }
+            if(video.isPlaying()) {
+                progress.postDelayed(onEverySecond, 1000);
+            }
+            DecimalFormat formatter = new DecimalFormat("00");
+            start.setText((formatter.format((video.getCurrentPosition()/1000)/60)+":"+formatter.format(video.getCurrentPosition()/1000%60)));
+
+        }
+    };
 //    @Override
 //    public void onItemClick(View view, Object data, int position) {
 //        Log.i("ITEM CLICK", "" + position);

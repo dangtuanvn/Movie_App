@@ -550,26 +550,24 @@ public class CinemaTabFragment extends Fragment {
         private View myContentsView;
 
         private MyInfoWindowAdapter(LayoutInflater inflater) {
-            myContentsView = inflater.inflate(R.layout.location_detail, null);
+            myContentsView = inflater.inflate(R.layout.info_window_layout, null);
         }
 
         @Override
         public View getInfoContents(Marker marker) {
-            return null;
+         return null;
         }
 
         @Override
         public View getInfoWindow(Marker marker) {
             myContentsView.setBackgroundColor(Color.BLACK);
-            LinearLayout distanceLinear = (LinearLayout) myContentsView.findViewById(R.id.lineardistance);
-            distanceLinear.setVisibility(View.GONE);
             ImageView cinemaIcon = (ImageView) myContentsView.findViewById(R.id.location_icon);
             cinemaIcon.getPaddingLeft();
             cinemaIcon.setImageResource(R.drawable.cinema_holder);
             TextView tvTitle = ((TextView) myContentsView.findViewById(R.id.cinema_name));
             tvTitle.setText(marker.getTitle());
             TextView tvSnippet = ((TextView) myContentsView.findViewById(R.id.address));
-            tvSnippet.setText(marker.getSnippet());
+            tvSnippet.setText(marker.getSnippet());;
             return myContentsView;
         }
     }
