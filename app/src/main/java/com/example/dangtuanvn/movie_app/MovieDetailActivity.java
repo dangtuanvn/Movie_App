@@ -28,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,26 +59,26 @@ import java.util.Set;
  * Created by sinhhx on 11/15/16.
  */
 public class MovieDetailActivity extends AppCompatActivity {
-    private Toolbar mytoolbar;
-    private  VideoView video;
+    private VideoView video;
     private FrameLayout videolayout;
-    private  Button playbtn;
-    private  TextView movieTitle;
-    private  TextView PG;
-    private  TextView IMDB;
-    private  TextView length;
-    private  TextView date;
-    private  TextView movieDescription;
-    private  TextView directorName;
-    private  TextView writerName;
-    private  TextView starName;
-    private  RecyclerView allSchedule;
-    private  Button more;
-    private  GridView movieSchedule;
+    private Button playbtn;
+    private TextView movieTitle;
+    private TextView PG;
+    private TextView IMDB;
+    private TextView length;
+    private TextView date;
+    private TextView movieDescription;
+    private TextView directorName;
+    private TextView writerName;
+    private TextView starName;
+    private RecyclerView allSchedule;
+    private Button more;
+    private GridView movieSchedule;
     private Calendar dateTime = Calendar.getInstance();
     private ArrayList<String> dateList = new ArrayList<>();
     private ArrayList<String> displayDate = new ArrayList<>();
     private ArrayList<String> timeList = new ArrayList<>();
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_detail);
@@ -106,6 +107,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 //                finish();
 //            }
 //        });
+
         final int movieId = getIntent().getIntExtra("movieId", 0);
         final String posterUrl = getIntent().getStringExtra("posterUrl");
 //
@@ -162,7 +164,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 
             }
         };
-
 
         // Create a handler with delay of 500 so these code will run after the image has loaded
         Handler handlerVideo = new Handler();
@@ -246,9 +247,6 @@ public class MovieDetailActivity extends AppCompatActivity {
             }
         });
 
-
-
-
         more.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -261,9 +259,6 @@ public class MovieDetailActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-        final Calendar c = Calendar.getInstance();
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat sdf = new SimpleDateFormat("EE");
@@ -279,15 +274,15 @@ public class MovieDetailActivity extends AppCompatActivity {
                 displayDate.add(i, f.format(dateTime.getTime()));
             }
         }
-        MovieScheduleAdapter movieScheduleAdapter = new MovieScheduleAdapter(this, displayDate, timeList);
 
+        final MovieScheduleAdapter movieScheduleAdapter = new MovieScheduleAdapter(this, displayDate, timeList);
         movieSchedule.setAdapter(movieScheduleAdapter);
 
         movieSchedule.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 view.setSelected(true);
-                movieSchedule.getPositionForView(view);
+
                 FeedDataStore scheduleFDS = new ScheduleFeedDataStore(getApplicationContext(), movieId, dateList.get(position));
                 scheduleFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
                     @Override
@@ -296,14 +291,28 @@ public class MovieDetailActivity extends AppCompatActivity {
                     }
                 });
             }
-
-
         });
-
-        movieSchedule.performItemClick(movieSchedule.getAdapter().getView(0, null, movieSchedule), 0, movieSchedule.getItemIdAtPosition(0));
-
-
     }
+
+    @Override
+    protected void onPostCreate (Bundle savedInstanceState){
+        super.onPostCreate(savedInstanceState);
+
+        // Default schedule selection of Today
+        final int position = 0;
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                movieSchedule.performItemClick(movieSchedule.getAdapter().getView(position, null, movieSchedule), 0, position);
+//                movieSchedule.getAdapter().getView(position, null, movieSchedule).performClick();
+                View v = movieSchedule.getChildAt(position);
+                if (v != null) {
+                    v.setPressed(true);
+                }
+            }
+        }, 500);
+    }
+
     private void displayScheduleExpandableList(final List<Schedule> scheduleList) {
         // TODO: Simplify this process
 //        List<Integer> cinemaGroupListID = new ArrayList<>();
