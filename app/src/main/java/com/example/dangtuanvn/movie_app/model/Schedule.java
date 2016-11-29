@@ -175,7 +175,7 @@ public class Schedule implements Serializable {
         */
 
         public String getVersion(){
-            String version = null;
+            String version;
             switch(movieVersion) {
                 case 1:
                     version = "IMAX";
@@ -189,7 +189,8 @@ public class Schedule implements Serializable {
                     version = "3D";
                     break;
 
-                case 4:
+                case 5:
+                case 9:
                     version = "GOLD CLASS";
                     break;
 
