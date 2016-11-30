@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
 import com.bignerdranch.expandablerecyclerview.Model.ParentListItem;
+import com.bignerdranch.expandablerecyclerview.Model.ParentWrapper;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ChildViewHolder;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ParentViewHolder;
 import com.example.dangtuanvn.movie_app.R;
@@ -102,14 +103,21 @@ public class ScheduleExpandableAdapter  extends ExpandableRecyclerAdapter<Schedu
             GroupCinemaAdapter groupCinemaAdapter = new GroupCinemaAdapter(context, schedule.getListSessions());
             cinemaGroupView.setAdapter(groupCinemaAdapter);
             cinemaGroupView.setLayoutManager(new LinearLayoutManager(context));
-
-
 //            itemView.setTag(schedule);
         }
     }
+//
+//    public interface OnItemClick {
+//        void onItemClick(View view, Object data, int position);
+//    }
 
-    public interface OnItemClick {
-        void onItemClick(View view, Object data, int position);
+    @Override
+    public void onParentListItemExpanded(int position) {
+        Object parent = mItemList.get(position);
+        collapseAllParents();    // Alternatively keep track of the single item that is expanded and explicitly collapse that row (more efficient)
+        expandParent(((ParentWrapper) parent).getParentListItem());
+
+
     }
 
     private class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {

@@ -360,6 +360,9 @@ public class MovieDetailActivity extends AppCompatActivity {
                 });
             }
         });
+
+        // Disable input for the schedule before it is ready
+        movieSchedule.setEnabled(false);
     }
 
     @Override
@@ -377,6 +380,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                 if (v != null) {
                     v.setPressed(true);
                 }
+                movieSchedule.setEnabled(true);
             }
         }, 500);
     }
