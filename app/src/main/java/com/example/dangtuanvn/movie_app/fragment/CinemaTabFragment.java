@@ -189,6 +189,7 @@ public class CinemaTabFragment extends Fragment {
                 map = googleMap;
                 map.setInfoWindowAdapter(new MyInfoWindowAdapter(inflater));
 
+
                 MarkerOptions currentPosition = finalTempPosition;
 
                 double latitude = currentPosition.getPosition().latitude;
@@ -548,18 +549,19 @@ public class CinemaTabFragment extends Fragment {
 
     private class MyInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         private View myContentsView;
-
+        LayoutInflater inflater;
         private MyInfoWindowAdapter(LayoutInflater inflater) {
-            myContentsView = inflater.inflate(R.layout.info_window_layout, null);
+            this.inflater = inflater;
         }
 
         @Override
         public View getInfoContents(Marker marker) {
-         return null;
+            return null;
         }
 
         @Override
         public View getInfoWindow(Marker marker) {
+            myContentsView = inflater.inflate(R.layout.info_window_layout, null);
             myContentsView.setBackgroundColor(Color.BLACK);
             ImageView cinemaIcon = (ImageView) myContentsView.findViewById(R.id.location_icon);
             cinemaIcon.getPaddingLeft();
@@ -567,8 +569,9 @@ public class CinemaTabFragment extends Fragment {
             TextView tvTitle = ((TextView) myContentsView.findViewById(R.id.cinema_name));
             tvTitle.setText(marker.getTitle());
             TextView tvSnippet = ((TextView) myContentsView.findViewById(R.id.address));
-            tvSnippet.setText(marker.getSnippet());;
+            tvSnippet.setText(marker.getSnippet());
             return myContentsView;
+
         }
     }
 

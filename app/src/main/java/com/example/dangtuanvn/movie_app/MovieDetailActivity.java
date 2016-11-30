@@ -51,9 +51,11 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -64,7 +66,7 @@ import java.util.Set;
 public class MovieDetailActivity extends AppCompatActivity {
     private Toolbar mytoolbar;
     private  VideoView video;
-    private RelativeLayout videolayout;
+    private FrameLayout videolayout;
     private  Button playbtn;
     private  TextView duration;
     private  TextView start;
@@ -92,7 +94,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         setContentView(R.layout.movie_detail);
 
         video = (VideoView) findViewById(R.id.video_view);
-        videolayout = (RelativeLayout) findViewById(R.id.video_layout);
+        videolayout = (FrameLayout) findViewById(R.id.video_layout);
         playbtn = (Button) findViewById(R.id.play_button);
         movieTitle = (TextView) findViewById(R.id.movie_title);
         PG = (TextView) findViewById(R.id.PG);
@@ -189,7 +191,8 @@ public class MovieDetailActivity extends AppCompatActivity {
             public void run() {
                 Picasso.with(getApplication())
                         .load(posterUrl)
-                        .into(mTarget);
+                        .into(mTarget)
+                ;
 
                 movieTrailerFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
                     @Override
@@ -207,18 +210,19 @@ public class MovieDetailActivity extends AppCompatActivity {
                 });
                 progress.setMax(video.getDuration());
                 final DecimalFormat formatter = new DecimalFormat("00");
-                video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mediaPlayer) {
-                        duration.setText(formatter.format((video.getDuration()/1000)/60)+":"+formatter.format(video.getDuration()/1000%60));
-                    }
-                });
+//                video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//                    @Override
+//                    public void onPrepared(MediaPlayer mediaPlayer) {
+//                        duration.setText(formatter.format((video.getDuration()/1000)/60)+":"+formatter.format(video.getDuration()/1000%60));
+//                    }
+//                });
                 progress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                         if(b) {
                             // this is when actually seekbar has been seeked to a new position
                             video.seekTo(i);
+                            start.setText((formatter.format((video.getCurrentPosition()/1000)/60)+":"+formatter.format(video.getCurrentPosition()/1000%60)));
                         }
                     }
 
@@ -230,6 +234,12 @@ public class MovieDetailActivity extends AppCompatActivity {
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {
 
+                    }
+                });
+                video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        duration.setText((formatter.format((video.getDuration()/1000)/60)+":"+formatter.format(video.getDuration()/1000%60)));
                     }
                 });
 
@@ -285,7 +295,9 @@ public class MovieDetailActivity extends AppCompatActivity {
                 IMDB.setText(detailList.get(0).getImdbPoint() + " IMDB");
                 String duration = detailList.get(0).getDuration() / 60 + "h " + detailList.get(0).getDuration() % 60 + "min";
                 length.setText(duration);
-                date.setText(detailList.get(0).getPublishDate());
+                String date_before =  detailList.get(0).getPublishDate();
+                String date_after = formateDateFromstring("yyyy-MM-dd", "dd MMM yyyy", date_before);
+                date.setText(date_after);
                 movieDescription.setText("" + detailList.get(0).getDescriptionMobile());
                 if (detailList.get(0).getDirectorName() == null) {
                     directorName.setText("");
@@ -407,6 +419,24 @@ public class MovieDetailActivity extends AppCompatActivity {
 //        recyclerExpandableView.setOnItemClick(this);
         allSchedule.setAdapter(recyclerExpandableView);
         allSchedule.setLayoutManager(new LinearLayoutManager(this));
+    }
+    public static String formateDateFromstring(String inputFormat, String outputFormat, String inputDate){
+
+        Date parsed = null;
+        String outputDate = "";
+
+        SimpleDateFormat df_input = new SimpleDateFormat(inputFormat, java.util.Locale.getDefault());
+        SimpleDateFormat df_output = new SimpleDateFormat(outputFormat, java.util.Locale.getDefault());
+
+        try {
+            parsed = df_input.parse(inputDate);
+            outputDate = df_output.format(parsed);
+
+        } catch (ParseException e) {
+        }
+
+        return outputDate;
+
     }
     private Runnable onEverySecond=new Runnable() {
 
