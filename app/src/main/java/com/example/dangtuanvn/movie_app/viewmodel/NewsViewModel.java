@@ -1,59 +1,60 @@
-package com.example.dangtuanvn.movie_app.adapter;
+package com.example.dangtuanvn.movie_app.viewmodel;
 
 import android.content.Context;
+import android.databinding.BaseObservable;
+import android.databinding.BindingAdapter;
 import android.graphics.Bitmap;
-import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.example.dangtuanvn.movie_app.R;
-import com.example.dangtuanvn.movie_app.viewmodel.ViewModelVM;
+import com.example.dangtuanvn.movie_app.model.News;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
-import java.util.List;
-
 /**
- * Created by dangtuanvn on 11/10/16.
+ * Created by dangtuanvn on 12/9/16.
  */
 
-public abstract class TabAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<?> listObject;
+public class NewsViewModel extends BaseObservable {
+    private News news;
     private Context context;
-    private Transformation cropPosterTransformation;
+    private static Transformation cropPosterTransformation;
 
-    public TabAdapter(Context context, List<?> listObject) {
-        this.listObject = listObject;
+    public NewsViewModel(News news, Context context){
+        this.news = news;
         this.context = context;
-        this.cropPosterTransformation = getCropPosterTransformation();
+        cropPosterTransformation = getCropPosterTransformation();
     }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
+    public String getNewsTitle(){
+        return news.getNewsTitle();
     }
 
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
+    public String getTimeDifference(){
+        return news.getTimeDifference();
     }
 
-    @Override
-    public int getItemCount() {
-        return listObject.size();
+    public String getImageUrl(){
+        return news.getImageFull();
     }
 
-    protected void displayImagePicasso(ImageView imageView, String url) {
-        Picasso.with(context)
+    @BindingAdapter("app:image")
+    public static void loadImage(ImageView view, String url) {
+        displayImagePicasso(view, url);
+//        view.setScaleType(ImageView.ScaleType.FIT_XY);
+    }
+
+    private static void displayImagePicasso(ImageView imageView, String url) {
+        Picasso.with(imageView.getContext())
                 .load(url)
                 .placeholder(R.drawable.white_placeholder)
                 .transform(cropPosterTransformation)
                 .into(imageView);
     }
 
-    protected Transformation getCropPosterTransformation(){
+    private Transformation getCropPosterTransformation(){
         Transformation cropPosterTransformation = new Transformation() {
             @Override
             public Bitmap transform(Bitmap source) {
