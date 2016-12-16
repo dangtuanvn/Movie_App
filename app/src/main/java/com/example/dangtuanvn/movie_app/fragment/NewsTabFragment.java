@@ -1,6 +1,7 @@
 package com.example.dangtuanvn.movie_app.fragment;
 
 import android.content.Intent;
+import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,12 +18,14 @@ import android.view.ViewGroup;
 
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.NewsDetailActivity;
+import com.example.dangtuanvn.movie_app.adapter.NewsTabAdapter;
 import com.example.dangtuanvn.movie_app.databinding.MovieTabRecyclerBinding;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
+import com.example.dangtuanvn.movie_app.viewmodel.MyDataBindingComponent;
 import com.example.dangtuanvn.movie_app.viewmodel.ViewModelVM;
 
 import java.util.List;
@@ -66,10 +69,18 @@ public class NewsTabFragment extends Fragment {
             }
         });
 
+        // Applying 2nd answer
+        // http://stackoverflow.com/questions/39283855/what-is-databindingcomponent-class-in-android-databinding
+        // This has to happened before binding the view
+        DataBindingUtil.setDefaultComponent(new MyDataBindingComponent(getContext()));
+
         MovieTabRecyclerBinding binding = DataBindingUtil.bind(view);
         binding.setViewModelVM(new ViewModelVM(getContext(), swipeLayout));
         return view;
     }
+
+
+
 
 
 

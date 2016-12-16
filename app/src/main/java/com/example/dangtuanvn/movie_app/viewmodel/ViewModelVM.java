@@ -54,92 +54,14 @@ public class ViewModelVM extends BaseObservable {
 
             }
         });
-
-        DataBindingUtil.setDefaultComponent(new MyOwnDefaultDataBindingComponent());
     }
-
-    public interface DisplayNewsList {
-        @BindingAdapter({"app:items"})
-        void displayNewsList(final RecyclerView mRecyclerView, final List<News> listNews);
-    }
-
-    // Applying 2nd answer
-    // http://stackoverflow.com/questions/39283855/what-is-databindingcomponent-class-in-android-databinding
-    public class NewsListBinding implements DisplayNewsList {
-        @Override
-        public void displayNewsList(RecyclerView mRecyclerView, List<News> listNews) {
-                        /* Use this setting to improve performance if you know that changes
-                        in content do not change the layout size of the RecyclerView */
-            mRecyclerView.setHasFixedSize(true);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-
-            RecyclerView.Adapter mAdapter = new NewsTabAdapter(context, listObject);
-            mRecyclerView.setAdapter((mAdapter));
-
-            // TODO: Should only be added once
-            addOnTouchNewsItem(mRecyclerView, listNews);
-        }
-
-
-        private void addOnTouchNewsItem(RecyclerView mRecyclerView, final List<News> newsList) {
-            final GestureDetector mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    return true;
-                }
-            });
-
-            mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-                @Override
-                public boolean onInterceptTouchEvent(final RecyclerView rv, MotionEvent e) {
-                    final View childView = rv.findChildViewUnder(e.getX(), e.getY());
-                    if (childView != null && mGestureDetector.onTouchEvent(e)) {
-                        displayNewsDetail(rv, childView, newsList);
-                    }
-                    return false;
-                }
-
-                @Override
-                public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-                }
-
-                @Override
-                public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-                }
-            });
-        }
-
-        private void displayNewsDetail(RecyclerView rv, View childView, List<News> newsList) {
-            FeedDataStore newsDetailFDS = new NewsDetailFeedDataStore(context, newsList.get(rv.getChildAdapterPosition(childView)).getNewsId());
-            newsDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
-                @Override
-                public void onDataRetrievedListener(List<?> list, Exception ex) {
-                    // Start web view
-                    Intent intent = new Intent(context, NewsDetailActivity.class);
-                    intent.putExtra("data", ((NewsDetail) list.get(0)).getContent());
-                    context.startActivity(intent);
-                }
-            });
-        }
-    }
-
-    public class MyOwnDefaultDataBindingComponent implements android.databinding.DataBindingComponent{
-        @Override
-        public DisplayNewsList getDisplayNewsList() {
-            return new NewsListBinding();
-        }
-    }
-
 
     public List<News> getListObject() {
-//        final List<News> list = new ArrayList<>();
-        final boolean[] check = {false};
         newsFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
             @Override
             public void onDataRetrievedListener(List list, Exception ex) {
                 listObject = (List<News>) list;
                 Toast.makeText(context, "abc", Toast.LENGTH_LONG).show();
-                check[0] = true;
             }
         });
 //        while(!check[0]){
@@ -154,6 +76,4 @@ public class ViewModelVM extends BaseObservable {
 //    public void displayNewsList(final RecyclerView mRecyclerView, final List<News> listNews) {
 //
 //    }
-
-
 }
