@@ -28,6 +28,11 @@ import com.example.dangtuanvn.movie_app.model.NewsDetail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import rx.Observable;
+import rx.Subscriber;
 
 
 /**
@@ -57,20 +62,43 @@ public class ViewModelVM extends BaseObservable {
     }
 
     public List<News> getListObject() {
-        newsFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
-            @Override
-            public void onDataRetrievedListener(List list, Exception ex) {
-                listObject = (List<News>) list;
-                Toast.makeText(context, "abc", Toast.LENGTH_LONG).show();
-            }
-        });
-//        while(!check[0]){
-//            if(listObject != null){
-//                return listObject;
+//        Observable<List<News>> listObservable = Observable.create(new Observable.OnSubscribe<List<News>>() {
+//            @Override
+//            public void call(final Subscriber<? super List<News>> subscriber) {
+//                newsFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+//                    @Override
+//                    public void onDataRetrievedListener(List list, Exception ex) {
+//                        subscriber.onNext(list);
+//                        subscriber.onCompleted();
+////                Toast.makeText(context, "abc", Toast.LENGTH_LONG).show();
+//                    }
+//                });
 //            }
-//        }
+//        });
+//
+//        Subscriber<List<News>> newsSubscriber = new Subscriber<List<News>>() {
+//            @Override
+//            public void onCompleted() {
+//
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//
+//            }
+//
+//            @Override
+//            public void onNext(List<News> newses) {
+//                listObject = newses;
+//            }
+//        };
+//
+//        listObservable.subscribe(newsSubscriber);
+
         return listObject;
     }
+
+
 
 //    @BindingAdapter("app:items")
 //    public void displayNewsList(final RecyclerView mRecyclerView, final List<News> listNews) {

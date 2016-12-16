@@ -17,14 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.dangtuanvn.movie_app.R;
-import com.example.dangtuanvn.movie_app.NewsDetailActivity;
-import com.example.dangtuanvn.movie_app.adapter.NewsTabAdapter;
 import com.example.dangtuanvn.movie_app.databinding.MovieTabRecyclerBinding;
-import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
-import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
-import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
-import com.example.dangtuanvn.movie_app.model.News;
-import com.example.dangtuanvn.movie_app.model.NewsDetail;
 import com.example.dangtuanvn.movie_app.viewmodel.MyDataBindingComponent;
 import com.example.dangtuanvn.movie_app.viewmodel.ViewModelVM;
 
@@ -35,7 +28,6 @@ import java.util.List;
  */
 
 public class NewsTabFragment extends Fragment {
-    private RecyclerView.Adapter mAdapter;
     private SwipeRefreshLayout swipeLayout;
 
     public static NewsTabFragment newInstance() {
@@ -78,12 +70,4 @@ public class NewsTabFragment extends Fragment {
         binding.setViewModelVM(new ViewModelVM(getContext(), swipeLayout));
         return view;
     }
-
-
-
-
-
-
-
-
 }
