@@ -21,61 +21,13 @@ import java.util.List;
 
 public abstract class TabAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<?> listObject;
-    private Context context;
-    private Transformation cropPosterTransformation;
 
-    public TabAdapter(Context context, List<?> listObject) {
+    public TabAdapter(List<?> listObject) {
         this.listObject = listObject;
-        this.context = context;
-        this.cropPosterTransformation = getCropPosterTransformation();
-    }
-
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
-    }
-
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
     }
 
     @Override
     public int getItemCount() {
         return listObject.size();
-    }
-
-    protected void displayImagePicasso(ImageView imageView, String url) {
-        Picasso.with(context)
-                .load(url)
-                .placeholder(R.drawable.white_placeholder)
-                .transform(cropPosterTransformation)
-                .into(imageView);
-    }
-
-    protected Transformation getCropPosterTransformation(){
-        Transformation cropPosterTransformation = new Transformation() {
-            @Override
-            public Bitmap transform(Bitmap source) {
-                DisplayMetrics metrics = new DisplayMetrics();
-                WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-                wm.getDefaultDisplay().getMetrics(metrics);
-                int targetWidth = metrics.widthPixels - (metrics.widthPixels / 20);
-                double aspectRatio = (double) source.getHeight() / (double) source.getWidth();
-                int targetHeight = (int) (targetWidth * aspectRatio);
-                Bitmap result = Bitmap.createScaledBitmap(source, targetWidth, targetHeight, false);
-                if (result != source) {
-                    // Same bitmap is returned if sizes are the same
-                    source.recycle();
-                }
-                return result;
-            }
-
-            @Override
-            public String key() {
-                return "cropPosterTransformation";
-            }
-        };
-        return cropPosterTransformation;
     }
 }

@@ -12,7 +12,7 @@ import com.example.dangtuanvn.movie_app.NewsDetailActivity;
 import com.example.dangtuanvn.movie_app.adapter.NewsTabAdapter;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
-import com.example.dangtuanvn.movie_app.fragment.NewsTabFragment;
+import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
 
@@ -29,17 +29,26 @@ public class NewsListBinding implements DisplayNewsList {
     }
 
     @Override
-    public void displayNewsList(RecyclerView mRecyclerView, List<News> listNews) {
+    public void displayNewsList(final RecyclerView mRecyclerView, final List<News> listNews) {
                         /* Use this setting to improve performance if you know that changes
                         in content do not change the layout size of the RecyclerView */
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        NewsFeedDataStore newsFDS = new NewsFeedDataStore(context);
+        newsFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+            @Override
+            public void onDataRetrievedListener(List<?> list, Exception ex) {
+                if(listNews.isEmpty()) {
+                    listNews.addAll((List<News>) list);
 
-        RecyclerView.Adapter mAdapter = new NewsTabAdapter(context, listNews);
-        mRecyclerView.setAdapter((mAdapter));
+                    RecyclerView.Adapter mAdapter = new NewsTabAdapter(context, listNews);
+                    mRecyclerView.setAdapter(mAdapter);
 
-        // TODO: Should only be added once
-        addOnTouchNewsItem(context, mRecyclerView, listNews);
+                    // onTouch Should only be added once
+                    addOnTouchNewsItem(context, mRecyclerView, listNews);
+                }
+            }
+        });
     }
 
     private void addOnTouchNewsItem(final Context context, RecyclerView mRecyclerView, final List<News> newsList) {
