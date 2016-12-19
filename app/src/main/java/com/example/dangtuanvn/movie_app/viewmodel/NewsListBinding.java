@@ -24,7 +24,8 @@ import java.util.List;
 
 public class NewsListBinding implements DisplayNewsList {
     private Context context;
-    public NewsListBinding(Context context){
+
+    public NewsListBinding(Context context) {
         this.context = context;
     }
 
@@ -34,21 +35,12 @@ public class NewsListBinding implements DisplayNewsList {
                         in content do not change the layout size of the RecyclerView */
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        NewsFeedDataStore newsFDS = new NewsFeedDataStore(context);
-        newsFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
-            @Override
-            public void onDataRetrievedListener(List<?> list, Exception ex) {
-                if(listNews.isEmpty()) {
-                    listNews.addAll((List<News>) list);
 
-                    RecyclerView.Adapter mAdapter = new NewsTabAdapter(context, listNews);
-                    mRecyclerView.setAdapter(mAdapter);
+        RecyclerView.Adapter mAdapter = new NewsTabAdapter(context, listNews);
+        mRecyclerView.setAdapter(mAdapter);
 
-                    // onTouch Should only be added once
-                    addOnTouchNewsItem(context, mRecyclerView, listNews);
-                }
-            }
-        });
+        // onTouch Should only be added once
+        addOnTouchNewsItem(context, mRecyclerView, listNews);
     }
 
     private void addOnTouchNewsItem(final Context context, RecyclerView mRecyclerView, final List<News> newsList) {
