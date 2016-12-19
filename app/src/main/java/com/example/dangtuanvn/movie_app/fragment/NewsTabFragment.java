@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,23 +44,17 @@ public class NewsTabFragment extends Fragment {
                 ContextCompat.getColor(getActivity(), R.color.blue),
                 ContextCompat.getColor(getActivity(), R.color.green));
 
-        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-
-            }
-        });
-
         // Applying 2nd answer
         // http://stackoverflow.com/questions/39283855/what-is-databindingcomponent-class-in-android-databinding
         // This has to happened before binding the view
         // Doing this to avoid casting static context in Databinding functions
+
         DataBindingUtil.setDefaultComponent(new MyDataBindingComponent(getContext()));
 
         MovieTabRecyclerBinding binding = DataBindingUtil.bind(view);
-
         ViewModelVM vm = new ViewModelVM(getContext(), swipeLayout);
         vm.getNewsData();
+
         binding.setViewModelVM(vm);
         return view;
     }

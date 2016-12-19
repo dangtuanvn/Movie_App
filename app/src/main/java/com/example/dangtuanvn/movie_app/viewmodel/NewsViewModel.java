@@ -1,18 +1,26 @@
 package com.example.dangtuanvn.movie_app.viewmodel;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.BindingAdapter;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.example.dangtuanvn.movie_app.NewsDetailActivity;
 import com.example.dangtuanvn.movie_app.R;
+import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
+import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.News;
+import com.example.dangtuanvn.movie_app.model.NewsDetail;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
+
+import java.util.List;
 
 /**
  * Created by dangtuanvn on 12/9/16.
@@ -82,5 +90,22 @@ public class NewsViewModel extends BaseObservable {
             }
         };
         return cropPosterTransformation;
+    }
+
+    public View.OnClickListener onClickPost() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FeedDataStore newsDetailFDS = new NewsDetailFeedDataStore(context, news.getNewsId());
+                newsDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+                    @Override
+                    public void onDataRetrievedListener(List<?> list, Exception ex) {
+                        Intent intent = new Intent(context, NewsDetailActivity.class);
+                        intent.putExtra("data", ((NewsDetail) list.get(0)).getContent());
+                        context.startActivity(intent);
+                    }
+                });
+            }
+        };
     }
 }

@@ -28,7 +28,6 @@ public class ViewModelVM extends BaseObservable {
         newsFDS = new NewsFeedDataStore(context);
         this.swipeLayout = swipeLayout;
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            // TODO: There are distorted images before the view is replaced.
             @Override
             public void onRefresh() {
                 refresh();
@@ -37,22 +36,24 @@ public class ViewModelVM extends BaseObservable {
     }
 
     public void getNewsData() {
+        swipeLayout.setRefreshing(true);
         newsFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
             @Override
             public void onDataRetrievedListener(List<?> list, Exception ex) {
                 {
                     listObject = (List<News>) list;
                     notifyPropertyChanged(BR.listObject);
+                    swipeLayout.setRefreshing(false);
                 }
             }
         });
     }
 
-    public void refresh() {
+    private void refresh() {
         getNewsData();
 //        listObject.remove(0);  // Remove the first element from list to see the if the changes was made
 //        notifyChange();   // Notify all properties changed
-        swipeLayout.setRefreshing(false);
+//        notifyPropertyChanged(BR.listObject);
     }
 
     public void setListObject(List<News> newsList) {
