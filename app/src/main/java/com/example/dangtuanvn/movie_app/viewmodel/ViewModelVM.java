@@ -2,10 +2,11 @@ package com.example.dangtuanvn.movie_app.viewmodel;
 
 import android.content.Context;
 import android.databinding.BaseObservable;
-import android.os.Handler;
+import android.databinding.Bindable;
 
 import android.support.v4.widget.SwipeRefreshLayout;
 
+import com.android.databinding.library.baseAdapters.BR;
 import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.News;
@@ -35,8 +36,9 @@ public class ViewModelVM extends BaseObservable {
                             listObject.clear();
                         }
                         listObject.addAll((List<News>) list);
-//                        listObject.remove(0);
-                        notifyChange();
+//                        listObject.remove(0);  // Remove the first element from list to see the if the changes was made
+//                        notifyChange();   // Notify all properties changed
+                        notifyPropertyChanged(BR.listObject);    // Notify only the change from this field
                         swipeLayout.setRefreshing(false);
                     }
                 });
@@ -44,6 +46,7 @@ public class ViewModelVM extends BaseObservable {
         });
     }
 
+    @Bindable
     public List<News> getListObject() {
         return listObject;
     }

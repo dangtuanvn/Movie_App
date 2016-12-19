@@ -2,6 +2,7 @@ package com.example.dangtuanvn.movie_app.viewmodel;
 
 import android.content.Context;
 import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.databinding.BindingAdapter;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
@@ -28,14 +29,17 @@ public class NewsViewModel extends BaseObservable {
         cropPosterTransformation = getCropPosterTransformation();
     }
 
+    @Bindable
     public String getNewsTitle(){
         return news.getNewsTitle();
     }
 
+    @Bindable
     public String getTimeDifference(){
         return news.getTimeDifference();
     }
 
+    @Bindable
     public String getImageUrl(){
         return news.getImageFull();
     }
