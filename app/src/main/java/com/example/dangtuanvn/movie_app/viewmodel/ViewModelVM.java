@@ -5,14 +5,19 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 
 import com.android.databinding.library.baseAdapters.BR;
-import com.example.dangtuanvn.movie_app.datastore.FeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
+import com.example.dangtuanvn.movie_app.datastoreRX.OnSubscribeNews;
 import com.example.dangtuanvn.movie_app.model.News;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.Observable;
+import rx.Subscriber;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by dangtuanvn on 12/15/16.
@@ -20,12 +25,16 @@ import java.util.List;
 
 public class ViewModelVM extends BaseObservable {
     private List<News> listObject;
-    private NewsFeedDataStore newsFDS;
+//    private NewsFeedDataStore newsFDS;
     private SwipeRefreshLayout swipeLayout;
+    private Context context;
+    private CompositeSubscription compositeSubscription;
 
-    public ViewModelVM(Context context, SwipeRefreshLayout swipeLayout) {
+    public ViewModelVM(Context context, SwipeRefreshLayout swipeLayout, CompositeSubscription compositeSubscription) {
+        this.compositeSubscription = compositeSubscription;
         listObject = new ArrayList<>();
-        newsFDS = new NewsFeedDataStore(context);
+//        newsFDS = new NewsFeedDataStore(context);
+        this.context = context;
         this.swipeLayout = swipeLayout;
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -37,16 +46,49 @@ public class ViewModelVM extends BaseObservable {
 
     public void getNewsData() {
         swipeLayout.setRefreshing(true);
-        newsFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+
+//        newsFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
+//            @Override
+//            public void onDataRetrievedListener(List<?> list, Exception ex) {
+//                {
+//                    listObject = (List<News>) list;
+//                    notifyPropertyChanged(BR.listObject);
+//                    swipeLayout.setRefreshing(false);
+//                }
+//            }
+//        });
+
+        Subscriber subscriber = new Subscriber() {
             @Override
-            public void onDataRetrievedListener(List<?> list, Exception ex) {
-                {
-                    listObject = (List<News>) list;
-                    notifyPropertyChanged(BR.listObject);
-                    swipeLayout.setRefreshing(false);
-                }
+            public void onCompleted() {
+
             }
-        });
+
+            @Override
+            public void onError(Throwable e) {
+                Log.i("SUBSCRIBER ERROR", "ERROR IN API CALL" );
+                Log.i("THROWABLE 1", e.toString());
+//                Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                swipeLayout.setRefreshing(false);
+            }
+
+            @Override
+            public void onNext(Object object) {
+                listObject = (List<News>) object;
+                notifyPropertyChanged(BR.listObject);
+                swipeLayout.setRefreshing(false);
+            }
+        };
+
+//        observable.doOnError(new Action1<Throwable>() {
+//                                 @Override
+//                                 public void call(Throwable throwable) {
+//                                     Log.i("SUBSCRIBER ERROR", "ERROR IN API CALL" );
+//                                     Log.i("THROWABLE 2", throwable.toString());
+//                                     throw new UnsupportedOperationException("onError exception");
+//                                 }
+//                             }).subscribe(subscriber);
+        compositeSubscription.add(Observable.create(new OnSubscribeNews(context)).subscribe(subscriber));
     }
 
     private void refresh() {

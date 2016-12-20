@@ -12,7 +12,7 @@
         android:id="@+id/news_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="@{NewsVM.onClickPost}">
+        android:onClick="@{NewsVM.onClickNews}">
 
         <FrameLayout
             android:layout_width="match_parent"

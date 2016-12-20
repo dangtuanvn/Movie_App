@@ -1,10 +1,35 @@
 package com.example.dangtuanvn.movie_app;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.android.databinding.library.baseAdapters.*;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.example.dangtuanvn.movie_app.datastore.SingletonQueue;
+import com.example.dangtuanvn.movie_app.model.News;
+import com.example.dangtuanvn.movie_app.model.converter.NewsDeserializer;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+
 import org.junit.Test;
 
+import java.lang.reflect.Type;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -19,7 +44,7 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
-//    @Test
+    //    @Test
     public void addition_isCorrect() throws Exception {
         assertEquals(4, 2 + 2);
     }
@@ -27,8 +52,8 @@ public class ExampleUnitTest {
     private PublishSubject<String> subjectObservable;
     private String abc = "543";
 
-//    @Test
-    public void testPublishSubject(){
+    //    @Test
+    public void testPublishSubject() {
         subjectObservable = PublishSubject.create();
         Subscriber<String> subscriber = new Subscriber<String>() {
             @Override
@@ -56,23 +81,18 @@ public class ExampleUnitTest {
         changeSubjectVariable();
     }
 
-    public void changeSubjectVariable(){
+    public void changeSubjectVariable() {
         abc += "2";
         subjectObservable.onNext(abc);
     }
-
-
-
-
-
 
 
     private Observable<String> observable;
     private String qwe = "987";
     Subscriber<String> subscriber;
 
-//    @Test
-    public void testObservable(){
+    //    @Test
+    public void testObservable() {
         observable = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
@@ -105,7 +125,7 @@ public class ExampleUnitTest {
         changeVariable();
     }
 
-    public void changeVariable(){
+    public void changeVariable() {
         qwe += "2";
 //        subscriber.onNext(qwe);
         observable.subscribe(subscriber);
@@ -113,15 +133,12 @@ public class ExampleUnitTest {
     }
 
 
-
-
-
     private Observable<String> StringObservable;
     private String[] asdqwe = {"1414", "2323", "3535"};
     Subscriber<String> StringSubscriber;
 
-//    @Test
-    public void testStringObservable(){
+    //    @Test
+    public void testStringObservable() {
 
         StringObservable = Observable.from(asdqwe);
 //        StringObservable = Observable.create(new Observable.OnSubscribe<String>() {
@@ -155,26 +172,22 @@ public class ExampleUnitTest {
 //        changeStringVariable();
     }
 
-    public void changeStringVariable(){
+    public void changeStringVariable() {
 //        asdqwe += "2";
 //        subscriber.onNext(qwe);
     }
 
 
-
-
-    public int returnDouble(int x){
-        if(x == 2){
+    public int returnDouble(int x) {
+        if (x == 2) {
             return 100;
         }
         return 1;
     }
 
 
-
-
-    @Test
-    public  void startChain(){
+    //    @Test
+    public void startChain() {
         Observable<Integer> observable1 = Observable.range(0, 10);
 
 //        observable1.subscribe(
@@ -234,7 +247,7 @@ public class ExampleUnitTest {
         });
 
 
-        Subscriber<String> subscriber1 = new Subscriber<String>(){
+        Subscriber<String> subscriber1 = new Subscriber<String>() {
             @Override
             public void onCompleted() {
 
@@ -254,7 +267,7 @@ public class ExampleUnitTest {
         observable4.subscribe(subscriber1);
     }
 
-    public Observable changeFormat1(Observable<Integer> intObs){
+    public Observable changeFormat1(Observable<Integer> intObs) {
         return intObs.map(new Func1<Integer, String>() {
             @Override
             public String call(Integer i) {
@@ -264,7 +277,6 @@ public class ExampleUnitTest {
         });
     }
 }
-
 
 //
 //    var numberObsevable: Variable<Int> = Variable(1)

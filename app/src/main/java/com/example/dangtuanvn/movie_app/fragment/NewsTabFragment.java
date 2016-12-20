@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +14,15 @@ import com.example.dangtuanvn.movie_app.databinding.MovieTabRecyclerBinding;
 import com.example.dangtuanvn.movie_app.viewmodel.MyDataBindingComponent;
 import com.example.dangtuanvn.movie_app.viewmodel.ViewModelVM;
 
+import rx.Observable;
+import rx.subscriptions.CompositeSubscription;
+
 /**
  * Created by dangtuanvn on 11/22/16.
  */
 
 public class NewsTabFragment extends Fragment {
+    private CompositeSubscription compositeSubscription;
     public static NewsTabFragment newInstance() {
         NewsTabFragment fragment = new NewsTabFragment();
         return fragment;
@@ -52,10 +55,16 @@ public class NewsTabFragment extends Fragment {
         DataBindingUtil.setDefaultComponent(new MyDataBindingComponent(getContext()));
 
         MovieTabRecyclerBinding binding = DataBindingUtil.bind(view);
-        ViewModelVM vm = new ViewModelVM(getContext(), swipeLayout);
+        ViewModelVM vm = new ViewModelVM(getContext(), swipeLayout, compositeSubscription);
         vm.getNewsData();
 
         binding.setViewModelVM(vm);
         return view;
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        compositeSubscription.unsubscribe();
     }
 }

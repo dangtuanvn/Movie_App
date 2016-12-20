@@ -1,4 +1,4 @@
-package com.example.dangtuanvn.movie_app.datastore;
+package com.example.dangtuanvn.movie_app.datastoreRX;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,55 +8,56 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.dangtuanvn.movie_app.datastore.SingletonQueue;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import rx.Observable;
+import rx.Subscriber;
+
 /**
- * Created by dangtuanvn on 11/9/16.
+ * Created by dangtuanvn on 12/20/16.
  */
 
-public abstract class DataStore implements FeedDataStore {
-    private static String X123F_TOKEN = "GVlRhvnZt0Z4WF4NrfsQXwZh";
-    private static String X123F_VERSION = "3";
-    protected static String BASE_URL = "http://mapp.123phim.vn/android/2.97/";
-
+public abstract class OnSubscribeRX implements Observable.OnSubscribe<Object> {
+    private String X123F_TOKEN = "GVlRhvnZt0Z4WF4NrfsQXwZh";
+    private String X123F_VERSION = "3";
+    protected String BASE_URL = "http://mapp.123phim.vn/android/2.97/";
+    private Object result;
     private Context context;
 
-    public DataStore(Context context) {
+    public OnSubscribeRX(Context context) {
         this.context = context;
     }
 
     @Override
-    public void getList(final FeedDataStore.OnDataRetrievedListener onDataRetrievedListener) {
-
+    public void call(final Subscriber<? super Object> subscriber) {
         String url = setUrl();
 
-        final StringRequest stringRequest = new StringRequest
+        StringRequest stringRequest = new StringRequest
                 (Request.Method.GET, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-//                        Log.i("RESPONSE", "Response is: "+ response);
-                        onDataRetrievedListener.onDataRetrievedListener(handleData(response), null);
+//                                Log.i("API RESPONSE", response);
+                        result = handleData(response);
+                        subscriber.onNext(result);
+                        subscriber.onCompleted(); // unsubscribe
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.i("VOLLEY RESPONSE FAIL", "Volley gets fail");
-//                        Intent intent = new Intent(context, NoInternetActivity.class);
-//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                        context.startActivity(intent);
                     }
-                }){
+                }) {
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String>  params = new HashMap<>();
+                Map<String, String> params = new HashMap<>();
 
 
                 long timestamp = TimeUnit.MILLISECONDS.toSeconds(new Date().getTime());
@@ -69,15 +70,23 @@ public abstract class DataStore implements FeedDataStore {
             }
         };
 
-        // Set timeout to 5000 ms, DefaultRetryPolicy.DEFAULT_TIMEOUT_MS = 2500
-//        stringRequest.setRetryPolicy(new DefaultRetryPolicy(5000, DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+//       Set timeout to 5000 ms, DefaultRetryPolicy.DEFAULT_TIMEOUT_MS = 2500
+//       stringRequest.setRetryPolicy(new DefaultRetryPolicy(5000, DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         // Add the request to the a Singleton request queue
         SingletonQueue.getInstance(context).addRequest(stringRequest);
 //        queue.add(stringRequest);
+
     }
 
-    // http://stackoverflow.com/questions/4846484/md5-hashing-in-android
+    protected Object handleData(String response) {
+       return null;
+    }
+
+    protected String setUrl() {
+        return BASE_URL;
+    }
+
     private String hashMd5(final String s) {
         final String MD5 = "MD5";
         try {
@@ -101,13 +110,4 @@ public abstract class DataStore implements FeedDataStore {
         }
         return "";
     }
-
-    protected List<?> handleData(String response){
-        return null;
-    }
-
-    protected String setUrl(){
-        return BASE_URL;
-    }
 }
-
