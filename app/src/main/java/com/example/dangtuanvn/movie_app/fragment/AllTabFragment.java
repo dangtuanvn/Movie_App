@@ -481,7 +481,7 @@
 //    }
 //
 //    public View inflateListView(LayoutInflater inflater, ViewGroup container) {
-//        View view = inflater.inflate(R.layout.movie_tab_recycler, container, false);
+//        View view = inflater.inflate(R.layout.view_pager_tab, container, false);
 //
 //        mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
 //        swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);

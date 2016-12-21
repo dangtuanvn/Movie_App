@@ -29,12 +29,13 @@ import rx.Subscriber;
  * Created by dangtuanvn on 12/9/16.
  */
 
-public class NewsViewModel extends BaseObservable {
+public class NewsItemViewModel extends BaseObservable {
     private News news;
     private Context context;
     private static Transformation cropPosterTransformation;
+    private Subscriber subscriber;
 
-    public NewsViewModel(News news, Context context) {
+    public NewsItemViewModel(News news, Context context) {
         this.news = news;
         this.context = context;
         cropPosterTransformation = getCropPosterTransformation();
@@ -109,9 +110,7 @@ public class NewsViewModel extends BaseObservable {
 //                    }
 //                });
 
-                Observable observable = Observable.create(new OnSubscribeNewsDetail(context, news.getNewsId()));
-
-                Subscriber subscriber = new Subscriber() {
+                subscriber = new Subscriber() {
                     @Override
                     public void onCompleted() {
 
@@ -130,8 +129,14 @@ public class NewsViewModel extends BaseObservable {
                     }
                 };
 
-                observable.subscribe(subscriber);
+                Observable.create(new OnSubscribeNewsDetail(context, news.getNewsId())).subscribe(subscriber);
             }
         };
+    }
+
+    public void onDestroy(){
+        if(!subscriber.isUnsubscribed()){
+            subscriber.unsubscribe();
+        }
     }
 }

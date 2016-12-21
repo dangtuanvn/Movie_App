@@ -43,10 +43,15 @@ public abstract class OnSubscribeRX implements Observable.OnSubscribe<Object> {
                 (Request.Method.GET, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-//                                Log.i("API RESPONSE", response);
-                        result = handleData(response);
-                        subscriber.onNext(result);
-                        subscriber.onCompleted(); // unsubscribe
+                        
+                        if(subscriber.isUnsubscribed()){
+                            return;
+                        }
+                        else {
+                            result = handleData(response);
+                            subscriber.onNext(result);
+                            subscriber.onCompleted();
+                        }
                     }
                 }, new Response.ErrorListener() {
                     @Override

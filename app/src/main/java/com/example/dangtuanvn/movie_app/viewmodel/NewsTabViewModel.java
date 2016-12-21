@@ -24,14 +24,15 @@ import rx.subscriptions.CompositeSubscription;
  * Created by dangtuanvn on 12/15/16.
  */
 
-public class ViewModelVM extends BaseObservable {
-    private List<News> listObject;
+public class NewsTabViewModel extends BaseObservable {
+    private List<?> listObject;
 //    private NewsFeedDataStore newsFDS;
     private SwipeRefreshLayout swipeLayout;
     private Context context;
+    private Subscriber subscriber;
 //    private CompositeSubscription compositeSubscription;
 
-    public ViewModelVM(Context context, SwipeRefreshLayout swipeLayout) {
+    public NewsTabViewModel(Context context, SwipeRefreshLayout swipeLayout) {
 //        this.compositeSubscription = compositeSubscription;
         listObject = new ArrayList<>();
 //        newsFDS = new NewsFeedDataStore(context);
@@ -59,7 +60,7 @@ public class ViewModelVM extends BaseObservable {
 //            }
 //        });
 
-        Subscriber subscriber = new Subscriber() {
+        subscriber = new Subscriber() {
             @Override
             public void onCompleted() {
 
@@ -98,13 +99,19 @@ public class ViewModelVM extends BaseObservable {
 //        notifyPropertyChanged(BR.listObject);
     }
 
-    public void setListObject(List<News> newsList) {
-        listObject = newsList;
+    public void setListObject(List<?> listObject) {
+        this.listObject = listObject;
         notifyPropertyChanged(BR.listObject);
     }
 
     @Bindable
-    public List<News> getListObject() {
+    public List<?> getListObject() {
         return listObject;
+    }
+
+    public void onDestroy() {
+        if (!subscriber.isUnsubscribed()) {
+            subscriber.unsubscribe();
+        }
     }
 }

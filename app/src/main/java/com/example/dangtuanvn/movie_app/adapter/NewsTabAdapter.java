@@ -5,11 +5,9 @@ import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.dangtuanvn.movie_app.R;
-import com.example.dangtuanvn.movie_app.viewmodel.NewsViewModel;
+import com.example.dangtuanvn.movie_app.viewmodel.NewsItemViewModel;
 import com.example.dangtuanvn.movie_app.databinding.NewsDetailBinding;
 import com.example.dangtuanvn.movie_app.model.News;
 
@@ -21,6 +19,7 @@ import java.util.List;
 public class NewsTabAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
     private List<News> newsList;
+    private NewsItemViewModel vm;
 
     public NewsTabAdapter(Context context, List<News> newsList) {
         this.newsList = newsList;
@@ -40,7 +39,8 @@ public class NewsTabAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         NewsTabAdapter.NewsDetailVH newsHolder = (NewsTabAdapter.NewsDetailVH) holder;
 
         NewsDetailBinding binding = newsHolder.binding;
-        binding.setNewsVM(new NewsViewModel(newsList.get(position), context));
+        vm = new NewsItemViewModel(newsList.get(position), context);
+        binding.setNewsItemVM(vm);
     }
 
     protected static class NewsDetailVH extends RecyclerView.ViewHolder {
@@ -61,5 +61,11 @@ public class NewsTabAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemCount() {
         return newsList.size();
+    }
+
+    public void onDestroy(){
+        if(vm != null){
+            vm.onDestroy();
+        }
     }
 }

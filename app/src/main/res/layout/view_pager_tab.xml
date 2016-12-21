@@ -4,8 +4,8 @@
 
     <data>
         <variable
-            name="ViewModelVM"
-            type="com.example.dangtuanvn.movie_app.viewmodel.ViewModelVM" />
+            name="TabViewModel"
+            type="com.example.dangtuanvn.movie_app.viewmodel.NewsTabViewModel" />
     </data>
 
     <LinearLayout
@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="vertical"
-                app:items="@{ViewModelVM.listObject}" />
+                app:items="@{TabViewModel.listObject}" />
         </android.support.v4.widget.SwipeRefreshLayout>
     </LinearLayout>
 </layout>

@@ -8,7 +8,7 @@ import com.example.dangtuanvn.movie_app.fragment.NewsTabFragment;
  * Created by dangtuanvn on 12/16/16.
  */
 
-public class MyDataBindingComponent  implements android.databinding.DataBindingComponent {
+public class MyDataBindingComponent implements android.databinding.DataBindingComponent {
     private Context context;
     public MyDataBindingComponent(Context context){
         this.context = context;
@@ -17,5 +17,9 @@ public class MyDataBindingComponent  implements android.databinding.DataBindingC
     @Override
     public DisplayNewsList getDisplayNewsList() {
         return new NewsListBinding(context);
+    }
+
+    public void onDestroy(){
+
     }
 }

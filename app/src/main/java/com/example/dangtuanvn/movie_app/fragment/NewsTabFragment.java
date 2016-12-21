@@ -12,9 +12,8 @@ import android.view.ViewGroup;
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.databinding.MovieTabRecyclerBinding;
 import com.example.dangtuanvn.movie_app.viewmodel.MyDataBindingComponent;
-import com.example.dangtuanvn.movie_app.viewmodel.ViewModelVM;
+import com.example.dangtuanvn.movie_app.viewmodel.NewsTabViewModel;
 
-import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -22,7 +21,9 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class NewsTabFragment extends Fragment {
-    private CompositeSubscription compositeSubscription;
+//    private CompositeSubscription compositeSubscription;
+    private NewsTabViewModel vm;
+
     public static NewsTabFragment newInstance() {
         NewsTabFragment fragment = new NewsTabFragment();
         return fragment;
@@ -40,7 +41,7 @@ public class NewsTabFragment extends Fragment {
     }
 
     public View inflateListView(LayoutInflater inflater, ViewGroup container) {
-        View view = inflater.inflate(R.layout.movie_tab_recycler, container, false);
+        View view = inflater.inflate(R.layout.view_pager_tab, container, false);
 
         SwipeRefreshLayout swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeLayout.setColorSchemeColors(ContextCompat.getColor(getActivity(), R.color.orange),
@@ -55,7 +56,7 @@ public class NewsTabFragment extends Fragment {
         DataBindingUtil.setDefaultComponent(new MyDataBindingComponent(getContext()));
 
         MovieTabRecyclerBinding binding = DataBindingUtil.bind(view);
-        ViewModelVM vm = new ViewModelVM(getContext(), swipeLayout);
+        vm = new NewsTabViewModel(getContext(), swipeLayout);
         vm.getNewsData();
 
         binding.setViewModelVM(vm);
@@ -64,7 +65,10 @@ public class NewsTabFragment extends Fragment {
 
     @Override
     public void onDestroy(){
+        if(vm != null){
+            vm.onDestroy();
+        }
         super.onDestroy();
-        compositeSubscription.unsubscribe();
+//        compositeSubscription.unsubscribe();
     }
 }

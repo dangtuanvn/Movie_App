@@ -4,15 +4,15 @@
 
     <data>
         <variable
-            name="NewsVM"
-            type="com.example.dangtuanvn.movie_app.viewmodel.NewsViewModel" />
+            name="NewsItemVM"
+            type="com.example.dangtuanvn.movie_app.viewmodel.NewsItemViewModel" />
     </data>
 
     <RelativeLayout
         android:id="@+id/news_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="@{NewsVM.onClickNews}">
+        android:onClick="@{NewsItemVM.onClickNews}">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -22,7 +22,7 @@
                 android:id="@+id/newspic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:image="@{NewsVM.imageUrl}" />
+                app:image="@{NewsItemVM.imageUrl}" />
 
             <View
                 android:layout_width="match_parent"
@@ -44,7 +44,7 @@
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
                 android:textAllCaps="true"
-                android:text="@{NewsVM.newsTitle}"/>
+                android:text="@{NewsItemVM.newsTitle}"/>
 
             <TextView
                 android:id="@+id/txtTime"
@@ -56,7 +56,7 @@
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:singleLine="true"
-                android:text="@{NewsVM.timeDifference}"/>
+                android:text="@{NewsItemVM.timeDifference}"/>
         </LinearLayout>
     </RelativeLayout>
 </layout>
