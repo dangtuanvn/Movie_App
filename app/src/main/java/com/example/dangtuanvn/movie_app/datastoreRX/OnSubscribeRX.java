@@ -19,16 +19,16 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Func0;
 
 /**
  * Created by dangtuanvn on 12/20/16.
  */
 
-public abstract class OnSubscribeRX implements VolleyWrapperRX, Observable.OnSubscribe<Object> {
+public abstract class OnSubscribeRX implements Observable.OnSubscribe<Object> {
     private String X123F_TOKEN = "GVlRhvnZt0Z4WF4NrfsQXwZh";
     private String X123F_VERSION = "3";
     protected String BASE_URL = "http://mapp.123phim.vn/android/2.97/";
+    private Object result;
     private Context context;
 
     public OnSubscribeRX(Context context) {
@@ -37,25 +37,47 @@ public abstract class OnSubscribeRX implements VolleyWrapperRX, Observable.OnSub
 
     @Override
     public void call(final Subscriber<? super Object> subscriber) {
-        createStringRequest(setUrl()).subscribe(new Subscriber<String>() {
+        String url = setUrl();
+
+        StringRequest stringRequest = new StringRequest
+                (Request.Method.GET, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if(!subscriber.isUnsubscribed()){
+                            result = handleData(response);
+                            subscriber.onNext(result);
+                            subscriber.onCompleted();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.i("VOLLEY RESPONSE FAIL", "Volley gets fail");
+                    }
+                }) {
+
             @Override
-            public void onCompleted() {
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
 
+
+                long timestamp = TimeUnit.MILLISECONDS.toSeconds(new Date().getTime());
+                String accessToken = hashMd5(X123F_TOKEN + timestamp) + " " + timestamp;
+
+                params.put("X-123F-Version", X123F_VERSION);
+                params.put("X-123F-Token", accessToken);
+
+                return params;
             }
+        };
 
-            @Override
-            public void onError(Throwable e) {
+//       Set timeout to 5000 ms, DefaultRetryPolicy.DEFAULT_TIMEOUT_MS = 2500
+//       stringRequest.setRetryPolicy(new DefaultRetryPolicy(5000, DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
-            }
+        // Add the request to the a Singleton request queue
+        SingletonQueue.getInstance(context).addRequest(stringRequest);
+//        queue.add(stringRequest);
 
-            @Override
-            public void onNext(String response) {
-                if(!subscriber.isUnsubscribed()){
-                    subscriber.onNext(handleData(response));
-                    subscriber.onCompleted();
-                }
-            }
-        });
     }
 
     protected Object handleData(String response) {
@@ -88,51 +110,5 @@ public abstract class OnSubscribeRX implements VolleyWrapperRX, Observable.OnSub
             e.printStackTrace();
         }
         return "";
-    }
-
-    @Override
-    public Observable<String> createStringRequest(final String url) {
-        return Observable.defer(new Func0<Observable<String>>() {
-            @Override
-            public Observable<String> call() {
-                return Observable.create(new Observable.OnSubscribe<String>() {
-                    @Override
-                    public void call(final Subscriber<? super String> subscriber) {
-                        StringRequest stringRequest = new StringRequest
-                                (Request.Method.GET, url, new Response.Listener<String>() {
-                                    @Override
-                                    public void onResponse(String response) {
-                                        if(!subscriber.isUnsubscribed()){
-                                            subscriber.onNext(response);
-                                            subscriber.onCompleted();
-                                        }
-                                    }
-                                }, new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                        Log.i("VOLLEY RESPONSE FAIL", "Volley gets fail");
-                                        subscriber.onError(error);
-                                    }
-                                }) {
-
-                            @Override
-                            public Map<String, String> getHeaders() throws AuthFailureError {
-                                Map<String, String> params = new HashMap<>();
-
-                                long timestamp = TimeUnit.MILLISECONDS.toSeconds(new Date().getTime());
-                                String accessToken = hashMd5(X123F_TOKEN + timestamp) + " " + timestamp;
-
-                                params.put("X-123F-Version", X123F_VERSION);
-                                params.put("X-123F-Token", accessToken);
-
-                                return params;
-                            }
-                        };
-
-                        SingletonQueue.getInstance(context).addRequest(stringRequest);
-                    }
-                });
-            }
-        });
     }
 }

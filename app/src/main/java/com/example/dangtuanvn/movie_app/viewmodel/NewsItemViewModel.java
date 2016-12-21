@@ -129,7 +129,8 @@ public class NewsItemViewModel extends BaseObservable {
                     }
                 };
 
-                Observable.create(new OnSubscribeNewsDetail(context, news.getNewsId())).subscribe(subscriber);
+//                Observable.create(new OnSubscribeNewsDetail(context, news.getNewsId())).subscribe(subscriber);
+                new NewsDetailFeedDataStore(context, news.getNewsId()).getDataObservable().subscribe(subscriber);
             }
         };
     }

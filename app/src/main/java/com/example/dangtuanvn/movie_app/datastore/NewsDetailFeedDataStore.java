@@ -2,6 +2,7 @@ package com.example.dangtuanvn.movie_app.datastore;
 
 import android.content.Context;
 
+import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
 import com.example.dangtuanvn.movie_app.model.converter.NewsDetailDeserializer;
 import com.google.gson.Gson;
@@ -28,7 +29,7 @@ public class NewsDetailFeedDataStore extends DataStore {
     }
 
     @Override
-    protected List<NewsDetail> handleData(String response) {
+    protected NewsDetail handleData(String response) {
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(response);
         NewsDetail newsDetail;
@@ -37,7 +38,7 @@ public class NewsDetailFeedDataStore extends DataStore {
         gsonBuilder.registerTypeAdapter(NewsDetail.class, new NewsDetailDeserializer());
         Gson gson = gsonBuilder.create();
         newsDetail = gson.fromJson(jsonObject.get("result").getAsJsonObject(), type);
-        return Collections.singletonList(newsDetail);
+        return newsDetail;
     }
 
     @Override

@@ -81,15 +81,16 @@ public class NewsTabViewModel extends BaseObservable {
             }
         };
 
-        Observable.create(new OnSubscribeNews(context)).doOnError(new Action1<Throwable>() {
-                                 @Override
-                                 public void call(Throwable throwable) {
-                                     Log.i("SUBSCRIBER ERROR", throwable.toString());
-                                     throw new UnsupportedOperationException("onError exception");
-                                 }
-                             }).subscribe(subscriber);
+//        Observable.create(new OnSubscribeNews(context)).doOnError(new Action1<Throwable>() {
+//                                 @Override
+//                                 public void call(Throwable throwable) {
+//                                     Log.i("SUBSCRIBER ERROR", throwable.toString());
+//                                     throw new UnsupportedOperationException("onError exception");
+//                                 }
+//                             }).subscribe(subscriber);
 
-//        valueObservable().subscribe(subscriber);
+        new NewsFeedDataStore(context).getDataObservable().subscribe(subscriber);
+
 //        compositeSubscription.add(Observable.create(new OnSubscribeNews(context)).subscribe(subscriber));
     }
 
@@ -114,14 +115,5 @@ public class NewsTabViewModel extends BaseObservable {
         if (subscriber != null && !subscriber.isUnsubscribed()) {
             subscriber.unsubscribe();
         }
-    }
-
-    public Observable<Object> valueObservable() {
-        return Observable.defer(new Func0<Observable<Object>>() {
-            @Override
-            public Observable<Object> call() {
-                return Observable.create(new OnSubscribeNews(context));
-            }
-        });
     }
 }

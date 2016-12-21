@@ -2,6 +2,7 @@ package com.example.dangtuanvn.movie_app.datastore;
 
 import android.content.Context;
 
+import com.android.annotations.Nullable;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.converter.NewsDeserializer;
 import com.google.gson.Gson;
@@ -12,6 +13,8 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.List;
+
+import rx.Observable;
 
 /**
  * Created by dangtuanvn on 11/9/16.
