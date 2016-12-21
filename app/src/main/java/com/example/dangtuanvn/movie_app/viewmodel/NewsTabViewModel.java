@@ -18,7 +18,7 @@ import java.util.List;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Action1;
-import rx.subscriptions.CompositeSubscription;
+import rx.functions.Func0;
 
 /**
  * Created by dangtuanvn on 12/15/16.
@@ -30,7 +30,6 @@ public class NewsTabViewModel extends BaseObservable {
     private SwipeRefreshLayout swipeLayout;
     private Context context;
     private Subscriber subscriber;
-//    private CompositeSubscription compositeSubscription;
 
     public NewsTabViewModel(Context context, SwipeRefreshLayout swipeLayout) {
 //        this.compositeSubscription = compositeSubscription;
@@ -89,6 +88,8 @@ public class NewsTabViewModel extends BaseObservable {
                                      throw new UnsupportedOperationException("onError exception");
                                  }
                              }).subscribe(subscriber);
+
+//        valueObservable().subscribe(subscriber);
 //        compositeSubscription.add(Observable.create(new OnSubscribeNews(context)).subscribe(subscriber));
     }
 
@@ -110,8 +111,17 @@ public class NewsTabViewModel extends BaseObservable {
     }
 
     public void onDestroy() {
-        if (!subscriber.isUnsubscribed()) {
+        if (subscriber != null && !subscriber.isUnsubscribed()) {
             subscriber.unsubscribe();
         }
+    }
+
+    public Observable<Object> valueObservable() {
+        return Observable.defer(new Func0<Observable<Object>>() {
+            @Override
+            public Observable<Object> call() {
+                return Observable.create(new OnSubscribeNews(context));
+            }
+        });
     }
 }

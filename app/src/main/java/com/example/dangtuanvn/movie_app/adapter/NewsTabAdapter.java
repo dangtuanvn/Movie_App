@@ -63,9 +63,11 @@ public class NewsTabAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return newsList.size();
     }
 
-    public void onDestroy(){
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView){
         if(vm != null){
             vm.onDestroy();
         }
+        super.onDetachedFromRecyclerView(recyclerView);
     }
 }

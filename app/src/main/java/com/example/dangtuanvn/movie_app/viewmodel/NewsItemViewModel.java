@@ -135,7 +135,7 @@ public class NewsItemViewModel extends BaseObservable {
     }
 
     public void onDestroy(){
-        if(!subscriber.isUnsubscribed()){
+        if(subscriber != null && !subscriber.isUnsubscribed()){
             subscriber.unsubscribe();
         }
     }

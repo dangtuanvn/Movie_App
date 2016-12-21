@@ -16,7 +16,6 @@ import java.util.List;
 
 public class NewsListBinding implements DisplayNewsList {
     private Context context;
-    private NewsTabAdapter mAdapter;
 
     public NewsListBinding(Context context) {
         this.context = context;
@@ -29,14 +28,7 @@ public class NewsListBinding implements DisplayNewsList {
 //        mRecyclerView.setHasFixedSize(true);
         if(!listNews.isEmpty()) {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-            mAdapter = new NewsTabAdapter(context, listNews);
-            mRecyclerView.setAdapter(mAdapter);
-        }
-    }
-
-    public void onDestroy(){
-        if(mAdapter != null){
-            mAdapter.onDestroy();
+            mRecyclerView.setAdapter(new NewsTabAdapter(context, listNews));
         }
     }
 }

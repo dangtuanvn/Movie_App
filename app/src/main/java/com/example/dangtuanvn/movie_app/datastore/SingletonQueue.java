@@ -14,30 +14,31 @@ public class SingletonQueue {
     public static SingletonQueue instance;
     private RequestQueue queue;
     private Context context;
-    public SingletonQueue(Context context){
-        this.context =context;
+
+    public SingletonQueue(Context context) {
+        this.context = context;
         queue = getRequestQueue();
     }
-    public RequestQueue getRequestQueue(){
-        if(queue == null){
 
+    public RequestQueue getRequestQueue() {
+        if (queue == null) {
             queue = Volley.newRequestQueue(context);
         }
         return queue;
     }
 
-    public static synchronized SingletonQueue getInstance(Context context){
-        if(instance ==null ){
+    public static synchronized SingletonQueue getInstance(Context context) {
+        if (instance == null) {
             instance = new SingletonQueue(context);
         }
         return instance;
     }
 
-    public<T> void addRequest(Request<T> request){
+    public <T> void addRequest(Request<T> request) {
         queue.add(request);
     }
 
-    public void cancelAllRequests(){
+    public void cancelAllRequests() {
         queue.cancelAll(new RequestQueue.RequestFilter() {
             @Override
             public boolean apply(Request<?> request) {

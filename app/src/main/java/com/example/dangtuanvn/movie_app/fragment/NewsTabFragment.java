@@ -14,16 +14,13 @@ import com.example.dangtuanvn.movie_app.databinding.ViewPagerTabBinding;
 import com.example.dangtuanvn.movie_app.viewmodel.MyDataBindingComponent;
 import com.example.dangtuanvn.movie_app.viewmodel.NewsTabViewModel;
 
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by dangtuanvn on 11/22/16.
  */
 
 public class NewsTabFragment extends Fragment {
-//    private CompositeSubscription compositeSubscription;
     private NewsTabViewModel vm;
-    private MyDataBindingComponent bindingComponent;
 
     public static NewsTabFragment newInstance() {
         NewsTabFragment fragment = new NewsTabFragment();
@@ -54,8 +51,7 @@ public class NewsTabFragment extends Fragment {
         // This has to happened before binding the view
         // Doing this to avoid casting static context in Databinding functions
 
-        bindingComponent = new MyDataBindingComponent(getContext());
-        DataBindingUtil.setDefaultComponent(bindingComponent);
+        DataBindingUtil.setDefaultComponent(new MyDataBindingComponent(getContext()));
 
         ViewPagerTabBinding binding = DataBindingUtil.bind(view);
         vm = new NewsTabViewModel(getContext(), swipeLayout);
@@ -70,12 +66,6 @@ public class NewsTabFragment extends Fragment {
         if(vm != null){
             vm.onDestroy();
         }
-
-        if(bindingComponent != null){
-            bindingComponent.onDestroy();
-        }
-
         super.onDestroy();
-//        compositeSubscription.unsubscribe();
     }
 }

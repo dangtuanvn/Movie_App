@@ -13,17 +13,9 @@ public class MyDataBindingComponent implements android.databinding.DataBindingCo
     public MyDataBindingComponent(Context context){
         this.context = context;
     }
-    private NewsListBinding binding;
 
     @Override
     public DisplayNewsList getDisplayNewsList() {
-        binding = new NewsListBinding(context);
-        return binding;
-    }
-
-    public void onDestroy(){
-        if(binding != null) {
-            binding.onDestroy();
-        }
+        return new NewsListBinding(context);
     }
 }
