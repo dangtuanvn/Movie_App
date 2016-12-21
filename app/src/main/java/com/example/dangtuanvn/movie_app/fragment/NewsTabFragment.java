@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.dangtuanvn.movie_app.R;
-import com.example.dangtuanvn.movie_app.databinding.MovieTabRecyclerBinding;
+import com.example.dangtuanvn.movie_app.databinding.ViewPagerTabBinding;
 import com.example.dangtuanvn.movie_app.viewmodel.MyDataBindingComponent;
 import com.example.dangtuanvn.movie_app.viewmodel.NewsTabViewModel;
 
@@ -23,6 +23,7 @@ import rx.subscriptions.CompositeSubscription;
 public class NewsTabFragment extends Fragment {
 //    private CompositeSubscription compositeSubscription;
     private NewsTabViewModel vm;
+    private MyDataBindingComponent bindingComponent;
 
     public static NewsTabFragment newInstance() {
         NewsTabFragment fragment = new NewsTabFragment();
@@ -53,13 +54,14 @@ public class NewsTabFragment extends Fragment {
         // This has to happened before binding the view
         // Doing this to avoid casting static context in Databinding functions
 
-        DataBindingUtil.setDefaultComponent(new MyDataBindingComponent(getContext()));
+        bindingComponent = new MyDataBindingComponent(getContext());
+        DataBindingUtil.setDefaultComponent(bindingComponent);
 
-        MovieTabRecyclerBinding binding = DataBindingUtil.bind(view);
+        ViewPagerTabBinding binding = DataBindingUtil.bind(view);
         vm = new NewsTabViewModel(getContext(), swipeLayout);
         vm.getNewsData();
 
-        binding.setViewModelVM(vm);
+        binding.setTabViewModel(vm);
         return view;
     }
 
@@ -68,6 +70,11 @@ public class NewsTabFragment extends Fragment {
         if(vm != null){
             vm.onDestroy();
         }
+
+        if(bindingComponent != null){
+            bindingComponent.onDestroy();
+        }
+
         super.onDestroy();
 //        compositeSubscription.unsubscribe();
     }

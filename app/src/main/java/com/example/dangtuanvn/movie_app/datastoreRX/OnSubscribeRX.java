@@ -28,7 +28,6 @@ public abstract class OnSubscribeRX implements Observable.OnSubscribe<Object> {
     private String X123F_TOKEN = "GVlRhvnZt0Z4WF4NrfsQXwZh";
     private String X123F_VERSION = "3";
     protected String BASE_URL = "http://mapp.123phim.vn/android/2.97/";
-    private Object result;
     private Context context;
 
     public OnSubscribeRX(Context context) {
@@ -43,13 +42,8 @@ public abstract class OnSubscribeRX implements Observable.OnSubscribe<Object> {
                 (Request.Method.GET, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        
-                        if(subscriber.isUnsubscribed()){
-                            return;
-                        }
-                        else {
-                            result = handleData(response);
-                            subscriber.onNext(result);
+                        if(!subscriber.isUnsubscribed()){
+                            subscriber.onNext(handleData(response));
                             subscriber.onCompleted();
                         }
                     }

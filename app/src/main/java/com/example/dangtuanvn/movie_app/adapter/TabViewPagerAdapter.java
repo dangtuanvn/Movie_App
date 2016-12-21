@@ -10,7 +10,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.example.dangtuanvn.movie_app.MainActivity;
 import com.example.dangtuanvn.movie_app.NoInternetActivity;
-import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
+//import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.NoInternetFragment;
 //import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
 //import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;

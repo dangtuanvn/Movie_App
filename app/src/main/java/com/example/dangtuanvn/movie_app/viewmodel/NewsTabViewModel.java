@@ -25,7 +25,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class NewsTabViewModel extends BaseObservable {
-    private List<?> listObject;
+    private List<News> listObject;
 //    private NewsFeedDataStore newsFDS;
     private SwipeRefreshLayout swipeLayout;
     private Context context;
@@ -99,13 +99,13 @@ public class NewsTabViewModel extends BaseObservable {
 //        notifyPropertyChanged(BR.listObject);
     }
 
-    public void setListObject(List<?> listObject) {
+    public void setListObject(List<News> listObject) {
         this.listObject = listObject;
         notifyPropertyChanged(BR.listObject);
     }
 
     @Bindable
-    public List<?> getListObject() {
+    public List<News> getListObject() {
         return listObject;
     }
 
