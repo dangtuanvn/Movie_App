@@ -55,7 +55,7 @@ public class NewsTabFragment extends Fragment {
         DataBindingUtil.setDefaultComponent(new MyDataBindingComponent(getContext()));
 
         MovieTabRecyclerBinding binding = DataBindingUtil.bind(view);
-        ViewModelVM vm = new ViewModelVM(getContext(), swipeLayout, compositeSubscription);
+        ViewModelVM vm = new ViewModelVM(getContext(), swipeLayout);
         vm.getNewsData();
 
         binding.setViewModelVM(vm);

@@ -17,6 +17,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -28,10 +29,10 @@ public class ViewModelVM extends BaseObservable {
 //    private NewsFeedDataStore newsFDS;
     private SwipeRefreshLayout swipeLayout;
     private Context context;
-    private CompositeSubscription compositeSubscription;
+//    private CompositeSubscription compositeSubscription;
 
-    public ViewModelVM(Context context, SwipeRefreshLayout swipeLayout, CompositeSubscription compositeSubscription) {
-        this.compositeSubscription = compositeSubscription;
+    public ViewModelVM(Context context, SwipeRefreshLayout swipeLayout) {
+//        this.compositeSubscription = compositeSubscription;
         listObject = new ArrayList<>();
 //        newsFDS = new NewsFeedDataStore(context);
         this.context = context;
@@ -80,15 +81,14 @@ public class ViewModelVM extends BaseObservable {
             }
         };
 
-//        observable.doOnError(new Action1<Throwable>() {
-//                                 @Override
-//                                 public void call(Throwable throwable) {
-//                                     Log.i("SUBSCRIBER ERROR", "ERROR IN API CALL" );
-//                                     Log.i("THROWABLE 2", throwable.toString());
-//                                     throw new UnsupportedOperationException("onError exception");
-//                                 }
-//                             }).subscribe(subscriber);
-        compositeSubscription.add(Observable.create(new OnSubscribeNews(context)).subscribe(subscriber));
+        Observable.create(new OnSubscribeNews(context)).doOnError(new Action1<Throwable>() {
+                                 @Override
+                                 public void call(Throwable throwable) {
+                                     Log.i("SUBSCRIBER ERROR", throwable.toString());
+                                     throw new UnsupportedOperationException("onError exception");
+                                 }
+                             }).subscribe(subscriber);
+//        compositeSubscription.add(Observable.create(new OnSubscribeNews(context)).subscribe(subscriber));
     }
 
     private void refresh() {
