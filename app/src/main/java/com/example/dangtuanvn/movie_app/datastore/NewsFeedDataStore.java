@@ -1,8 +1,8 @@
 package com.example.dangtuanvn.movie_app.datastore;
 
 import android.content.Context;
+import android.util.Log;
 
-import com.android.annotations.Nullable;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.converter.NewsDeserializer;
 import com.google.gson.Gson;
@@ -32,7 +32,8 @@ public class NewsFeedDataStore extends DataStore {
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(response);
         List<News> newsList;
-        Type type = new TypeToken<List<News>>() {}.getType();
+        Type type = new TypeToken<List<News>>() {
+        }.getType();
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(News.class, new NewsDeserializer());
         Gson gson = gsonBuilder.create();
@@ -40,8 +41,18 @@ public class NewsFeedDataStore extends DataStore {
         return newsList;
     }
 
+    public Observable<List<News>> getNewsList() {
+        Observable observable = super.getDataObservable(getUrl());
+        try {
+            return (Observable<List<News>>) observable;
+        } catch (ClassCastException e) {
+            Log.i("ClassCastException", e.getMessage());
+        }
+        return null;
+    }
+
     @Override
-    protected String setUrl(){
+    protected String getUrl() {
         return url;
     }
 }

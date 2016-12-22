@@ -14,7 +14,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -66,19 +65,18 @@ public abstract class DataStore implements VolleyWrapperRX {
         return null;
     }
 
-    protected String setUrl(){
+    protected String getUrl(){
         return BASE_URL;
     }
 
     @Override
-    public Observable<Object> getDataObservable() {
+    public Observable<Object> getDataObservable(final String url) {
         return Observable.defer(new Func0<Observable<Object>>() {
             @Override
             public Observable<Object> call() {
                 return Observable.create(new Observable.OnSubscribe<Object>() {
                     @Override
                     public void call(final Subscriber<? super Object> subscriber) {
-                        String url = setUrl();
 
                         StringRequest stringRequest = new StringRequest
                                 (Request.Method.GET, url, new Response.Listener<String>() {

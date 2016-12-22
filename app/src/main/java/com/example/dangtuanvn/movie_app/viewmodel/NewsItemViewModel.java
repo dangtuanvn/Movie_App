@@ -7,7 +7,6 @@ import android.databinding.Bindable;
 import android.databinding.BindingAdapter;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -15,13 +14,11 @@ import android.widget.ImageView;
 import com.example.dangtuanvn.movie_app.NewsDetailActivity;
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.datastore.NewsDetailFeedDataStore;
-import com.example.dangtuanvn.movie_app.datastoreRX.OnSubscribeNewsDetail;
 import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
-import rx.Observable;
 import rx.Subscriber;
 
 
@@ -33,7 +30,7 @@ public class NewsItemViewModel extends BaseObservable {
     private News news;
     private Context context;
     private static Transformation cropPosterTransformation;
-    private Subscriber subscriber;
+    private Subscriber<NewsDetail> subscriber;
 
     public NewsItemViewModel(News news, Context context) {
         this.news = news;
@@ -71,7 +68,7 @@ public class NewsItemViewModel extends BaseObservable {
     }
 
     private Transformation getCropPosterTransformation() {
-        Transformation cropPosterTransformation = new Transformation() {
+        return new Transformation() {
             @Override
             public Bitmap transform(Bitmap source) {
                 DisplayMetrics metrics = new DisplayMetrics();
@@ -93,24 +90,14 @@ public class NewsItemViewModel extends BaseObservable {
                 return "cropPosterTransformation";
             }
         };
-        return cropPosterTransformation;
     }
 
     public View.OnClickListener onClickNews() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                FeedDataStore newsDetailFDS = new NewsDetailFeedDataStore(context, news.getNewsId());
-//                newsDetailFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
-//                    @Override
-//                    public void onDataRetrievedListener(List<?> list, Exception ex) {
-//                        Intent intent = new Intent(context, NewsDetailActivity.class);
-//                        intent.putExtra("data", ((NewsDetail) list.get(0)).getContent());
-//                        context.startActivity(intent);
-//                    }
-//                });
 
-                subscriber = new Subscriber() {
+                subscriber = new Subscriber<NewsDetail>() {
                     @Override
                     public void onCompleted() {
 
@@ -122,15 +109,14 @@ public class NewsItemViewModel extends BaseObservable {
                     }
 
                     @Override
-                    public void onNext(Object object) {
+                    public void onNext(NewsDetail object) {
                         Intent intent = new Intent(context, NewsDetailActivity.class);
-                        intent.putExtra("data", ((NewsDetail) object).getContent());
+                        intent.putExtra("data", object.getContent());
                         context.startActivity(intent);
                     }
                 };
 
-//                Observable.create(new OnSubscribeNewsDetail(context, news.getNewsId())).subscribe(subscriber);
-                new NewsDetailFeedDataStore(context, news.getNewsId()).getDataObservable().subscribe(subscriber);
+                new NewsDetailFeedDataStore(context).getNewsDetail(news.getNewsId()).subscribe(subscriber);
             }
         };
     }

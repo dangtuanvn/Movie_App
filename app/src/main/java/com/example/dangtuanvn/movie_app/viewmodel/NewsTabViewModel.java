@@ -9,16 +9,12 @@ import android.util.Log;
 
 import com.android.databinding.library.baseAdapters.BR;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
-import com.example.dangtuanvn.movie_app.datastoreRX.OnSubscribeNews;
 import com.example.dangtuanvn.movie_app.model.News;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Action1;
-import rx.functions.Func0;
 
 /**
  * Created by dangtuanvn on 12/15/16.
@@ -26,15 +22,12 @@ import rx.functions.Func0;
 
 public class NewsTabViewModel extends BaseObservable {
     private List<News> listObject;
-//    private NewsFeedDataStore newsFDS;
     private SwipeRefreshLayout swipeLayout;
     private Context context;
-    private Subscriber subscriber;
+    private Subscriber<List<News>> subscriber;
 
     public NewsTabViewModel(Context context, SwipeRefreshLayout swipeLayout) {
-//        this.compositeSubscription = compositeSubscription;
         listObject = new ArrayList<>();
-//        newsFDS = new NewsFeedDataStore(context);
         this.context = context;
         this.swipeLayout = swipeLayout;
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -48,18 +41,7 @@ public class NewsTabViewModel extends BaseObservable {
     public void getNewsData() {
         swipeLayout.setRefreshing(true);
 
-//        newsFDS.getList(new FeedDataStore.OnDataRetrievedListener() {
-//            @Override
-//            public void onDataRetrievedListener(List<?> list, Exception ex) {
-//                {
-//                    listObject = (List<News>) list;
-//                    notifyPropertyChanged(BR.listObject);
-//                    swipeLayout.setRefreshing(false);
-//                }
-//            }
-//        });
-
-        subscriber = new Subscriber() {
+        subscriber = new Subscriber<List<News>>() {
             @Override
             public void onCompleted() {
 
@@ -69,13 +51,12 @@ public class NewsTabViewModel extends BaseObservable {
             public void onError(Throwable e) {
                 Log.i("SUBSCRIBER ERROR", "ERROR IN API CALL" );
                 Log.i("THROWABLE 1", e.toString());
-//                Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
                 swipeLayout.setRefreshing(false);
             }
 
             @Override
-            public void onNext(Object object) {
-                listObject = (List<News>) object;
+            public void onNext(List<News> object) {
+                listObject = object;
                 notifyPropertyChanged(BR.listObject);
                 swipeLayout.setRefreshing(false);
             }
@@ -89,16 +70,12 @@ public class NewsTabViewModel extends BaseObservable {
 //                                 }
 //                             }).subscribe(subscriber);
 
-        new NewsFeedDataStore(context).getDataObservable().subscribe(subscriber);
+        new NewsFeedDataStore(context).getNewsList().subscribe(subscriber);
 
-//        compositeSubscription.add(Observable.create(new OnSubscribeNews(context)).subscribe(subscriber));
     }
 
     private void refresh() {
         getNewsData();
-//        listObject.remove(0);  // Remove the first element from list to see the if the changes was made
-//        notifyChange();   // Notify all properties changed
-//        notifyPropertyChanged(BR.listObject);
     }
 
     public void setListObject(List<News> listObject) {

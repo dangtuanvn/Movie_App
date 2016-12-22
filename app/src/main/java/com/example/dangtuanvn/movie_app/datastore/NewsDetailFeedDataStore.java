@@ -1,8 +1,8 @@
 package com.example.dangtuanvn.movie_app.datastore;
 
 import android.content.Context;
+import android.util.Log;
 
-import com.example.dangtuanvn.movie_app.model.News;
 import com.example.dangtuanvn.movie_app.model.NewsDetail;
 import com.example.dangtuanvn.movie_app.model.converter.NewsDetailDeserializer;
 import com.google.gson.Gson;
@@ -11,9 +11,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
-import java.util.List;
 import java.lang.reflect.Type;
-import java.util.Collections;
+
+import rx.Observable;
 
 /**
  * Created by dangtuanvn on 11/14/16.
@@ -21,11 +21,9 @@ import java.util.Collections;
 
 public class NewsDetailFeedDataStore extends DataStore {
     private String url = BASE_URL + "news/detail?news_id=";
-    private int newsId;
 
-    public NewsDetailFeedDataStore(Context context, int newsId) {
+    public NewsDetailFeedDataStore(Context context) {
         super(context);
-        this.newsId = newsId;
     }
 
     @Override
@@ -41,8 +39,19 @@ public class NewsDetailFeedDataStore extends DataStore {
         return newsDetail;
     }
 
+    public Observable<NewsDetail> getNewsDetail(int newsId){
+        Observable observable = super.getDataObservable(getUrl() + newsId);
+        try {
+            return (Observable<NewsDetail>) observable;
+        }
+        catch (ClassCastException e){
+            Log.i("ClassCastException", e.getMessage());
+        }
+        return null;
+    }
+
     @Override
-    protected String setUrl(){
-        return url + newsId;
+    protected String getUrl(){
+        return url;
     }
 }

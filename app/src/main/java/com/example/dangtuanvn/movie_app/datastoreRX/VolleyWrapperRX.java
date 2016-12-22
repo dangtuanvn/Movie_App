@@ -1,7 +1,5 @@
 package com.example.dangtuanvn.movie_app.datastoreRX;
 
-import com.android.annotations.Nullable;
-
 import rx.Observable;
 
 /**
@@ -9,5 +7,5 @@ import rx.Observable;
  */
 
 public interface VolleyWrapperRX {
-    Observable<Object> getDataObservable();
+    Observable<Object> getDataObservable(String url);
 }
