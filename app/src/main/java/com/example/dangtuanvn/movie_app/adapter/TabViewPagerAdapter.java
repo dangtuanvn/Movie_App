@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import com.example.dangtuanvn.movie_app.MainActivity;
 import com.example.dangtuanvn.movie_app.NoInternetActivity;
 //import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
+import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.NoInternetFragment;
 //import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
@@ -47,6 +48,7 @@ public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
                 case 1:
                     return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.Upcoming);
                 case 2:
+                    return CinemaTabFragment.newInstance();
                 case 3:
                     return NewsTabFragment.newInstance();
             }

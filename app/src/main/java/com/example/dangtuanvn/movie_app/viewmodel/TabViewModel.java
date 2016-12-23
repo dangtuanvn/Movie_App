@@ -10,7 +10,6 @@ import android.util.Log;
 import com.android.databinding.library.baseAdapters.BR;
 import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
-import com.example.dangtuanvn.movie_app.model.News;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,8 +75,10 @@ public class TabViewModel extends BaseObservable {
         switch(tabId) {
             case 0:
                 new MovieFeedDataStore(context, 0).getMovieList().subscribe(subscriber);
+                break;
             case 1:
                 new MovieFeedDataStore(context, 1).getMovieList().subscribe(subscriber);
+                break;
             case 3:
                 new NewsFeedDataStore(context).getNewsList().subscribe(subscriber);
                 break;

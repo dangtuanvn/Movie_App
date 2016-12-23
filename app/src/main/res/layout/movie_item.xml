@@ -3,9 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="MovieItemVM"
             type="com.example.dangtuanvn.movie_app.viewmodel.MovieItemViewModel" />
+
+        <import type="android.view.View" />
+        <import type="android.text.Html" />
     </data>
 
     <RelativeLayout
@@ -33,25 +37,25 @@
             android:background="#99000000"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            android:textColor="#33FFFFFF"
-            android:text="@{MovieItemVM.imdbPoint"/>
+            android:text="@{Html.fromHtml(MovieItemVM.imdbPoint)}"
+            android:textColor="#33FFFFFF" />
 
         <TextView
             android:id="@+id/txt_Calendar"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/txt_IMDB"
             android:layout_alignParentEnd="true"
-            android:layout_alignStart="@+id/txt_IMDB"
             android:layout_below="@+id/txt_IMDB"
-            android:layout_gravity="center"
             android:background="@color/colorHighlightTab"
             android:drawablePadding="5dp"
             android:drawableStart="@drawable/ic_calendar_white"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:singleLine="true"
-            android:text="@{MovieItemVM.publishDate"/>
-        <!--android:visibility="@{MovieItemVM.upComingPage ? View.GONE : View.VISIBLE"-->
+            android:layout_alignEnd="@+id/txt_IMDB"
+            android:layout_alignStart="@+id/txt_IMDB"
+            android:text="@{MovieItemVM.publishDate}"
+            android:visibility="@{MovieItemVM.pageIsUpComingPage() ? View.VISIBLE : View.GONE}" />
+
     </RelativeLayout>
 </layout>

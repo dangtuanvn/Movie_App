@@ -6,7 +6,10 @@ import android.databinding.Bindable;
 import android.databinding.BindingAdapter;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.example.dangtuanvn.movie_app.MovieDetailActivity;
+import com.example.dangtuanvn.movie_app.datastore.MovieDetailFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.Movie;
 import com.example.dangtuanvn.movie_app.model.MovieDetail;
 
@@ -34,21 +37,19 @@ public class MovieItemViewModel extends MovieAppViewModel {
     }
 
     @Bindable
-    public double getImdbPoint() {
-        return movie.getImdbPoint();
+    public String getImdbPoint() {
+        return "<font color=#cc0029>" + Double.toString(movie.getImdbPoint()) + "</font> <font color=#ffffff> IMDB</font>";
     }
 
     @Bindable
     public String getPublishDate() {
-        if(isUpComingPage()) {
+        if(pageIsUpComingPage()) {
             try {
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
                 Date newDate;
-                newDate = format.parse(movie.getPublishDate());
-                format = new SimpleDateFormat("dd.MM");
-                return format.format(newDate);
-//            movieHolder.calendar.setVisibility(View.VISIBLE);
-//            movieHolder.calendar.setText(date);
+                newDate = formatDate.parse(movie.getPublishDate());
+                formatDate = new SimpleDateFormat("dd.MM");
+                return formatDate.format(newDate);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -56,7 +57,7 @@ public class MovieItemViewModel extends MovieAppViewModel {
         return null;
     }
 
-    public boolean isUpComingPage(){
+    public boolean pageIsUpComingPage(){
         return page == 1;
     }
 
@@ -89,14 +90,14 @@ public class MovieItemViewModel extends MovieAppViewModel {
 
                     @Override
                     public void onNext(MovieDetail object) {
-//                        Intent intent = new Intent(getActivity(), MovieDetailActivity.class);
-//                        intent.putExtra("movieId", movie.getFilmId());
-//                        intent.putExtra("posterUrl", movie.getPosterLandscape());
-//
-//                        startActivity(intent);
+                        Intent intent = new Intent(context, MovieDetailActivity.class);
+                        intent.putExtra("movieId", movie.getFilmId());
+                        intent.putExtra("posterUrl", movie.getPosterLandscape());
+
+                        context.startActivity(intent);
                     }
                 };
-//                new NewsDetailFeedDataStore(context).getNewsDetail(news.getNewsId()).subscribe(subscriber);
+                new MovieDetailFeedDataStore(context).getMovieDetail(movie.getFilmId()).subscribe(subscriber);
             }
         };
     }

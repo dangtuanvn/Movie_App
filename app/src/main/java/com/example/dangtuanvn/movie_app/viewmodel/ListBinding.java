@@ -33,10 +33,13 @@ public class ListBinding implements DisplayList {
             switch(tabId){
                 case 0:
                     mRecyclerView.setAdapter(new MovieTabAdapter(context, listObject, 0));
+                    break;
                 case 1:
                     mRecyclerView.setAdapter(new MovieTabAdapter(context, listObject, 1));
+                    break;
                 case 3:
                     mRecyclerView.setAdapter(new NewsTabAdapter(context, listObject));
+                    break;
             }
         }
     }
