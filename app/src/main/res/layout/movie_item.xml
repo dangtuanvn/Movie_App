@@ -8,6 +8,7 @@
             type="com.example.dangtuanvn.movie_app.viewmodel.MovieItemViewModel" />
     </data>
 
+
     <RelativeLayout
         android:id="@+id/movie_detail"
         android:layout_width="wrap_content"
