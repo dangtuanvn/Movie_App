@@ -12,7 +12,7 @@ import java.util.List;
  * Created by dangtuanvn on 12/16/16.
  */
 
-public interface DisplayNewsList {
+public interface DisplayList {
     @BindingAdapter("app:items")
-    void displayNewsList(RecyclerView mRecyclerView, List<News> listNews);
+    void displayList(RecyclerView mRecyclerView, List listObject);
 }

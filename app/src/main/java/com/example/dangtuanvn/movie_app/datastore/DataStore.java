@@ -77,45 +77,47 @@ public abstract class DataStore implements VolleyWrapperRX {
                 return Observable.create(new Observable.OnSubscribe<Object>() {
                     @Override
                     public void call(final Subscriber<? super Object> subscriber) {
-
-                        StringRequest stringRequest = new StringRequest
-                                (Request.Method.GET, url, new Response.Listener<String>() {
-                                    @Override
-                                    public void onResponse(String response) {
-                                        if(!subscriber.isUnsubscribed()){
-                                            subscriber.onNext(handleData(response));
-                                            subscriber.onCompleted();
-                                        }
-                                    }
-                                }, new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                        Log.i("VOLLEY RESPONSE FAIL", "Volley gets fail");
-                                        if(!subscriber.isUnsubscribed()) {
-                                            subscriber.onError(error);
-                                        }
-                                    }
-                                }) {
-
-                            @Override
-                            public Map<String, String> getHeaders() throws AuthFailureError {
-                                Map<String, String> params = new HashMap<>();
-
-                                long timestamp = TimeUnit.MILLISECONDS.toSeconds(new Date().getTime());
-                                String accessToken = hashMd5(X123F_TOKEN + timestamp) + " " + timestamp;
-
-                                params.put("X-123F-Version", X123F_VERSION);
-                                params.put("X-123F-Token", accessToken);
-
-                                return params;
-                            }
-                        };
-
+                        StringRequest stringRequest = createStringRequest(url, subscriber);
                         SingletonQueue.getInstance(context).addRequest(stringRequest);
                     }
                 });
             }
         });
+    }
+
+    public StringRequest createStringRequest(String url, final Subscriber<? super Object> subscriber){
+        return new StringRequest
+                (Request.Method.GET, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if(!subscriber.isUnsubscribed()){
+                            subscriber.onNext(handleData(response));
+                            subscriber.onCompleted();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.i("VOLLEY RESPONSE FAIL", "Volley gets fail");
+                        if(!subscriber.isUnsubscribed()) {
+                            subscriber.onError(error);
+                        }
+                    }
+                }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+
+                long timestamp = TimeUnit.MILLISECONDS.toSeconds(new Date().getTime());
+                String accessToken = hashMd5(X123F_TOKEN + timestamp) + " " + timestamp;
+
+                params.put("X-123F-Version", X123F_VERSION);
+                params.put("X-123F-Token", accessToken);
+
+                return params;
+            }
+        };
     }
 }
 

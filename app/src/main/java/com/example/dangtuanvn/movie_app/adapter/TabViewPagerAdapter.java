@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import com.example.dangtuanvn.movie_app.MainActivity;
 import com.example.dangtuanvn.movie_app.NoInternetActivity;
 //import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
+import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.NoInternetFragment;
 //import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
 //import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
@@ -40,14 +41,14 @@ public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
 //        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 //        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 //        if (networkInfo != null && networkInfo.isConnected()) {
-            if (position == 0) {
-                return NewsTabFragment.newInstance();
-            } else if (position == 1) {
-                return NewsTabFragment.newInstance();
-            } else if (position == 2) {
-                return NewsTabFragment.newInstance();
-            } else if (position == 3) {
-                return NewsTabFragment.newInstance();
+            switch(position) {
+                case 0:
+                    return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.Showing);
+                case 1:
+                    return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.Upcoming);
+                case 2:
+                case 3:
+                    return NewsTabFragment.newInstance();
             }
 //        } else {
 //            Intent intent = new Intent(context, NoInternetActivity.class);

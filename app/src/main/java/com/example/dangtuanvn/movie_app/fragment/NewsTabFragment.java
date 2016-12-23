@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import com.example.dangtuanvn.movie_app.R;
 import com.example.dangtuanvn.movie_app.databinding.ViewPagerTabBinding;
 import com.example.dangtuanvn.movie_app.viewmodel.MyDataBindingComponent;
-import com.example.dangtuanvn.movie_app.viewmodel.NewsTabViewModel;
+import com.example.dangtuanvn.movie_app.viewmodel.TabViewModel;
 
 
 /**
@@ -20,7 +20,7 @@ import com.example.dangtuanvn.movie_app.viewmodel.NewsTabViewModel;
  */
 
 public class NewsTabFragment extends Fragment {
-    private NewsTabViewModel vm;
+    private TabViewModel vm;
 
     public static NewsTabFragment newInstance() {
         NewsTabFragment fragment = new NewsTabFragment();
@@ -51,11 +51,11 @@ public class NewsTabFragment extends Fragment {
         // This has to happened before binding the view
         // Doing this to avoid casting static context in Databinding functions
 
-        DataBindingUtil.setDefaultComponent(new MyDataBindingComponent(getContext()));
+        DataBindingUtil.setDefaultComponent(new MyDataBindingComponent(getContext(), 3));
 
         ViewPagerTabBinding binding = DataBindingUtil.bind(view);
-        vm = new NewsTabViewModel(getContext(), swipeLayout);
-        vm.getNewsData();
+        vm = new TabViewModel(getContext(), swipeLayout, 3);
+        vm.getListData();
 
         binding.setTabViewModel(vm);
         return view;

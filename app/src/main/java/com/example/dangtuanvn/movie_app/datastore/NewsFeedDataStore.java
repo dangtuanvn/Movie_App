@@ -32,8 +32,7 @@ public class NewsFeedDataStore extends DataStore {
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(response);
         List<News> newsList;
-        Type type = new TypeToken<List<News>>() {
-        }.getType();
+        Type type = new TypeToken<List<News>>() {}.getType();
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(News.class, new NewsDeserializer());
         Gson gson = gsonBuilder.create();

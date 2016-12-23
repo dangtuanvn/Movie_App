@@ -7,8 +7,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.example.dangtuanvn.movie_app.R;
+import com.example.dangtuanvn.movie_app.databinding.NewsItemBinding;
 import com.example.dangtuanvn.movie_app.viewmodel.NewsItemViewModel;
-import com.example.dangtuanvn.movie_app.databinding.NewsDetailBinding;
 import com.example.dangtuanvn.movie_app.model.News;
 
 import java.util.List;
@@ -27,9 +27,9 @@ public class NewsTabAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public NewsTabAdapter.NewsDetailVH onCreateViewHolder(ViewGroup parent, int viewType) {
-        NewsDetailBinding binding = DataBindingUtil.inflate(
+        NewsItemBinding binding = DataBindingUtil.inflate(
                 LayoutInflater.from(parent.getContext()),
-                R.layout.news_detail, parent, false);
+                R.layout.news_item, parent, false);
 
         return new NewsDetailVH(binding);
     }
@@ -38,24 +38,9 @@ public class NewsTabAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         NewsTabAdapter.NewsDetailVH newsHolder = (NewsTabAdapter.NewsDetailVH) holder;
 
-        NewsDetailBinding binding = newsHolder.binding;
+        NewsItemBinding binding = newsHolder.binding;
         vm = new NewsItemViewModel(newsList.get(position), context);
         binding.setNewsItemVM(vm);
-    }
-
-    protected static class NewsDetailVH extends RecyclerView.ViewHolder {
-//        private ImageView newsPic;
-//        private TextView title;
-//        private TextView time;
-        private NewsDetailBinding binding;
-
-        private NewsDetailVH(NewsDetailBinding binding) {
-            super(binding.newsDetail);
-            this.binding = binding;
-//            newsPic = (ImageView) binding.newsDetail.findViewById(R.id.newspic);
-//            title = (TextView) binding.newsDetail.findViewById(R.id.txtTitle);
-//            time = (TextView) binding.newsDetail.findViewById(R.id.txtTime);
-        }
     }
 
     @Override
@@ -69,5 +54,14 @@ public class NewsTabAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             vm.onDestroy();
         }
         super.onDetachedFromRecyclerView(recyclerView);
+    }
+
+    private static class NewsDetailVH extends RecyclerView.ViewHolder {
+        private NewsItemBinding binding;
+
+        private NewsDetailVH(NewsItemBinding binding) {
+            super(binding.newsDetail);
+            this.binding = binding;
+        }
     }
 }

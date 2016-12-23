@@ -5,7 +5,7 @@
     <data>
         <variable
             name="TabViewModel"
-            type="com.example.dangtuanvn.movie_app.viewmodel.NewsTabViewModel" />
+            type="com.example.dangtuanvn.movie_app.viewmodel.TabViewModel" />
     </data>
 
     <LinearLayout

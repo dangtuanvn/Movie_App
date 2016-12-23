@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="MovieItemVM"
+            type="com.example.dangtuanvn.movie_app.viewmodel.MovieItemViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/movie_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:onClick="@{MovieItemVM.onClickMovie}">
+
+        <ImageView
+            android:id="@+id/moviepic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            app:image="@{MovieItemVM.imageUrl}" />
+
+        <TextView
+            android:id="@+id/txtIMDB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:background="#99000000"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textColor="#33FFFFFF"
+            android:text="@{MovieItemVM.imdbPoint"/>
+
+        <TextView
+            android:id="@+id/txtCalendar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/txtIMDB"
+            android:layout_alignParentEnd="true"
+            android:layout_alignStart="@+id/txtIMDB"
+            android:layout_below="@+id/txtIMDB"
+            android:layout_gravity="center"
+            android:background="@color/colorHighlightTab"
+            android:drawablePadding="5dp"
+            android:drawableStart="@drawable/ic_calendar_white"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:singleLine="true"
+            android:text="@{MovieItemVM.publishDate"/>
+        <!--android:visibility="@{MovieItemVM.upComingPage ? View.GONE : View.VISIBLE"-->
+    </RelativeLayout>
+</layout>

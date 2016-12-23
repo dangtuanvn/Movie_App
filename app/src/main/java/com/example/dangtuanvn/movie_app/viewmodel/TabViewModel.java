@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 
 import com.android.databinding.library.baseAdapters.BR;
+import com.example.dangtuanvn.movie_app.datastore.MovieFeedDataStore;
 import com.example.dangtuanvn.movie_app.datastore.NewsFeedDataStore;
 import com.example.dangtuanvn.movie_app.model.News;
 
@@ -20,13 +21,15 @@ import rx.Subscriber;
  * Created by dangtuanvn on 12/15/16.
  */
 
-public class NewsTabViewModel extends BaseObservable {
-    private List<News> listObject;
+public class TabViewModel extends BaseObservable {
+    private List listObject;
     private SwipeRefreshLayout swipeLayout;
     private Context context;
-    private Subscriber<List<News>> subscriber;
+    private Subscriber<List<?>> subscriber;
+    private int tabId;
 
-    public NewsTabViewModel(Context context, SwipeRefreshLayout swipeLayout) {
+    public TabViewModel(Context context, SwipeRefreshLayout swipeLayout, int tabId) {
+        this.tabId = tabId;
         listObject = new ArrayList<>();
         this.context = context;
         this.swipeLayout = swipeLayout;
@@ -38,10 +41,10 @@ public class NewsTabViewModel extends BaseObservable {
         });
     }
 
-    public void getNewsData() {
+    public void getListData() {
         swipeLayout.setRefreshing(true);
 
-        subscriber = new Subscriber<List<News>>() {
+        subscriber = new Subscriber<List<?>>() {
             @Override
             public void onCompleted() {
 
@@ -55,7 +58,7 @@ public class NewsTabViewModel extends BaseObservable {
             }
 
             @Override
-            public void onNext(List<News> object) {
+            public void onNext(List<?> object) {
                 listObject = object;
                 notifyPropertyChanged(BR.listObject);
                 swipeLayout.setRefreshing(false);
@@ -70,21 +73,28 @@ public class NewsTabViewModel extends BaseObservable {
 //                                 }
 //                             }).subscribe(subscriber);
 
-        new NewsFeedDataStore(context).getNewsList().subscribe(subscriber);
-
+        switch(tabId) {
+            case 0:
+                new MovieFeedDataStore(context, MovieFeedDataStore.DataType.SHOWING).getMovieList().subscribe(subscriber);
+            case 1:
+                new MovieFeedDataStore(context, MovieFeedDataStore.DataType.UPCOMING).getMovieList().subscribe(subscriber);
+            case 3:
+                new NewsFeedDataStore(context).getNewsList().subscribe(subscriber);
+                break;
+        }
     }
 
     private void refresh() {
-        getNewsData();
+        getListData();
     }
 
-    public void setListObject(List<News> listObject) {
+    public void setListObject(List<?> listObject) {
         this.listObject = listObject;
         notifyPropertyChanged(BR.listObject);
     }
 
     @Bindable
-    public List<News> getListObject() {
+    public List getListObject() {
         return listObject;
     }
 

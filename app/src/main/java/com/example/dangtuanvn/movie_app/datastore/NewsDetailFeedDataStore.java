@@ -43,8 +43,7 @@ public class NewsDetailFeedDataStore extends DataStore {
         Observable observable = super.getDataObservable(getUrl() + newsId);
         try {
             return (Observable<NewsDetail>) observable;
-        }
-        catch (ClassCastException e){
+        } catch (ClassCastException e){
             Log.i("ClassCastException", e.getMessage());
         }
         return null;
