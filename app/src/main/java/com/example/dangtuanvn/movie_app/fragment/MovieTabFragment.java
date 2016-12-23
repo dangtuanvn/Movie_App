@@ -20,18 +20,13 @@ import com.example.dangtuanvn.movie_app.viewmodel.TabViewModel;
  */
 
 public class MovieTabFragment extends Fragment {
-    public enum CinemaTab {
-        Showing,
-        Upcoming
-    }
-
     private TabViewModel vm;
     private SwipeRefreshLayout swipeLayout;
-    private CinemaTab tab;
+    private int tab;
 
-    public static MovieTabFragment newInstance(CinemaTab tab) {
+    public static MovieTabFragment newInstance(int tab) {
         Bundle args = new Bundle();
-        args.putSerializable("cinema_tab", tab);
+        args.putInt("cinema_tab", tab);
         MovieTabFragment fragment = new MovieTabFragment();
         fragment.setArguments(args);
         return fragment;
@@ -40,7 +35,7 @@ public class MovieTabFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tab = (CinemaTab) getArguments().getSerializable("cinema_tab");
+        tab = getArguments().getInt("cinema_tab");
     }
 
     @Override
@@ -51,18 +46,18 @@ public class MovieTabFragment extends Fragment {
 
     public View inflateListView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.view_pager_tab, container, false);
-        
+
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeLayout.setColorSchemeColors(ContextCompat.getColor(getActivity(), R.color.orange),
                 ContextCompat.getColor(getActivity(), R.color.blue),
                 ContextCompat.getColor(getActivity(), R.color.green));
 
         switch (tab) {
-            case Showing:
+            case 0:
                 DataBindingUtil.setDefaultComponent(new MyDataBindingComponent(getContext(), 0));
                 vm = new TabViewModel(getContext(), swipeLayout, 0);
                 break;
-            case Upcoming:
+            case 1:
                 DataBindingUtil.setDefaultComponent(new MyDataBindingComponent(getContext(), 1));
                 vm = new TabViewModel(getContext(), swipeLayout, 1);
 

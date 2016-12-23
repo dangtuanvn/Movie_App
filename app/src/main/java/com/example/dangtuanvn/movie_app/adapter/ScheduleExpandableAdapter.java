@@ -28,7 +28,7 @@ import java.util.List;
 public class ScheduleExpandableAdapter  extends ExpandableRecyclerAdapter<ScheduleExpandableAdapter.GroupViewHolder, ChildViewHolder> {
     private LayoutInflater inflater;
     //    private List<ScheduleCinemaGroupList> groupList;
-//    private OnItemClick onItemClick;
+    //    private OnItemClick onItemClick;
     private Context context;
 
     public ScheduleExpandableAdapter(Context context, List<ScheduleCinemaGroupList> groupList) {

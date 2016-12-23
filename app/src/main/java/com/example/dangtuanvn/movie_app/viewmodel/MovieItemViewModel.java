@@ -6,7 +6,6 @@ import android.databinding.Bindable;
 import android.databinding.BindingAdapter;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.example.dangtuanvn.movie_app.MovieDetailActivity;
 import com.example.dangtuanvn.movie_app.datastore.MovieDetailFeedDataStore;

@@ -1,27 +1,25 @@
 package com.example.dangtuanvn.movie_app.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.example.dangtuanvn.movie_app.MainActivity;
-import com.example.dangtuanvn.movie_app.NoInternetActivity;
-//import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
-import com.example.dangtuanvn.movie_app.fragment.NoInternetFragment;
-//import com.example.dangtuanvn.movie_app.fragment.CinemaTabFragment;
-//import com.example.dangtuanvn.movie_app.fragment.MovieTabFragment;
 import com.example.dangtuanvn.movie_app.fragment.NewsTabFragment;
 
 /**
  * Created by sinhhx on 11/7/16.
  */
 public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
+    private enum Tab {
+        Showing,
+        Upcoming,
+        Cinema,
+        News,
+    }
+
     private final static int PAGE_COUNT = 4;
     private String tabTitles[] = new String[]{"Showing", "Upcoming", "Cinema around", "News"};
     private Context context;
@@ -42,14 +40,14 @@ public class TabViewPagerAdapter extends FragmentStatePagerAdapter {
 //        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 //        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 //        if (networkInfo != null && networkInfo.isConnected()) {
-            switch(position) {
-                case 0:
-                    return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.Showing);
-                case 1:
-                    return MovieTabFragment.newInstance(MovieTabFragment.CinemaTab.Upcoming);
-                case 2:
+            switch(Tab.values()[position]) {
+                case Showing:
+                    return MovieTabFragment.newInstance(0);
+                case Upcoming:
+                    return MovieTabFragment.newInstance(1);
+                case Cinema:
                     return CinemaTabFragment.newInstance();
-                case 3:
+                case News:
                     return NewsTabFragment.newInstance();
             }
 //        } else {
