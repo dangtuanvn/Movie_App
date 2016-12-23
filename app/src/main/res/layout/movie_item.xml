@@ -8,7 +8,6 @@
             type="com.example.dangtuanvn.movie_app.viewmodel.MovieItemViewModel" />
     </data>
 
-
     <RelativeLayout
         android:id="@+id/movie_detail"
         android:layout_width="wrap_content"
@@ -19,14 +18,14 @@
         android:onClick="@{MovieItemVM.onClickMovie}">
 
         <ImageView
-            android:id="@+id/moviepic"
+            android:id="@+id/movie_pic"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             app:image="@{MovieItemVM.imageUrl}" />
 
         <TextView
-            android:id="@+id/txtIMDB"
+            android:id="@+id/txt_IMDB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -38,13 +37,13 @@
             android:text="@{MovieItemVM.imdbPoint"/>
 
         <TextView
-            android:id="@+id/txtCalendar"
+            android:id="@+id/txt_Calendar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/txtIMDB"
+            android:layout_alignEnd="@+id/txt_IMDB"
             android:layout_alignParentEnd="true"
-            android:layout_alignStart="@+id/txtIMDB"
-            android:layout_below="@+id/txtIMDB"
+            android:layout_alignStart="@+id/txt_IMDB"
+            android:layout_below="@+id/txt_IMDB"
             android:layout_gravity="center"
             android:background="@color/colorHighlightTab"
             android:drawablePadding="5dp"

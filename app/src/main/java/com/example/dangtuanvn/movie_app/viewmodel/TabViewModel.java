@@ -75,9 +75,9 @@ public class TabViewModel extends BaseObservable {
 
         switch(tabId) {
             case 0:
-                new MovieFeedDataStore(context, MovieFeedDataStore.DataType.SHOWING).getMovieList().subscribe(subscriber);
+                new MovieFeedDataStore(context, 0).getMovieList().subscribe(subscriber);
             case 1:
-                new MovieFeedDataStore(context, MovieFeedDataStore.DataType.UPCOMING).getMovieList().subscribe(subscriber);
+                new MovieFeedDataStore(context, 1).getMovieList().subscribe(subscriber);
             case 3:
                 new NewsFeedDataStore(context).getNewsList().subscribe(subscriber);
                 break;

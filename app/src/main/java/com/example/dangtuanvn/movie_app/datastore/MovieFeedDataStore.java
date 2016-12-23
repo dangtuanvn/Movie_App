@@ -24,13 +24,8 @@ public class MovieFeedDataStore extends DataStore {
     private String urlShowing = BASE_URL + "film/list?status=2";
     private String urlUpcoming = BASE_URL + "film/list?status=1";
 
-    public enum DataType{
-        SHOWING,
-        UPCOMING
-    }
-
-    private DataType type;
-    public MovieFeedDataStore(Context context, DataType type) {
+    private int type;
+    public MovieFeedDataStore(Context context, int type) {
         super(context);
         this.type = type;
     }
@@ -60,10 +55,11 @@ public class MovieFeedDataStore extends DataStore {
 
     @Override
     protected String getUrl(){
-        if (type == DataType.UPCOMING)
-            return urlUpcoming;
-        else{
-            return urlShowing;
+       switch(type){
+           case 0:
+               return urlShowing;
+           default:
+               return urlUpcoming;
         }
     }
 }
