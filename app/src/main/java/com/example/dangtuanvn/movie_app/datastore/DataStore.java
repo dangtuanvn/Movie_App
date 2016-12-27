@@ -8,7 +8,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.dangtuanvn.movie_app.datastoreRX.VolleyWrapperRX;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -25,7 +24,7 @@ import rx.functions.Func0;
  * Created by dangtuanvn on 11/9/16.
  */
 
-public abstract class DataStore implements VolleyWrapperRX {
+public abstract class DataStore {
     private static String X123F_TOKEN = "GVlRhvnZt0Z4WF4NrfsQXwZh";
     private static String X123F_VERSION = "3";
     protected static String BASE_URL = "http://mapp.123phim.vn/android/2.97/";
@@ -69,8 +68,7 @@ public abstract class DataStore implements VolleyWrapperRX {
         return BASE_URL;
     }
 
-    @Override
-    public Observable<Object> getDataObservable(final String url) {
+    protected Observable<Object> getDataObservable(final String url) {
         return Observable.defer(new Func0<Observable<Object>>() {
             @Override
             public Observable<Object> call() {
@@ -85,7 +83,7 @@ public abstract class DataStore implements VolleyWrapperRX {
         });
     }
 
-    public StringRequest createStringRequest(String url, final Subscriber<? super Object> subscriber){
+    protected StringRequest createStringRequest(String url, final Subscriber<? super Object> subscriber){
         return new StringRequest
                 (Request.Method.GET, url, new Response.Listener<String>() {
                     @Override
